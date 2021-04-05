@@ -19,6 +19,22 @@ Bayesian statistics is an approach to inferential statistics based on Bayes' the
 
 Bayesian statistics is a departure from classical inferential statistics that prohibits probability statements about parameters and is based on asymptotically sampling infinite samples from a theoretical population and finding parameter values that maximize the likelihood function. Mostly notorious is null-hypothesis significance testing (NHST) based on *p*-values. Bayesian statistics incorporate uncertainty (and prior knowledge) by allowing probability statements about parameters, and the process of parameter value inference is a direct result of the Bayes' theorem.
 
+## Table of Contents
+
+
+   * [Turing](#turing)
+   * [Author](#author)
+   * [How to use the content?](#how-to-use-the-content)
+   * [Tutorials](#tutorials)
+   * [What about other Turing.jl tutorials?](#what-about-other-turingjl-tutorials)
+   * [How to cite](#how-to-cite)
+   * [References](#references)
+      * [Books](#books)
+      * [Academic Papers](#academic-papers)
+         * [Primary](#primary)
+         * [Auxiliary](#auxiliary)
+   * [License](#license)
+
 ## Turing
 
 Placeholder
