@@ -5,23 +5,13 @@
 
 
 ~~~
-<div class="figure" style="text-align: center">
-<a href="http://creativecommons.org/licenses/by-sa/4.0/">
-<img src="images/bayes-meme.jpg" alt="CC BY-SA 4.0" width="100" />
-<p class="caption">
-CC BY-SA 4.0
-</p>
-</a>
-</div>
+<img align="left" width="100" src="https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg" alt="CC BY-SA 4.0">
 ~~~
 
 ~~~
-<div class="figure" style="text-align: center">
-<img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
-<p class="caption">
-Bayesian for Everyone!
+<p align="center">
+  <img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500">
 </p>
-</div>
 ~~~
 
 \tableofcontents <!-- you can use \toc as well -->
