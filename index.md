@@ -3,19 +3,11 @@
 
 # Bayesian Statistics using Julia and Turing
 
-~~~
-<div class="figure" style="text-align: left">
-  <a href="http://creativecommons.org/licenses/by-sa/4.0/">
-    <img src="https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg" alt="CC BY-SA 4.0" width="100" />
-  </a>
-</div>
-~~~
+[![CC BY-SA
+4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg){ width=30% }](http://creativecommons.org/licenses/by-sa/4.0/)
 
-~~~
-<div class="figure" style="text-align: center">
-  <img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
-</div>
-~~~
+![Bayesian for Everyone](images/bayes-meme.jpg)
+
 
 \tableofcontents <!-- you can use \toc as well -->
 
@@ -113,7 +105,7 @@ Or in BibTeX format $\LaTeX$:
 -   Amrhein, V., Greenland, S., & McShane, B. (2019). Scientists rise up against statistical significance. *Nature*, *567*(7748), 305–307. <https://doi.org/10.1038/d41586-019-00857-9>
 -   van Ravenzwaaij, D., Cassey, P., & Brown, S. D. (2018). A simple introduction to Markov Chain Monte–Carlo sampling. *Psychonomic Bulletin and Review*, *25*(1), 143–154. <https://doi.org/10.3758/s13423-016-1015-8>
 -   Vandekerckhove, J., Matzke, D., Wagenmakers, E.-J., & others. (2015). Model comparison and the principle of parsimony. In J. R. Busemeyer, Z. Wang, J. T. Townsend, & A. Eidels (Eds.), *Oxford handbook of computational and mathematical psychology* (pp. 300–319). Oxford University Press Oxford.
--   van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer, F. J., & van Aken, M. A. G. (2014). A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research. *Child Development*, *85*(3), 842–860. <https://doi.org/10.1111/cdev.12169> <span class="csl-block">\_eprint: https://srcd.onlinelibrary.wiley.com/doi/pdf/10.1111/cdev.12169</span>
+-   van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer, F. J., & van Aken, M. A. G. (2014). A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research. *Child Development*, *85*(3), 842–860. <https://doi.org/10.1111/cdev.12169>
 -   Wagenmakers, E.-J. (2007). A practical solution to the pervasive problems of p values. *Psychonomic Bulletin & Review*, *14*(5), 779–804. <https://doi.org/10.3758/BF03194105>
 
 #### Auxiliary
@@ -126,7 +118,7 @@ Or in BibTeX format $\LaTeX$:
 -   Kruschke, J. K., & Liddell, T. M. (2018). Bayesian data analysis for newcomers. *Psychonomic Bulletin & Review*, *25*(1), 155–177. <https://doi.org/10.3758/s13423-017-1272-1>
 -   Kruschke, J. K., & Liddell, T. M. (2018). The Bayesian New Statistics: Hypothesis testing, estimation, meta-analysis, and power analysis from a Bayesian perspective. *Psychonomic Bulletin & Review*, *25*(1), 178–206. <https://doi.org/10.3758/s13423-016-1221-4>
 -   Lakens, D., Adolfi, F. G., Albers, C. J., Anvari, F., Apps, M. A. J., Argamon, S. E., Baguley, T., Becker, R. B., Benning, S. D., Bradford, D. E., Buchanan, E. M., Caldwell, A. R., Van Calster, B., Carlsson, R., Chen, S. C., Chung, B., Colling, L. J., Collins, G. S., Crook, Z., … Zwaan, R. A. (2018). Justify your alpha. *Nature Human Behaviour*, *2*(3), 168–171. <https://doi.org/10.1038/s41562-018-0311-x>
--   Morey, R. D., Hoekstra, R., Rouder, J. N., Lee, M. D., & Wagenmakers, E.-J. (2016). <span class="nocase">The fallacy of placing confidence in confidence intervals</span>. *Psychonomic Bulletin & Review*, *23*(1), 103–123. <https://doi.org/10.3758/s13423-015-0947-8>
+-   Morey, R. D., Hoekstra, R., Rouder, J. N., Lee, M. D., & Wagenmakers, E.-J. (2016). The fallacy of placing confidence in confidence intervals. *Psychonomic Bulletin & Review*, *23*(1), 103–123. <https://doi.org/10.3758/s13423-015-0947-8>
 -   Murphy, K. R., & Aguinis, H. (2019). HARKing: How Badly Can Cherry-Picking and Question Trolling Produce Bias in Published Results? *Journal of Business and Psychology*, *34*(1). <https://doi.org/10.1007/s10869-017-9524-7>
 -   Stark, P. B., & Saltelli, A. (2018). Cargo-cult statistics and scientific crisis. *Significance*, *15*(4), 40–43. <https://doi.org/10.1111/j.1740-9713.2018.01174.x>
 
@@ -134,10 +126,4 @@ Or in BibTeX format $\LaTeX$:
 
 This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Internacional](http://creativecommons.org/licenses/by-sa/4.0/).
 
-~~~
-<div class="figure" style="text-align: left">
-  <a href="http://creativecommons.org/licenses/by-sa/4.0/">
-    <img src="https://licensebuttons.net/l/by-sa/4.0/88x31.png" alt="CC BY-SA 4.0" width="88" />
-  </a>
-</div>
-~~~
+[![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/){ width=30% }
