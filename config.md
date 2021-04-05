@@ -5,11 +5,13 @@ The website_* must be defined for the RSS to work
 -->
 @def website_title = "Bayesian Statistics with Julia and Turing"
 @def website_descr = "Tutorials for Social Scientists and PhD Candidates"
-@def website_url   = "https://storopoli.github.io/Bayesian-Julia/"
+@def website_url   = "https://storopoli.io/Bayesian-Julia/"
 
 @def author = "Jose Storopoli"
 
 @def mintoclevel = 2
+
+@def prepath = "Bayesian-Julia"
 
 <!--
 Add here files or directories that should be ignored by Franklin, otherwise
