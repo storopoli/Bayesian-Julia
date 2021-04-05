@@ -3,24 +3,17 @@
 
 # Bayesian Statistics using Julia and Turing
 
-
 ~~~
-<div class="figure" style="text-align: center">
-<a href="http://creativecommons.org/licenses/by-sa/4.0/">
-<img src="images/bayes-meme.jpg" alt="CC BY-SA 4.0" width="100" />
-<p class="caption">
-CC BY-SA 4.0
-</p>
-</a>
+<div class="figure" style="text-align: left">
+  <a href="http://creativecommons.org/licenses/by-sa/4.0/">
+    <img src="https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg" alt="CC BY-SA 4.0" width="100" />
+  </a>
 </div>
 ~~~
 
 ~~~
 <div class="figure" style="text-align: center">
-<img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
-<p class="caption">
-Bayesian for Everyone!
-</p>
+  <img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
 </div>
 ~~~
 
@@ -86,7 +79,7 @@ Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.i
 
 Or in BibTeX format $\LaTeX$:
 
-```plaintex
+```plaintext
 @misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
@@ -141,4 +134,10 @@ Or in BibTeX format $\LaTeX$:
 
 This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Internacional](http://creativecommons.org/licenses/by-sa/4.0/).
 
-[![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+~~~
+<div class="figure" style="text-align: left">
+  <a href="http://creativecommons.org/licenses/by-sa/4.0/">
+    <img src="https://licensebuttons.net/l/by-sa/4.0/88x31.png" alt="CC BY-SA 4.0" width="88" />
+  </a>
+</div>
+~~~
