@@ -3,17 +3,26 @@
 
 # Bayesian Statistics using Julia and Turing
 
-[![CC BY-SA
-4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-sa/4.0/)
 
+~~~
 <div class="figure" style="text-align: center">
+<a href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img src="images/bayes-meme.jpg" alt="CC BY-SA 4.0" width="100" />
+<p class="caption">
+CC BY-SA 4.0
+</p>
+</a>
+</div>
+~~~
 
+~~~
+<div class="figure" style="text-align: center">
 <img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
 <p class="caption">
 Bayesian for Everyone!
 </p>
-
 </div>
+~~~
 
 \tableofcontents <!-- you can use \toc as well -->
 
@@ -71,16 +80,20 @@ Despite not being the only Turing tutorial that exists, this tutorial aims to in
 
 To cite these tutorials, please use:
 
-    Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
+```
+Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
+```
 
-Or in BibTeX format (LaTeX):
+Or in BibTeX format \LaTeX:
 
-    @misc{storopoli2021bayesianjulia,
+```bibtex
+@misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
       url = {https://storopoli.io/Bayesian-Julia},
       year = {2021}
     }
+```
 
 ## References
 
