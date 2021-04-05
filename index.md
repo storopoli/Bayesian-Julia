@@ -3,185 +3,129 @@
 
 # Bayesian Statistics using Julia and Turing
 
+[![CC BY-SA
+4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-sa/4.0/)
+
+<div class="figure" style="text-align: center">
+
+<img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
+<p class="caption">
+Bayesian for Everyone!
+</p>
+
+</div>
+
 \tableofcontents <!-- you can use \toc as well -->
 
-This section is meant as a refresher if you're new to Franklin.
-Have a look at both how the website renders and the corresponding markdown (`index.md`).
-Modify at will to get a feeling for how things work!
+Welcome to the repository of tutorials on how to Bayesian Statistics using [Julia](https://www.julialang.org) and [Turing](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
 
-Ps: if you want to modify the header or footer or the general look of the website, adjust the files in
-* `src/_css/` and
-* `src/_html_parts/`.
+Bayesian statistics is an approach to inferential statistics based on Bayes' theorem, where available knowledge about parameters in a statistical model is updated with the information in observed data. The background knowledge is expressed as a prior distribution and combined with observational data in the form of a likelihood function to determine the posterior distribution. The posterior can also be used for making predictions about future events.
 
-## The base with Markdown
+Bayesian statistics is a departure from classical inferential statistics that prohibits probability statements about parameters and is based on asymptotically sampling infinite samples from a theoretical population and finding parameter values that maximize the likelihood function. Mostly notorious is null-hypothesis significance testing (NHST) based on *p*-values. Bayesian statistics incorporate uncertainty (and prior knowledge) by allowing probability statements about parameters, and the process of parameter value inference is a direct result of the Bayes' theorem.
 
-The [standard markdown syntax](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) can be used such as titles using `#`, lists:
+## Turing
 
-* element with **bold**
-* element with _emph_
+[Turing](http://turing.ml/) is a ecosystem of Julia packages for Bayesian Inference using [probabilistic programming](https://en.wikipedia.org/wiki/Probabilistic_programming). Models specified using Turing are easy to read and write — models work the way you write them. Like everything in Julia, Turing is [fast](https://arxiv.org/abs/2002.02702).
 
-or code-blocks `inline` or with highlighting (note the `@def hascode = true` in the source to allow [highlight.js](https://highlightjs.org/) to do its job):
+## Author
 
-```julia
-abstract type Point end
-struct PointR2{T<:Real} <: Point
-    x::T
-    y::T
-end
-struct PointR3{T<:Real} <: Point
-    x::T
-    y::T
-    z::T
-end
-function len(p::T) where T<:Point
-  sqrt(sum(getfield(p, η)^2 for η ∈ fieldnames(T)))
-end
-```
+José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.io>
 
-You can also quote stuff
+<josees@uni9.pro.br>
 
-> You must have chaos within you to ...
+## How to use the content?
 
-or have tables:
+The content is licensed under a very permissive Creative Commons license (CC BY-SA). You are mostly welcome to contribute with [issues](https://www.github.com/storopoli/Bayesian-Julia/issues) and [pull requests](https://github.com/storopoli/Bayesian-Julia/pulls). My hope is to have more people into Bayesian statistics. The content is aimed towards social scientists and PhD candidates in social sciences. I chose to provide an intuitive approach rather than focusing on rigorous mathematical formulations. I've made it to be how I would have liked to be introduced to Bayesian statistics.
 
-| English         | Mandarin   |
-| --------------- | ---------- |
-| winnie the pooh | 维尼熊      |
+To configure a local environment:
 
-Note that you may have to do a bit of CSS-styling to get these elements to look the way you want them (the same holds for the whole page in fact).
+1. Download and install [Julia](https://www.julialang.org/downloads/)
+2.  Clone the repository from GitHub:
+    `git clone https://github.com/storopoli/Bayesian-Julia.git`
+3.  Access the directory: `cd Bayesian-Julia`
+4.  Activate the environment: type inside the Julia REPL `]activate .`
 
-### Symbols and html entities
+## Tutorials
 
-If you want a dollar sign you have to escape it like so: \$, you can also use html entities like so: &rarr; or &pi; or, if you're using Juno for instance, you can use `\pi[TAB]` to insert the symbol as is: π (it will be converted to a html entity).[^1]
+1. [**Why Julia?**](placeholder)
+2. [**What is Bayesian Statistics**](placeholder)
+3. [**Common Probability Distributions**](placeholder)
+4. [**How to use Turing**](placeholder)
+5. [**Markov Chain Monte Carlo (MCMC)**](placeholder)
+6. [**Bayesian Linear Regression**](placeholder)
+7. [**Bayesian Logistic Regression**](placeholder)
+8. [**Bayesian Regression with Count Data**](placeholder)
+9. [**Robust Bayesian Regression**](placeholder)
+10. [**Multilevel Models (a.k.a. Hierarchical Models)**](placeholder)
+11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](placeholder)
 
-If you want to show a backslash, just use it like so: \ ; if you want to force a line break, use a ` \\ ` like \\ so (this is on a new line).[^blah]
+## What about other Turing tutorials?
 
-If you want to show a backtick, escape it like so: \` and if you want to show a tick in inline code use double backticks like ``so ` ...``.
+Despite not being the only Turing tutorial that exists, this tutorial aims to introduce Bayesian inference along with how to use Julia and Turing. Here is a (not complete) list of other Turing tutorials:
 
-Footnotes are nice too:
+1. [**Official Turing Tutorials**](https://turing.ml/dev/tutorials/): tutorials on how to implement common models in Turing
+2. [**Statistical Rethinking - Turing Models**](https://statisticalrethinkingjulia.github.io/TuringModels.jl/): Julia versions of the Bayesian models described in *Statistical Rethinking* Edition 1 (McElreath, 2016) and Edition 2 (McElreath, 2020)
+3. [**Håkan Kjellerstrand Turing Tutorials**](http://hakank.org/julia/turing/): a collection of Julia Turing models
 
-[^1]: this is the text for the first footnote, you can style all this looking at `.fndef` elements; note that the whole footnote definition is _expected to be on the same line_.
-[^blah]: and this is a longer footnote with some blah from veggie ipsum: turnip greens yarrow ricebean rutabaga endive cauliflower sea lettuce kohlrabi amaranth water spinach avocado daikon napa cabbage asparagus winter purslane kale. Celery potato scallion desert raisin horseradish spinach carrot soko.
+## How to cite
 
-## Basic Franklin extensions
+To cite these tutorials, please use:
 
-### Divs
+    Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
 
-It is sometimes useful to have a short way to make a part of the page belong to a div so that it can be styled separately.
-You can do this easily with Franklin by using `@@divname ... @@`.
-For instance, you could want a blue background behind some text.
+Or in BibTeX format (LaTeX):
 
-@@colbox-blue
-Here we go! (this is styled in the css sheet with name "colbox-blue").
-@@
+    @misc{storopoli2021bayesianjulia,
+      author = {Storopoli, Jose},
+      title = {Bayesian Statistics with Julia and Turing},
+      url = {https://storopoli.io/Bayesian-Julia},
+      year = {2021}
+    }
 
-Since it's just a `<div>` block, you can put this construction wherever you like and locally style your text.
+## References
 
-### LaTeX and Maths
+### Books
 
-Essentially three things are imitated from LaTeX
+-   Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). *Bayesian Data Analysis*. Chapman and
+    Hall/CRC.
+-   McElreath, R. (2020). *Statistical rethinking: A Bayesian course with examples in R and Stan*. CRC press.
+-   Gelman, A., Hill, J., & Vehtari, A. (2020). *Regression and other stories*. Cambridge University Press.
+-   Brooks, S., Gelman, A., Jones, G., & Meng, X.-L. (2011). *Handbook of Markov Chain Monte Carlo*. CRC Press. <https://books.google.com?id=qfRsAIKZ4rIC>
+    -   Geyer, C. J. (2011). Introduction to markov chain monte carlo. In S. Brooks, A. Gelman, G. L. Jones, & X.-L. Meng (Eds.), *Handbook of markov chain monte carlo*.
 
-1. you can introduce definitions using `\newcommand`
-1. you can use hyper-references with `\eqref`, `\cite`, ...
-1. you can show nice maths (via KaTeX)
+### Academic Papers
 
-The definitions can be introduced in the page or in the `config.md` (in which case they're available everywhere as opposed to just in that page).
-For instance, the commands `\scal` and `\R` are defined in the config file (see `src/config.md`) and can directly be used whereas the command `\E` is defined below (and therefore only available on this page):
+#### Primary
 
-\newcommand{\E}[1]{\mathbb E\left[#1\right]}
+-   van de Schoot, R., Depaoli, S., King, R., Kramer, B., Märtens, K., Tadesse, M. G., Vannucci, M., Gelman, A., Veen, D., Willemsen, J., & Yau, C. (2021). Bayesian statistics and modelling. *Nature Reviews Methods Primers*, *1*(1, 1), 1–26. <https://doi.org/10.1038/s43586-020-00001-2>
+-   Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., & Gelman, A. (2019). Visualization in Bayesian workflow. *Journal of the Royal Statistical Society: Series A (Statistics in Society)*, *182*(2), 389–402. <https://doi.org/10.1111/rssa.12378>
+-   Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modr’ak, M. (2020, November 3). *Bayesian Workflow*. <http://arxiv.org/abs/2011.01808>
+-   Benjamin, D. J., Berger, J. O., Johannesson, M., Nosek, B. A., Wagenmakers, E.-J., Berk, R., Bollen, K. A., Brembs, B., Brown, L., Camerer, C., Cesarini, D., Chambers, C. D., Clyde, M., Cook, T. D., De Boeck, P., Dienes, Z., Dreber, A., Easwaran, K., Efferson, C., … Johnson, V. E. (2018). Redefine statistical significance. *Nature Human Behaviour*, *2*(1), 6–10. <https://doi.org/10.1038/s41562-017-0189-z>
+-   Etz, A. (2018). Introduction to the Concept of Likelihood and Its Applications. *Advances in Methods and Practices in Psychological Science*, *1*(1), 60–69. <https://doi.org/10.1177/2515245917744314>
+-   Etz, A., Gronau, Q. F., Dablander, F., Edelsbrunner, P. A., & Baribault, B. (2018). How to become a Bayesian in eight easy steps: An annotated reading list. *Psychonomic Bulletin & Review*, *25*(1), 219–234. <https://doi.org/10.3758/s13423-017-1317-5>
+-   McShane, B. B., Gal, D., Gelman, A., Robert, C., & Tackett, J. L. (2019). Abandon Statistical Significance. *American Statistician*, *73*, 235–245. <https://doi.org/10.1080/00031305.2018.1527253>
+-   Amrhein, V., Greenland, S., & McShane, B. (2019). Scientists rise up against statistical significance. *Nature*, *567*(7748), 305–307. <https://doi.org/10.1038/d41586-019-00857-9>
+-   van Ravenzwaaij, D., Cassey, P., & Brown, S. D. (2018). A simple introduction to Markov Chain Monte–Carlo sampling. *Psychonomic Bulletin and Review*, *25*(1), 143–154. <https://doi.org/10.3758/s13423-016-1015-8>
+-   Vandekerckhove, J., Matzke, D., Wagenmakers, E.-J., & others. (2015). Model comparison and the principle of parsimony. In J. R. Busemeyer, Z. Wang, J. T. Townsend, & A. Eidels (Eds.), *Oxford handbook of computational and mathematical psychology* (pp. 300–319). Oxford University Press Oxford.
+-   van de Schoot, R., Kaplan, D., Denissen, J., Asendorpf, J. B., Neyer, F. J., & van Aken, M. A. G. (2014). A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research. *Child Development*, *85*(3), 842–860. <https://doi.org/10.1111/cdev.12169> <span class="csl-block">\_eprint: https://srcd.onlinelibrary.wiley.com/doi/pdf/10.1111/cdev.12169</span>
+-   Wagenmakers, E.-J. (2007). A practical solution to the pervasive problems of p values. *Psychonomic Bulletin & Review*, *14*(5), 779–804. <https://doi.org/10.3758/BF03194105>
 
-Now we can write something like
+#### Auxiliary
 
-$$  \varphi(\E{X}) \le \E{\varphi(X)}. \label{equation blah} $$
+-   Cohen, J. (1994). The earth is round (p &lt; .05). *American Psychologist*, *49*(12), 997–1003. <https://doi.org/10.1037/0003-066X.49.12.997>
+-   Dienes, Z. (2011). Bayesian Versus Orthodox Statistics: Which Side Are You On? *Perspectives on Psychological Science*, *6*(3), 274–290. <https://doi.org/10.1177/1745691611406920>
+-   Etz, A., & Vandekerckhove, J. (2018). Introduction to Bayesian Inference for Psychology. *Psychonomic Bulletin & Review*, *25*(1), 5–34. <https://doi.org/10.3758/s13423-017-1262-3>
+-   Kerr, N. L. (1998). HARKing: Hypothesizing after the results are known. *Personality and Social Psychology Review*, *2*(3), 196–217. <https://doi.org/10.1207/s15327957pspr0203_4>
+-   Kruschke, J. K., & Vanpaemel, W. (2015). Bayesian estimation in hierarchical models. In J. R. Busemeyer, Z. Wang, J. T. Townsend, & A. Eidels (Eds.), *The Oxford handbook of computational and mathematical psychology* (pp. 279–299). Oxford University Press Oxford, UK.
+-   Kruschke, J. K., & Liddell, T. M. (2018). Bayesian data analysis for newcomers. *Psychonomic Bulletin & Review*, *25*(1), 155–177. <https://doi.org/10.3758/s13423-017-1272-1>
+-   Kruschke, J. K., & Liddell, T. M. (2018). The Bayesian New Statistics: Hypothesis testing, estimation, meta-analysis, and power analysis from a Bayesian perspective. *Psychonomic Bulletin & Review*, *25*(1), 178–206. <https://doi.org/10.3758/s13423-016-1221-4>
+-   Lakens, D., Adolfi, F. G., Albers, C. J., Anvari, F., Apps, M. A. J., Argamon, S. E., Baguley, T., Becker, R. B., Benning, S. D., Bradford, D. E., Buchanan, E. M., Caldwell, A. R., Van Calster, B., Carlsson, R., Chen, S. C., Chung, B., Colling, L. J., Collins, G. S., Crook, Z., … Zwaan, R. A. (2018). Justify your alpha. *Nature Human Behaviour*, *2*(3), 168–171. <https://doi.org/10.1038/s41562-018-0311-x>
+-   Morey, R. D., Hoekstra, R., Rouder, J. N., Lee, M. D., & Wagenmakers, E.-J. (2016). <span class="nocase">The fallacy of placing confidence in confidence intervals</span>. *Psychonomic Bulletin & Review*, *23*(1), 103–123. <https://doi.org/10.3758/s13423-015-0947-8>
+-   Murphy, K. R., & Aguinis, H. (2019). HARKing: How Badly Can Cherry-Picking and Question Trolling Produce Bias in Published Results? *Journal of Business and Psychology*, *34*(1). <https://doi.org/10.1007/s10869-017-9524-7>
+-   Stark, P. B., & Saltelli, A. (2018). Cargo-cult statistics and scientific crisis. *Significance*, *15*(4), 40–43. <https://doi.org/10.1111/j.1740-9713.2018.01174.x>
 
-since we've given it the label `\label{equation blah}`, we can refer it like so: \eqref{equation blah} which can be convenient for pages that are math-heavy.
+## License
 
-In a similar vein you can cite references that would be at the bottom of the page: \citep{noether15, bezanson17}.
+This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Internacional](http://creativecommons.org/licenses/by-sa/4.0/).
 
-**Note**: the LaTeX commands you define can also incorporate standard markdown (though not in a math environment) so for instance let's define a silly `\bolditalic` command.
-
-\newcommand{\bolditalic}[1]{_**!#1**_} <!--_ ignore this comment, it helps atom to not get confused by the trailing underscore when highlighting the code but is not necessary.-->
-
-and use it \bolditalic{here for example}.
-
-Here's another quick one, a command to change the color:
-
-\newcommand{\col}[2]{~~~<span style="color:#1">#2</span>~~~}
-
-This is \col{blue}{in blue} or \col{#bf37bc}{in #bf37bc}.
-
-### A quick note on whitespaces
-
-For most commands you will use `#k` to refer to the $k$-th argument as in LaTeX.
-In order to reduce headaches, this forcibly introduces a whitespace on the left of whatever is inserted which, usually, changes nothing visible (e.g. in a math settings).
-However there _may be_ situations where you do not want this to happen and you know that the insertion will not clash with anything else.
-In that case, you should simply use `!#k` which will not introduce that whitespace.
-It's probably easier to see this in action:
-
-\newcommand{\pathwith}[1]{`/usr/local/bin/#1`}
-\newcommand{\pathwithout}[1]{`/usr/local/bin/!#1`}
-
-* with: \pathwith{script.jl}, there's a whitespace you don't want 🚫
-* without: \pathwithout{script.jl} here there isn't ✅
-
-### Raw HTML
-
-You can include raw HTML by just surrounding a block with `~~~`.
-Not much more to add.
-This may be useful for local custom layouts like having a photo next to a text in a specific way.
-
-~~~
-<div class="row">
-  <div class="container">
-    <img class="left" src="/assets/rndimg.jpg">
-    <p>
-    Marine iguanas are truly splendid creatures. They're found on the Gálapagos islands, have skin that basically acts as a solar panel, can swim and may have the ability to adapt their body size depending on whether there's food or not.
-    </p>
-    <p>
-    Evolution is cool.
-    </p>
-    <div style="clear: both"></div>
-  </div>
-</div>
-~~~
-
-**Note 1**: again, entire such blocks can be made into latex-like commands via `\newcommand{\mynewblock}[1]{...}`.
-
-**Note 2**: whatever is in a raw HTML block is *not* further processed (so you can't have LaTeX in there for instance). A partial way around this is to use `@@...` blocks which *will* be recursively parsed. The following code gives the same result as above with the small difference that there is LaTeX being processed in the inner div.
-
-@@row
-@@container
-@@left ![](/assets/rndimg.jpg) @@
-@@
-Marine iguanas are **truly splendid** creatures. They're not found in equations like $\exp(-i\pi)+1$. But they're still quite cool.
-~~~
-<div style="clear: both"></div>
-~~~
-@@
-
-## Pages and structure
-
-Here are a few empty pages connecting to the menu links to show where files can go and the resulting paths. (It's probably best if you look at the source folder for this).
-
-* [menu 1](/menu1/)
-* [menu 2](/menu2/)
-* [menu 3](/menu3/)
-
-## References (not really)
-
-* \biblabel{noether15}{Noether (1915)} **Noether**,  Körper und Systeme rationaler Funktionen, 1915.
-* \biblabel{bezanson17}{Bezanson et al. (2017)} **Bezanson**, **Edelman**, **Karpinski** and **Shah**, [Julia: a fresh approach to numerical computing](https://julialang.org/research/julia-fresh-approach-BEKS.pdf), SIAM review 2017.
-
-## Header and Footer
-
-As you can see here at the bottom of the page, there is a footer which you may want on all pages but for instance you may want the date of last modification to be displayed.
-In a fashion heavily inspired by [Hugo](https://gohugo.io), you can write things like
-
-```html
-Last modified: {{ fill fd_mtime }}.
-```
-
-(cf. `src/_html_parts/page_foot.html`) which will then replace these braces with the content of a dictionary of variables at the key `fd_mtime`.
-This dictionary of variables is accessed locally by pages through `@def varname = value` and globally through the `config.md` page via the same syntax.
-
-There's a few other such functions of the form `{{fname p₁ p₂}}` as well as support for conditional blocks. If you wander through the `src/_html_parts/` folder and its content, you should be able to see those in action.
+[![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
