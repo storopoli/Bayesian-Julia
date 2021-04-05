@@ -3,11 +3,7 @@
 
 # Bayesian Statistics using Julia and Turing
 
-[![CC BY-SA
-4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg){ width=30% }](http://creativecommons.org/licenses/by-sa/4.0/)
-
 ![Bayesian for Everyone](images/bayes-meme.jpg)
-
 
 \tableofcontents <!-- you can use \toc as well -->
 
@@ -24,8 +20,6 @@ Bayesian statistics is a departure from classical inferential statistics that pr
 ## Author
 
 José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.io>
-
-<josees@uni9.pro.br>
 
 ## How to use the content?
 
@@ -125,5 +119,3 @@ Or in BibTeX format $\LaTeX$:
 ## License
 
 This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Internacional](http://creativecommons.org/licenses/by-sa/4.0/).
-
-[![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/){ width=30% }
