@@ -37,7 +37,7 @@ Bayesian statistics is a departure from classical inferential statistics that pr
 
 ## Turing
 
-Placeholder
+[Turing](http://turing.ml/) is a ecosystem of Julia packages for Bayesian Inference using [probabilistic programming](https://en.wikipedia.org/wiki/Probabilistic_programming). Models specified using Turing are easy to read and write — models work the way you write them. Like everything in Julia, Turing is [fast](https://arxiv.org/abs/2002.02702).
 
 ## Author
 
