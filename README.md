@@ -26,7 +26,7 @@ Bayesian statistics is a departure from classical inferential statistics that pr
    * [Author](#author)
    * [How to use the content?](#how-to-use-the-content)
    * [Tutorials](#tutorials)
-   * [What about other Turing tutorials?](#what-about-other-turingjl-tutorials)
+   * [What about other Turing tutorials?](#what-about-other-turing-tutorials)
    * [How to cite](#how-to-cite)
    * [References](#references)
       * [Books](#books)
@@ -41,7 +41,7 @@ Bayesian statistics is a departure from classical inferential statistics that pr
 
 ## Author
 
-José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - [professional site](https://storopoli.io)
+José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.io>
 
 <josees@uni9.pro.br>
 
@@ -68,8 +68,8 @@ To configure a local environment:
 7. [**Bayesian Logistic Regression**](placeholder)
 8. [**Bayesian Regression with Count Data**](placeholder)
 9. [**Robust Bayesian Regression**](placeholder)
-10. [**Multilevel Models (a.k.a. Hierarchical Models**](placeholder)
-11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition**](placeholder)
+10. [**Multilevel Models (a.k.a. Hierarchical Models)**](placeholder)
+11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](placeholder)
 
 ## What about other Turing tutorials?
 
