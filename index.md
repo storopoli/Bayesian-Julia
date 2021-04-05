@@ -5,13 +5,23 @@
 
 
 ~~~
-<img align="left" width="100" src="https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg" alt="CC BY-SA 4.0">
+<div class="figure" style="text-align: center">
+<a href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img src="images/bayes-meme.jpg" alt="CC BY-SA 4.0" width="100" />
+<p class="caption">
+CC BY-SA 4.0
+</p>
+</a>
+</div>
 ~~~
 
 ~~~
-<p align="center">
-  <img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500">
+<div class="figure" style="text-align: center">
+<img src="images/bayes-meme.jpg" alt="Bayesian for Everyone!" width="500" />
+<p class="caption">
+Bayesian for Everyone!
 </p>
+</div>
 ~~~
 
 \tableofcontents <!-- you can use \toc as well -->
@@ -70,13 +80,13 @@ Despite not being the only Turing tutorial that exists, this tutorial aims to in
 
 To cite these tutorials, please use:
 
-```
+```plaintext
 Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
 ```
 
-Or in BibTeX format \LaTeX:
+Or in BibTeX format $\LaTeX$:
 
-```bibtex
+```plaintex
 @misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
