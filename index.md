@@ -1,7 +1,7 @@
-@def title = "Franklin Example"
+@def title = "Bayesian Statistics using Julia and Turing"
 @def tags = ["syntax", "code"]
 
-# How to use Franklin
+# Bayesian Statistics using Julia and Turing
 
 \tableofcontents <!-- you can use \toc as well -->
 
@@ -140,7 +140,7 @@ This may be useful for local custom layouts like having a photo next to a text i
     <p>
     Evolution is cool.
     </p>
-    <div style="clear: both"></div>      
+    <div style="clear: both"></div>
   </div>
 </div>
 ~~~
