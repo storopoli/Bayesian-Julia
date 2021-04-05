@@ -1,7 +1,3 @@
-```@meta
-EditURL = "<unknown>/_literate/test.jl"
-```
-
 # Here is my website
 
 I'm going to use $\LaTeX$ and **Julia**.
