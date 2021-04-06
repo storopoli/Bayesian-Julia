@@ -1,5 +1,6 @@
 @def title = "Bayesian Statistics using Julia and Turing"
 @def tags = ["syntax", "code"]
+@def showall = true
 @def hascode = true
 
 # Bayesian Statistics using Julia and Turing
@@ -107,5 +108,5 @@ versioninfo()
 ```
 
 ```julia:pkg-status
-using Pkg; Pkg.status(
+using Pkg; Pkg.status()
 ```
