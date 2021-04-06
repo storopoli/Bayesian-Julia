@@ -103,10 +103,10 @@ This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Inte
 
 ## Environment
 
-```julia
+```julia:version-info
 versioninfo()
 ```
 
-```julia
+```julia:pkg-status
 using Pkg; Pkg.status()
 ```
