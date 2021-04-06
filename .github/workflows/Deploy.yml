@@ -7,6 +7,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-20.04
+    env:
+        JULIA_NUM_THREADS: 2
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -17,8 +19,6 @@ jobs:
     - run: npm install highlight.js
     - name: Install Julia
       uses: julia-actions/setup-julia@v1
-      env:
-        JULIA_NUM_THREADS: 2
       with:
         version: 1.6
     # NOTE
