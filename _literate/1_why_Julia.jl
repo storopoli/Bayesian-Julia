@@ -4,9 +4,9 @@
 
 # ## Here's some maths
 
-# $ f(x,y) = x^{x} + \frac{y}{x} $
+# $$ f(x,y) = x^{x} + \frac{y}{x} $$
 
-### And some code
+# And some code
 
 f(x,y) = x^x + y / x
 
@@ -18,4 +18,4 @@ using Plots
 plot(Plots.fakedata(50, 5), w=3);
 savefig(joinpath(@OUTPUT, "test.svg")) # hide
 
-# \figalt{Fake Data}{test}
+# \fig{test}
