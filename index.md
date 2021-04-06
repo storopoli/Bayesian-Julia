@@ -103,8 +103,8 @@ This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Inte
 
 ## Environment
 
-```julia:version-info
-versioninfo()
+```julia:versioninfo
+using InteractiveUtils; versioninfo()
 ```
 
 ```julia:pkg-status

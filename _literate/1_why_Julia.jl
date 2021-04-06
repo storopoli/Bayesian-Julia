@@ -2,7 +2,7 @@
 
 # I'm going to use $\LaTeX$ and **Julia**.
 
-# ### Here's some maths
+# ## Here's some maths
 
 # $ f(x,y) = x^{x} + \frac{y}{x} $
 
@@ -11,3 +11,8 @@
 f(x,y) = x^x + y / x
 
 f(2,3)
+
+# ## Testing Plots
+
+using Plots
+plot(Plots.fakedata(50, 5), w=3)
