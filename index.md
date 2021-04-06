@@ -1,11 +1,12 @@
 @def title = "Bayesian Statistics using Julia and Turing"
 @def tags = ["syntax", "code"]
+@def hascode = true
 
 # Bayesian Statistics using Julia and Turing
 
 ![Bayesian for Everyone](images/bayes-meme.jpg)
 
-\tableofcontents <!-- you can use \toc as well -->
+\toc
 
 Welcome to the repository of tutorials on how to Bayesian Statistics using [Julia](https://www.julialang.org) and [Turing](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
 
