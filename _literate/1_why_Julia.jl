@@ -18,4 +18,4 @@ using Plots
 plot(Plots.fakedata(50, 5), w=3);
 savefig(joinpath(@OUTPUT, "test.svg")) # hide
 
-# \fig{test}
+# \figalt{Fake Data}{test}
