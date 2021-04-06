@@ -5,7 +5,7 @@
 # ## Here's some maths
 
 # @@no-number
-# $$ f(x,y) = x^{x} + \frac{y}{x} $$
+#   $$ f(x,y) = x^{x} + \frac{y}{x} $$
 # @@
 
 # And some code
