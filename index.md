@@ -36,17 +36,17 @@ To configure a local environment:
 
 ## Tutorials
 
-1. [**Why Julia?**](placeholder)
-2. [**What is Bayesian Statistics**](placeholder)
-3. [**Common Probability Distributions**](placeholder)
-4. [**How to use Turing**](placeholder)
-5. [**Markov Chain Monte Carlo (MCMC)**](placeholder)
-6. [**Bayesian Linear Regression**](placeholder)
-7. [**Bayesian Logistic Regression**](placeholder)
-8. [**Bayesian Regression with Count Data**](placeholder)
-9. [**Robust Bayesian Regression**](placeholder)
-10. [**Multilevel Models (a.k.a. Hierarchical Models)**](placeholder)
-11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](placeholder)
+1. [**Why Julia?**](/pages/1_why_Julia/)
+2. [**What is Bayesian Statistics?**](/pages/2_bayes_stats/)
+3. [**Common Probability Distributions**](/pages/3_prob_dist/)
+4. [**How to use Turing**](/pages/4_Turing/)
+5. [**Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/)
+6. [**Bayesian Linear Regression**](/pages/6_linear_reg/)
+7. [**Bayesian Logistic Regression**](/pages/7_logistic_reg/)
+8. [**Bayesian Regression with Count Data**](/pages/8_count_reg/)
+9. [**Robust Bayesian Regression**](/pages/9_robust_reg/)
+10. [**Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/)
+11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](/pages/11_Turing_tricks/)
 
 ## What about other Turing tutorials?
 
@@ -99,3 +99,13 @@ Or in BibTeX format $\LaTeX$:
 ## License
 
 This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Internacional](http://creativecommons.org/licenses/by-sa/4.0/).
+
+## Environment
+
+```julia:versioninfo
+versioninfo()
+```
+
+```julia:pkg-status
+using Pkg; Pkg.status(
+```

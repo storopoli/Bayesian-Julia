@@ -59,17 +59,17 @@ To configure a local environment:
 
 ## Tutorials
 
-1. [**Why Julia?**](placeholder)
-2. [**What is Bayesian Statistics**](placeholder)
-3. [**Common Probability Distributions**](placeholder)
-4. [**How to use Turing**](placeholder)
-5. [**Markov Chain Monte Carlo (MCMC)**](placeholder)
-6. [**Bayesian Linear Regression**](placeholder)
-7. [**Bayesian Logistic Regression**](placeholder)
-8. [**Bayesian Regression with Count Data**](placeholder)
-9. [**Robust Bayesian Regression**](placeholder)
-10. [**Multilevel Models (a.k.a. Hierarchical Models)**](placeholder)
-11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](placeholder)
+1. [**Why Julia?**](https://storopoli.io/Bayesian-Julia/pages/1_why_Julia/)
+2. [**What is Bayesian Statistics?**](https://storopoli.io/Bayesian-Julia/pages/2_bayes_stats/)
+3. [**Common Probability Distributions**](https://storopoli.io/Bayesian-Julia/pages/3_prob_dist/)
+4. [**How to use Turing**](https://storopoli.io/Bayesian-Julia/pages/4_Turing/)
+5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.io/Bayesian-Julia/pages/5_MCMC/)
+6. [**Bayesian Linear Regression**](https://storopoli.io/Bayesian-Julia/pages/6_linear_reg/)
+7. [**Bayesian Logistic Regression**](https://storopoli.io/Bayesian-Julia/pages/7_logistic_reg/)
+8. [**Bayesian Regression with Count Data**](https://storopoli.io/Bayesian-Julia/pages/8_count_reg/)
+9. [**Robust Bayesian Regression**](https://storopoli.io/Bayesian-Julia/pages/9_robust_reg/)
+10. [**Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/)
+11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.io/Bayesian-Julia/pages/11_Turing_tricks/)
 
 ## What about other Turing tutorials?
 

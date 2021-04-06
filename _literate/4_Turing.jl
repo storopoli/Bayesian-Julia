@@ -1,7 +1,6 @@
-# # Bayesian Statistics using Julia and Turing
+# # How to use Turing
 
 # I'm going to use $\LaTeX$ and **Julia**.
-
 
 # ### Here's some maths
 
