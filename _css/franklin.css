@@ -275,11 +275,6 @@ body { counter-reset: eqnum; }
   padding-right: 5px;
 }
 
-.no-number .katex-display::after {
-  counter-increment: nothing;
-  content: "";
-}
-
 /* ==================================================================
     CODE & HIGHLIGHT.JS
 ================================================================== */
