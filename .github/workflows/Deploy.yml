@@ -17,6 +17,8 @@ jobs:
     - run: npm install highlight.js
     - name: Install Julia
       uses: julia-actions/setup-julia@v1
+      env:
+        JULIA_NUM_THREADS: 2
       with:
         version: 1.6
     # NOTE
