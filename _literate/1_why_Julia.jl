@@ -25,4 +25,6 @@ savefig(joinpath(@OUTPUT, "test.svg")) # hide
 
 # \fig{test}
 
-# \fig{bayes-meme}
+# Testing an image `\/``
+#
+# ![Bayesian for Everyone](images/bayes-meme.jpg)
