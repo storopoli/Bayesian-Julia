@@ -41,7 +41,12 @@ To configure a local environment:
 2.  Clone the repository from GitHub:
     `git clone https://github.com/storopoli/Bayesian-Julia.git`
 3.  Access the directory: `cd Bayesian-Julia`
-4.  Activate the environment: type inside the Julia REPL `]activate .`
+4.  Activate the environment by typing in the Julia REPL:
+    ```julia
+    using Pkg
+    Pkg.activate(".")
+    Pkg.instantiate()
+    ```
 
 ## Tutorials
 
