@@ -21,7 +21,7 @@ Bayesian statistics is a departure from classical inferential statistics that pr
 
 ## Table of Contents
 
-
+   * [Julia](#julia)
    * [Turing](#turing)
    * [Author](#author)
    * [How to use the content?](#how-to-use-the-content)
@@ -35,6 +35,14 @@ Bayesian statistics is a departure from classical inferential statistics that pr
          * [Auxiliary](#auxiliary)
    * [License](#license)
 
+## Julia
+
+[Julia](https://www.julialang.org) is a fast dynamic-typed language that just-in-time (JIT) compiles into native code using LLVM. It ["runs like C but reads like Python"](https://www.nature.com/articles/d41586-019-02310-3), meaning that is *blazing* fast and easy to prototype and read/write. It is multi-paradigm, combining features of imperative, functional, and object-oriented programming. I won't cover Julia basics and any sort of data manipulation using Julia in the tutorials, instead please take a look into the following resources which covers most of the introduction to Julia and how to work with tabular data in Julia:
+
+* [Thinking Julia](https://benlauwens.github.io/ThinkJulia.jl/latest/book.html): introductory book that explains the main concepts and functionality behind the Julia language.
+* [Julia High Performance](https://www.amazon.com/Julia-High-Performance-Avik-Sengupta/dp/178829811X): book by two of the creators of the Julia Language ([Avik Sengupta](https://www.linkedin.com/in/aviks) and [Alan Edelman](http://www-math.mit.edu/~edelman/)), it covers how to make Julia even faster with some principles and tricks of the trade.
+* [An Introduction DataFrames](https://github.com/bkamins/Julia-DataFrames-Tutorial): the package [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) provides a set of tools for working with tabular data in Julia. Its design and functionality are similar to those of `pandas` (in Python) and `data.frame`, `data.table` and `dplyr` (in R), making it a great general purpose data science tool, especially for those coming to Julia from R or Python.This is a collection of notebooks that introduces `DataFrames.jl` made by one of its core contributors [Bogumił Kamiński](https://github.com/bkamins).
+*
 ## Turing
 
 [Turing](http://turing.ml/) is a ecosystem of Julia packages for Bayesian Inference using [probabilistic programming](https://en.wikipedia.org/wiki/Probabilistic_programming). Models specified using Turing are easy to read and write — models work the way you write them. Like everything in Julia, Turing is [fast](https://arxiv.org/abs/2002.02702).
@@ -120,4 +128,3 @@ Or in BibTeX format (LaTeX):
 This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Internacional](http://creativecommons.org/licenses/by-sa/4.0/).
 
 [![CC BY-SA 4.0](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
-
