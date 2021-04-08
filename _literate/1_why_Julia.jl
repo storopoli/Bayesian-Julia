@@ -1,4 +1,4 @@
-# # # Why Julia?
+# # Why Julia?
 
 # [Julia](https://www.julialang.org) is a relatively new language, first released in 2012, aims to be both high-level and fast.
 # Julia is a fast dynamic-typed language that just-in-time (JIT)
