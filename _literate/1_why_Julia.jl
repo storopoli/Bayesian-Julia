@@ -342,7 +342,7 @@ end
 #       real x_ = uniform_rng(xmw, xpw); real y_ = uniform_rng(ymw, ypw);
 #       real r = exp(binormal_lpdf({x_, y_} | mu_X, mu_Y, sigma_X, sigma_Y, rho) -
 #                             binormal_lpdf({x , y } | mu_X, mu_Y, sigma_X, sigma_Y, rho));
-#       if (r > uniform_rng(0, 1)) { // Q({x,y}) / Q{x_,y_} = 1 in this case
+#       if (r > uniform_rng(0, 1)) {
 #         x = x_; y = y_; accepted += 1;
 #       }
 #       out[s, 1] = x;  out[s, 2] = y;
@@ -548,6 +548,6 @@ inner_sum(A, vs)
 
 inner_sum(A, onehot)
 
-But this
+# But this
 
 import Base:*
