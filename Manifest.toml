@@ -110,10 +110,10 @@ uuid = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 version = "0.7.0"
 
 [[Bijectors]]
-deps = ["ArgCheck", "ChainRulesCore", "Compat", "Distributions", "LinearAlgebra", "MappedArrays", "NNlib", "NonlinearSolve", "Random", "Reexport", "Requires", "SparseArrays", "Statistics", "StatsFuns"]
-git-tree-sha1 = "e85c654943615af69d504b05fc7d5408dc40a53f"
+deps = ["ArgCheck", "ChainRulesCore", "Compat", "Distributions", "Functors", "LinearAlgebra", "MappedArrays", "NNlib", "NonlinearSolve", "Random", "Reexport", "Requires", "SparseArrays", "Statistics", "StatsFuns"]
+git-tree-sha1 = "704dd7b3c8854f2f9efdf301fc1400ddbcc8eb75"
 uuid = "76274a88-744f-5084-9051-94815aaf08c4"
-version = "0.8.13"
+version = "0.9.0"
 
 [[Bzip2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -420,6 +420,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "0d20aed5b14dd4c9a2453c1b601d08e1149679cc"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.5+6"
+
+[[Functors]]
+deps = ["MacroTools"]
+git-tree-sha1 = "f40adc6422f548176bb4351ebd29e4abf773040a"
+uuid = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
+version = "0.1.0"
 
 [[Future]]
 deps = ["Random"]
@@ -729,10 +735,9 @@ uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 version = "0.5.6"
 
 [[MappedArrays]]
-deps = ["FixedPointNumbers"]
-git-tree-sha1 = "b92bd220c95a8bbe89af28f11201fd080e0e3fe7"
+git-tree-sha1 = "18d3584eebc861e311a552cbb67723af8edff5de"
 uuid = "dbb5928d-eab1-5f90-85c2-b9b0edb7c900"
-version = "0.3.0"
+version = "0.4.0"
 
 [[Markdown]]
 deps = ["Base64"]
@@ -1019,9 +1024,9 @@ uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SciMLBase]]
 deps = ["ArrayInterface", "CommonSolve", "Distributed", "DocStringExtensions", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Statistics", "Tables", "TreeViews"]
-git-tree-sha1 = "aef1fd59952e45ed4ea76b7032f6f86d0e235768"
+git-tree-sha1 = "dcb669e1fc9312ec00765f3d99242a4b57bd3d9f"
 uuid = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
-version = "1.10.2"
+version = "1.11.0"
 
 [[ScientificTypes]]
 git-tree-sha1 = "1d3f5f8bdf5dd0c9951eb9c595ee08a728aec331"
