@@ -31,8 +31,9 @@
 # ![Common Benchmarks](/pages/images/benchmarks.svg)
 
 # Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
-# "split-apply-combine" operations in three languages (please note that I've used updated versions for all languages and packages
-# as of April, 2021):
+# "split-apply-combine" operations in three languages[^updatedversion] :
+#
+# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021
 #
 # * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.39ms
 # * Python: using `Pandas` and `NumPy` - 1.76ms
@@ -329,8 +330,9 @@
 # }
 # ```
 
-# This means that I've simplified the PDF (you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf))
-# from equation \eqref{mvnpdf} into:
+# This means that I've simplified the PDF [^mathbinormal] from equation \eqref{mvnpdf} into:
+#
+# [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf)
 #
 # $$ \text{PDF}(x, y)= \frac{1}{2 \pi \sqrt{1 - \rho^2 } \sigma_X \sigma_Y} e^{-\frac{\frac{x^{2}}{\sigma_{X}^{2}}-2 \rho-\frac{x y}{\sigma_{X} \sigma_{Y}}+\frac{y^{2}}{\sigma_{Y}^{2}}}{2\left(1-\rho^{2}\right)}} \label{bvnpdf} $$
 #
@@ -518,9 +520,10 @@ encounter(whiskers, spots)
 # One-hot vector is a vector of integers in which all indices are zero (0) expect for one single index that is one (1).
 # In machine learning, one-hot encoding is a frequently used method to deal with categorical data. Because many machine
 # learning models need their input variables to be numeric, categorical variables need to be transformed in the pre-processing part.
-# The example below is heavily inspired by a [post from Vasily Pisarev](https://habr.com/ru/post/468609/) (the post in Russian,
-# I've "Google Translated" it to English).
-
+# The example below is heavily inspired by a [post from Vasily Pisarev](https://habr.com/ru/post/468609/)[^onehotpost].
+#
+# [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
+#
 # How we would represent one-hot vectors in Julia? Simple: we create a new type `OneHotVector` in Julia using the `struct` keyword
 # and define two fields `len` and `ind`, which represents the `OneHotVector` length and which index is the entry 1
 # (*i.e.* which index is "hot"). Then, we define new methods for the `Base` functions `size()` and `getindex()` for our newly defined
