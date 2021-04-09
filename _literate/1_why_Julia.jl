@@ -33,8 +33,6 @@
 # Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
 # "split-apply-combine" operations in three languages[^updatedversion] :
 #
-# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021
-#
 # * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.39ms
 # * Python: using `Pandas` and `NumPy` - 1.76ms
 # * R: using `{dplyr}` - 3.22ms
@@ -332,8 +330,6 @@
 
 # This means that I've simplified the PDF [^mathbinormal] from equation \eqref{mvnpdf} into:
 #
-# [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf)
-#
 # $$ \text{PDF}(x, y)= \frac{1}{2 \pi \sqrt{1 - \rho^2 } \sigma_X \sigma_Y} e^{-\frac{\frac{x^{2}}{\sigma_{X}^{2}}-2 \rho-\frac{x y}{\sigma_{X} \sigma_{Y}}+\frac{y^{2}}{\sigma_{Y}^{2}}}{2\left(1-\rho^{2}\right)}} \label{bvnpdf} $$
 #
 # since $\sigma_{X} = \sigma_{Y} = 1$, equation \eqref{bvnpdf} boils down to:
@@ -522,8 +518,6 @@ encounter(whiskers, spots)
 # learning models need their input variables to be numeric, categorical variables need to be transformed in the pre-processing part.
 # The example below is heavily inspired by a [post from Vasily Pisarev](https://habr.com/ru/post/468609/)[^onehotpost].
 #
-# [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
-#
 # How we would represent one-hot vectors in Julia? Simple: we create a new type `OneHotVector` in Julia using the `struct` keyword
 # and define two fields `len` and `ind`, which represents the `OneHotVector` length and which index is the entry 1
 # (*i.e.* which index is "hot"). Then, we define new methods for the `Base` functions `size()` and `getindex()` for our newly defined
@@ -644,3 +638,9 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # This is the **true power** of a scientific computing language like Julia. It brings so much **power** and **flexibility** to the
 # user and allows different ways of **sharing**, **contributing**, **extending**, **mixing** and **implementing** code and science.
 # I hope this short dive into Julia has somehow sent you **towards** Julia.
+#
+# ## Footnotes
+#
+# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021.
+# [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
+# [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
