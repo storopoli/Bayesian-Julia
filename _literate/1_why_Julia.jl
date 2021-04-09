@@ -175,7 +175,7 @@ end
 #    print(paste0("Acceptance rate is ", accepted / S))
 #    return(draws)
 # }
-# ```r
+# ```
 
 # Now C++. Here I am using the [`Eigen`](https://eigen.tuxfamily.org/) library. Note that, since C++ is a very powerful language to be used as "close to the metal" as possible, I don't have any
 # convenient predefined multivariate normal to use. So I will have to create this from zero (which of course I did not. The `Mvn`
