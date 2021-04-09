@@ -276,7 +276,7 @@ end
 
 # SPOILER ALERT: Julia will beat this C++ Eigen implementation by being almost 100x faster. So I will try to help C++ beat Julia (😂)
 # by making a bivariate normal class `BiNormal` to avoid the expensive operation of taking the inverse covariance matrix in every
-# logpdf proposal evaluation. Also since we are not doing linear algebra computations I've removed Eigen and used C++ STL's `<vector>``:
+# logpdf proposal evaluation. Also since we are not doing linear algebra computations I've removed Eigen and used C++ STL's `<vector>`:
 
 # ```cpp
 # #define M_PI 3.14159265358979323846 /* pi */
