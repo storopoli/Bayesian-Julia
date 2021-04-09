@@ -600,4 +600,4 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # the easy and slow quadrant. Julia is the only language in the easy and fast quadrant. I don't any language that would want to be
 # hard and slow, so this quadrant is empty.
 
-# ![Scientific Computing Language Comparisons](images/language_comparisons.svg)
+# ![Scientific Computing Language Comparisons](/pages/images/language_comparisons.svg)
