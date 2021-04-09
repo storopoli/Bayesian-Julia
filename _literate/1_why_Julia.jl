@@ -31,9 +31,8 @@
 # ![Common Benchmarks](/pages/images/benchmarks.svg)
 
 # Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
-# "split-apply-combine" operations in three languages[^1]:
-#
-# [^1]: please note that I've used updated versions for all languages and packages as of April, 2021.
+# "split-apply-combine" operations in three languages (please note that I've used updated versions for all languages and packages
+# as of April, 2021):
 #
 # * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.39ms
 # * Python: using `Pandas` and `NumPy` - 1.76ms
@@ -330,9 +329,8 @@
 # }
 # ```
 
-# This means that I've simplified the PDF[^2] from equation \eqref{mvnpdf} into:
-#
-# [^2]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
+# This means that I've simplified the PDF (you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf))
+# from equation \eqref{mvnpdf} into:
 #
 # $$ \text{PDF}(x, y)= \frac{1}{2 \pi \sqrt{1 - \rho^2 } \sigma_X \sigma_Y} e^{-\frac{\frac{x^{2}}{\sigma_{X}^{2}}-2 \rho-\frac{x y}{\sigma_{X} \sigma_{Y}}+\frac{y^{2}}{\sigma_{Y}^{2}}}{2\left(1-\rho^{2}\right)}} \label{bvnpdf} $$
 #
@@ -404,7 +402,7 @@
 # implementing function or method using the combined characteristics of one or more arguments.
 
 # Most languages have single-dispatch polymorphism that rely on the first parameter of a method in order to
-# determine which method should be called. But what Julia differs is that **multiple parameters are taken into account*.
+# determine which method should be called. But what Julia differs is that **multiple parameters are taken into account**.
 # This enables multiple definitions of similar functions that have the same initial parameter.
 # I think that this is best explained by one of the creators of Julia, Stefan Karpinski, at JuliaCon 2019 (see the video below):
 
@@ -520,9 +518,8 @@ encounter(whiskers, spots)
 # One-hot vector is a vector of integers in which all indices are zero (0) expect for one single index that is one (1).
 # In machine learning, one-hot encoding is a frequently used method to deal with categorical data. Because many machine
 # learning models need their input variables to be numeric, categorical variables need to be transformed in the pre-processing part.
-# The example below is heavily inspired by a [post from Vasily Pisarev](https://habr.com/ru/post/468609/)[^3]:
-
-# [^3]: the post in Russian, I've "Google Translated" it to English.
+# The example below is heavily inspired by a [post from Vasily Pisarev](https://habr.com/ru/post/468609/) (the post in Russian,
+# I've "Google Translated" it to English).
 
 # How we would represent one-hot vectors in Julia? Simple: we create a new type `OneHotVector` in Julia using the `struct` keyword
 # and define two fields `len` and `ind`, which represents the `OneHotVector` length and which index is the entry 1
@@ -602,7 +599,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # ## Why I Believe Julia is the right approach to scientific computation
 
 # Here is a very opinionated image that divides the scientific computing languages that we've spoken so far in a 2x2
-# diagram with two axes: Slow-Fast and Easy-Hard. I've put C++ and FORTRAN in the hard and fast quadrant. R and Python goes into
+# diagram with two axes: *Slow-Fast* and *Easy-Hard*. I've put C++ and FORTRAN in the hard and fast quadrant. R and Python goes into
 # the easy and slow quadrant. Julia is the only language in the easy and fast quadrant. I don't know any language that would want
 # to be hard and slow, so this quadrant is empty.
 
@@ -613,20 +610,23 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # One other thing to note that I find curious is that Julia packages are all written in Julia. This does not happen in other scientific
 # computing languages. For example, the whole `{tidyverse}` ecosystem of R packages are based on C++. `NumPy` and `SciPy` are a mix
-# of FORTRAN and C. `Scikit-Learn` is coded in C. See the figure below where I compare the GitHub's "Languages" stack bar of
+# of FORTRAN and C. `Scikit-Learn` is coded in C.
+
+# See the figure below where I compare the GitHub's "Languages" stack bar of
 # [`PyTorch`](https://github.com/pytorch/pytorch), [`TensorFlow`](https://github.com/tensorflow/tensorflow) and
-# [`Flux.jl`](https://github.com/FluxML/Flux.jl)(Julia's Deep Learning package). This figure I would call "Python my a**!" 😂:
+# [`Flux.jl`](https://github.com/FluxML/Flux.jl)(Julia's Deep Learning package). This figure I would call *"Python my a**!"* 😂:
 
 # ![Python my ass](/pages/images/ML_code_breakdown.svg)
 
-# I saw this in a Julia podcast that unfortunately I cannot record what podcast was or who was being interviewed.
+# I saw this in a Julia podcast that unfortunately I cannot recollect either what podcast was nor who was being interviewed.
 # While being asked about how he joined the Julia bandwagon, he replied something in the likes:
-# *"Well, I was doing some crazy calculation using a library that was a wrapper to an algorithm that was
+# *"Well, I was doing some crazy calculation using a library that was a wrapper to an algorithm
 # coded in FORTRAN and I was trying to get help with a bug. I opened an issue and after 2 weeks of no reply
-# I've dived into the FORTRAN code (despite not knowing FORTRAN). There I saw a comment from the original author
-# describing exactly the same bug that I was experiencing and saying that he would fix this. The comment
-# was dated from 1992. At the same time a colleague of mine said that I could try to code the algorithm in Julia.
-# I thought 'me?! code an algorithm?!'. So I coded the algorithm in Julia and it was faster than the FORTRAN implementation
+# I've dived into the FORTRAN code (despite having no knowledge of FORTRAN). There I saw a comment from the original author
+# describing exactly the same bug that I was experiencing and saying that he would fix this in the future. The comment
+# was dated from 1992. At the same time a colleague of mine suggested that I could try to code the algorithm in some
+# new language called Julia.
+# I thought 'me?! code an algorithm?!'. So, I coded the algorithm in Julia and it was faster than the FORTRAN implementation
 # and also without the evil bug. One thing to note that it was really easy to code the algorithm in Julia."*
 # Having stuff in different language and wrappers can hinder further research as you can see from this example.
 
@@ -634,9 +634,10 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # own types (if necessary)** and also allows them to **extend functions and types from other users** to their own special use.
 # This results in an ecosystem that stimulates code sharing and code reuse in scientific computing that is
 # unmatched. For instance, if I plug a differential equation from [`DifferentialEquations.jl`](https://diffeq.sciml.ai/) into
-# a [`Turing.jl`](https://turing.ml/) model I get a Bayesian stochastic differential equation model, *e.g.* Bayesian SIR model
-# for infectious disease. If I plug a [`Flux.jl`](https://fluxml.ai/) neural network into a [`Turing.jl`](https://turing.ml/)
-# model I get a Bayesian neural network! When I saw this type of code sharing I was blown away (and I still am).
-# This is the true power of a scientific computing language like Julia. It brings so much power and flexibility to the
-# user and allows different ways of sharing and contributing. I hope this short dive into Julia has somehow sent you
-# towards Julia.
+# a [`Turing.jl`](https://turing.ml/) model I get a Bayesian stochastic differential equation model, *e.g.* **Bayesian SIR model
+# for infectious disease**. If I plug a [`Flux.jl`](https://fluxml.ai/) neural network into a [`Turing.jl`](https://turing.ml/)
+# model I get a **Bayesian neural network**! When I saw this type of code sharing I was blown away (and I still am).
+#
+# This is the **true power** of a scientific computing language like Julia. It brings so much **power** and **flexibility** to the
+# user and allows different ways of **sharing**, **contributing**, **extending**, **mixing** and **implementing** code and science.
+# I hope this short dive into Julia has somehow sent you **towards** Julia.
