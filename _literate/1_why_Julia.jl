@@ -57,11 +57,11 @@
 # n = 10000
 #
 # df = pd.DataFrame({'x': np.random.choice(['A', 'B', 'C', 'D'], n, replace = True),
-# #                    'y': np.random.randn(n),
-# #                    'z': np.random.rand(n)})
-# #
-# # %timeit df.groupby('x').agg({'y': 'mean', 'z': 'median'})
-# #```
+#                    'y': np.random.randn(n),
+#                    'z': np.random.rand(n)})
+#
+# %timeit df.groupby('x').agg({'y': 'mean', 'z': 'median'})
+# ```
 
 # ```r
 # library(dplyr)
