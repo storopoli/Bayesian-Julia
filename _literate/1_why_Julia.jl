@@ -118,7 +118,7 @@
 # one of the creators of Julia, Alan Edelman, in a **TED Talk** (see the video below):
 
 # ~~~
-# <iframe width="560" height="315" src="https://www.youtube.com/embed/qGW0GT1rCvs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+# <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/qGW0GT1rCvs' frameborder='0' allowfullscreen></iframe></div>
 # ~~~
 
 # I will try to exemplify what would be the "two language problem" by showing you how I would code a simple
@@ -404,7 +404,7 @@
 # I think that this is best explained by one of the creators of Julia, Stefan Karpinski, at JuliaCon 2019 (see the video below):
 
 # ~~~
-# <iframe width="560" height="315" src="https://www.youtube.com/embed/kc9HwsxE1OY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+# <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/kc9HwsxE1OY' frameborder='0' allowfullscreen></iframe></div>
 # ~~~
 #
 # ### Example: Dogs and Cats
