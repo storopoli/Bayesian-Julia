@@ -596,7 +596,9 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # **Huge gains** of speed! 🚀
 
-# ## Why I Believe Julia is the right approach to scientific computation
+# ## Julia: the right approach
+
+# Here are some more thoughts on why I believe Julia is the right approach to scientific computation.
 
 # Here is a very opinionated image that divides the scientific computing languages that we've spoken so far in a 2x2
 # diagram with two axes: *Slow-Fast* and *Easy-Hard*. I've put C++ and FORTRAN in the hard and fast quadrant. R and Python goes into
@@ -605,8 +607,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # ![Scientific Computing Language Comparisons](/pages/images/language_comparisons.svg)
 
-# What I want to say with this image is that if you want to **code fast and easy** use Julia. Also the language has a one-to-one
-# faithful representation of code and math as you saw above.
+# What I want to say with this image is that if you want to **code fast and easy** use Julia.
 
 # One other thing to note that I find quite astonishing is that Julia packages are all written in Julia. This does not happen in other scientific
 # computing languages. For example, the whole `{tidyverse}` ecosystem of R packages are based on C++. `NumPy` and `SciPy` are a mix
