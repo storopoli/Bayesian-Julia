@@ -641,9 +641,9 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # for infectious disease**. If I plug a [`Flux.jl`](https://fluxml.ai/) neural network into a [`Turing.jl`](https://turing.ml/)
 # model I get a **Bayesian neural network**! When I saw this type of code sharing I was blown away (and I still am).
 #
-# This is the **true power** of a scientific computing language like Julia. It brings so much **power** and **flexibility** to the
+# \note{This is the **true power** of a scientific computing language like Julia. It brings so much **power** and **flexibility** to the
 # user and allows different ways of **sharing**, **contributing**, **extending**, **mixing** and **implementing** code and science.
-# I hope this short dive into Julia has somehow sent you **towards** Julia.
+# I hope this short dive into Julia has somehow sent you **towards** Julia.}
 #
 # ## Footnotes
 #

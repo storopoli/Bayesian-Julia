@@ -13,11 +13,11 @@ Bayesian for Everyone!
 
 </div>
 
-Welcome to the repository of tutorials on how to Bayesian Statistics using [Julia](https://www.julialang.org) and [Turing](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
+Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
 
-Bayesian statistics is an approach to inferential statistics based on Bayes' theorem, where available knowledge about parameters in a statistical model is updated with the information in observed data. The background knowledge is expressed as a prior distribution and combined with observational data in the form of a likelihood function to determine the posterior distribution. The posterior can also be used for making predictions about future events.
+**Bayesian statistics** is an approach to inferential statistics based on Bayes' theorem, where available knowledge about parameters in a statistical model is updated with the information in observed data. The background knowledge is expressed as a prior distribution and combined with observational data in the form of a likelihood function to determine the posterior distribution. The posterior can also be used for making predictions about future events.
 
-Bayesian statistics is a departure from classical inferential statistics that prohibits probability statements about parameters and is based on asymptotically sampling infinite samples from a theoretical population and finding parameter values that maximize the likelihood function. Mostly notorious is null-hypothesis significance testing (NHST) based on *p*-values. Bayesian statistics incorporate uncertainty (and prior knowledge) by allowing probability statements about parameters, and the process of parameter value inference is a direct result of the Bayes' theorem.
+**Bayesian statistics** is a departure from classical inferential statistics that prohibits probability statements about parameters and is based on asymptotically sampling infinite samples from a theoretical population and finding parameter values that maximize the likelihood function. Mostly notorious is null-hypothesis significance testing (NHST) based on *p*-values. Bayesian statistics **incorporate uncertainty** (and prior knowledge) by allowing probability statements about parameters, and the process of parameter value inference is a direct result of the **Bayes' theorem**.
 
 ## Table of Contents
 
@@ -37,15 +37,16 @@ Bayesian statistics is a departure from classical inferential statistics that pr
 
 ## Julia
 
-[Julia](https://www.julialang.org) is a fast dynamic-typed language that just-in-time (JIT) compiles into native code using LLVM. It ["runs like C but reads like Python"](https://www.nature.com/articles/d41586-019-02310-3), meaning that is *blazing* fast, easy to prototype and read/write code. It is multi-paradigm, combining features of imperative, functional, and object-oriented programming. I won't cover Julia basics and any sort of data manipulation using Julia in the tutorials, instead please take a look into the following resources which covers most of the introduction to Julia and how to work with tabular data in Julia:
+[**Julia**](https://www.julialang.org) is a fast dynamic-typed language that just-in-time (JIT) compiles into native code using LLVM. It ["runs like C but reads like Python"](https://www.nature.com/articles/d41586-019-02310-3), meaning that is *blazing* fast, easy to prototype and read/write code. It is multi-paradigm, combining features of imperative, functional, and object-oriented programming. I won't cover Julia basics and any sort of data manipulation using Julia in the tutorials, instead please take a look into the following resources which covers most of the introduction to Julia and how to work with tabular data in Julia:
 
-* [Thinking Julia](https://benlauwens.github.io/ThinkJulia.jl/latest/book.html): introductory book that explains the main concepts and functionality behind the Julia language.
-* [Julia High Performance](https://www.amazon.com/Julia-High-Performance-Avik-Sengupta/dp/178829811X): book by two of the creators of the Julia Language ([Avik Sengupta](https://www.linkedin.com/in/aviks) and [Alan Edelman](http://www-math.mit.edu/~edelman/)), it covers how to make Julia even faster with some principles and tricks of the trade.
-* [An Introduction DataFrames](https://github.com/bkamins/Julia-DataFrames-Tutorial): the package [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) provides a set of tools for working with tabular data in Julia. Its design and functionality are similar to those of `pandas` (in Python) and `data.frame`, `data.table` and `dplyr` (in R), making it a great general purpose data science tool, especially for those coming to Julia from R or Python.This is a collection of notebooks that introduces `DataFrames.jl` made by one of its core contributors [Bogumił Kamiński](https://github.com/bkamins).
-*
+* [**Julia Documentation**](https://docs.julialang.org/): Julia documentation is a very friendly and well-written resource that explains the basic design and functionality of the language.
+* [**Thinking Julia**](https://benlauwens.github.io/ThinkJulia.jl/latest/book.html): introductory beginner-friendly book that explains the main concepts and functionality behind the Julia language.
+* [**Julia High Performance**](https://www.amazon.com/Julia-High-Performance-Avik-Sengupta/dp/178829811X): book by two of the creators of the Julia Language ([Avik Sengupta](https://www.linkedin.com/in/aviks) and [Alan Edelman](http://www-math.mit.edu/~edelman/)), it covers how to make Julia even faster with some principles and tricks of the trade.
+* [**An Introduction DataFrames**](https://github.com/bkamins/Julia-DataFrames-Tutorial): the package [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) provides a set of tools for working with tabular data in Julia. Its design and functionality are similar to those of `pandas` (in Python) and `data.frame`, `data.table` and `dplyr` (in R), making it a great general purpose data science tool, especially for those coming to Julia from R or Python.This is a collection of notebooks that introduces `DataFrames.jl` made by one of its core contributors [Bogumił Kamiński](https://github.com/bkamins).
+
 ## Turing
 
-[Turing](http://turing.ml/) is a ecosystem of Julia packages for Bayesian Inference using [probabilistic programming](https://en.wikipedia.org/wiki/Probabilistic_programming). Models specified using Turing are easy to read and write — models work the way you write them. Like everything in Julia, Turing is [fast](https://arxiv.org/abs/2002.02702).
+[**Turing**](http://turing.ml/) is a ecosystem of Julia packages for Bayesian Inference using [probabilistic programming](https://en.wikipedia.org/wiki/Probabilistic_programming). Models specified using Turing are easy to read and write — models work the way you write them. Like everything in Julia, Turing is [fast](https://arxiv.org/abs/2002.02702).
 
 ## Author
 
@@ -55,7 +56,7 @@ José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311
 
 ## How to use the content?
 
-The content is licensed under a very permissive Creative Commons license (CC BY-SA). You are mostly welcome to contribute with [issues](https://www.github.com/storopoli/Bayesian-Julia/issues) and [pull requests](https://github.com/storopoli/Bayesian-Julia/pulls). My hope is to have more people into Bayesian statistics. The content is aimed towards social scientists and PhD candidates in social sciences. I chose to provide an intuitive approach rather than focusing on rigorous mathematical formulations. I've made it to be how I would have liked to be introduced to Bayesian statistics.
+The content is licensed under a very permissive Creative Commons license (CC BY-SA). You are mostly welcome to contribute with [issues](https://www.github.com/storopoli/Bayesian-Julia/issues) and [pull requests](https://github.com/storopoli/Bayesian-Julia/pulls). My hope is to have **more people into Bayesian statistics**. The content is aimed towards social scientists and PhD candidates in social sciences. I chose to provide an **intuitive approach** rather than focusing on rigorous mathematical formulations. I've made it to be how I would have liked to be introduced to Bayesian statistics.
 
 To configure a local environment:
 
