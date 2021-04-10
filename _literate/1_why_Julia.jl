@@ -600,7 +600,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # Here are some more thoughts on why I believe Julia is the right approach to scientific computation.
 
-# Here is a very opinionated image that divides the scientific computing languages that we've spoken so far in a 2x2
+# Below is a very opinionated image that divides the scientific computing languages that we've spoken so far in a 2x2
 # diagram with two axes: *Slow-Fast* and *Easy-Hard*. I've put C++ and FORTRAN in the hard and fast quadrant. R and Python goes into
 # the easy and slow quadrant. Julia is the only language in the easy and fast quadrant. I don't know any language that would want
 # to be hard and slow, so this quadrant is empty.
