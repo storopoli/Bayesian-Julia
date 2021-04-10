@@ -126,7 +126,7 @@
 # for a **bivariate normal distribution**. I would mostly prototype it in a dynamically-typed language such as R or Python.
 # Then, deploy the algorithm using a fast but hard to code language such as C++. This is exactly what I'll do now.
 # The algorithm will be coded in **Julia**, **R**, **C++** and [**`Stan`**](https://mc-stan.org). There are two caveats.
-# First, I am coding the &&original 1950s Metropolis version**, not the **1970s Metropolis-Hastings**, which implies
+# First, I am coding the **original 1950s Metropolis version**, not the **1970s Metropolis-Hastings**, which implies
 # **symmetrical proposal distributions** just for the sake of the example.
 # Second, the proposals are based on a **uniform distribution** on the current proposal values of the proposal values ± a certain `width`.
 #
@@ -195,8 +195,7 @@
 
 # Now **C++**. Here I am using the [`Eigen`](https://eigen.tuxfamily.org/) library. Note that, since C++ is a very powerful language
 # to be used as "close to the metal" as possible, I don't have any
-# convenient predefined multivariate normal to use. So I will have to create this from zero (which of course I did not. The `Mvn`
-# class is inspired by [Iason Sarantopoulos' implementation](http://blog.sarantop.com/notes/mvn)). Ok, be **ready**!
+# convenient predefined multivariate normal to use. So I will have to create this from zero[^mvnimplem]. Ok, be **ready**!
 # This is a mouthful:
 
 # ```cpp
@@ -383,7 +382,7 @@
 # * R - 1.35s which means 1350ms
 
 # **Conclusion**: a naïve Julia implementation beats C++
-# (while also beating a math-helped faster implementation using bivariate normal PDFs) and gets very close to `Stan`,
+# (while also beating a C++ math-helped faster implementation using bivariate normal PDFs) and gets very close to `Stan`,
 # a highly specialized  probabilistic language that compiles and runs on C++ with lots of contributors, funding and development
 # time invested.
 
@@ -407,7 +406,9 @@
 # ~~~
 # <iframe width="560" height="315" src="https://www.youtube.com/embed/kc9HwsxE1OY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 # ~~~
-
+#
+# ### Example: Dogs and Cats
+#
 # I will reproduce Karpinski's example. In the talk, Karpinski designs a structure of classes which are very common in
 # object-oriented programming (OOP). In Julia, we don't have classes but we have **structures** (`struct`) that are meant to be
 # "structured data": they define the kind of information that is embedded in the structure,
@@ -509,9 +510,11 @@ encounter(whiskers, spots)
 # Spots meets Fido and FALLBACK
 # Whiskers meets Spots and FALLBACK
 # ```
-
+#
 # Doesn't work... 🤷🏼
-
+#
+# ### Example: One-hot Vector
+#
 # Now let's change to another nice example of creating a [one-hot vector](https://en.wikipedia.org/wiki/One-hot).
 # One-hot vector is a vector of integers in which all indices are zero (0) expect for one single index that is one (1).
 # In machine learning, one-hot encoding is a frequently used method to deal with categorical data. Because many machine
@@ -603,11 +606,11 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # ![Scientific Computing Language Comparisons](/pages/images/language_comparisons.svg)
 
 # What I want to say with this image is that if you want to **code fast and easy** use Julia. Also the language has a one-to-one
-# of code and math as you saw above.
+# faithful representation of code and math as you saw above.
 
-# One other thing to note that I find curious is that Julia packages are all written in Julia. This does not happen in other scientific
+# One other thing to note that I find quite astonishing is that Julia packages are all written in Julia. This does not happen in other scientific
 # computing languages. For example, the whole `{tidyverse}` ecosystem of R packages are based on C++. `NumPy` and `SciPy` are a mix
-# of FORTRAN and C. `Scikit-Learn` is coded in C.
+# of FORTRAN and C. `Scikit-Learn` is also coded in C.
 
 # See the figure below where I compare the GitHub's "Languages" stack bar of
 # [`PyTorch`](https://github.com/pytorch/pytorch), [`TensorFlow`](https://github.com/tensorflow/tensorflow) and
@@ -615,16 +618,18 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # ![Python my ass](/pages/images/ML_code_breakdown.svg)
 
-# I saw this in a Julia podcast that unfortunately I cannot recollect either what podcast was nor who was being interviewed.
+# Another example comes from a Julia podcast that unfortunately I cannot recollect either what podcast was nor who was being interviewed.
 # While being asked about how he joined the Julia bandwagon, he replied something in the likes:
-# *"Well, I was doing some crazy calculation using a library that was a wrapper to an algorithm
-# coded in FORTRAN and I was trying to get help with a bug. I opened an issue and after 2 weeks of no reply
-# I've dived into the FORTRAN code (despite having no knowledge of FORTRAN). There I saw a comment from the original author
-# describing exactly the same bug that I was experiencing and saying that he would fix this in the future. The comment
-# was dated from 1992. At the same time a colleague of mine suggested that I could try to code the algorithm in some
-# new language called Julia.
-# I thought 'me?! code an algorithm?!'. So, I coded the algorithm in Julia and it was faster than the FORTRAN implementation
-# and also without the evil bug. One thing to note that it was really easy to code the algorithm in Julia."*
+#
+# > *"Well, I was doing some crazy calculation using a library that was a wrapper to an algorithm
+# > coded in FORTRAN and I was trying to get help with a bug. I opened an issue and after 2 weeks of no reply
+# > I've dived into the FORTRAN code (despite having no knowledge of FORTRAN). There I saw a comment from the original author
+# > describing exactly the same bug that I was experiencing and saying that he would fix this in the future. The comment
+# > was dated from 1992. At the same time a colleague of mine suggested that I could try to code the algorithm in some
+# > new language called Julia.
+# > I thought 'me?! code an algorithm?!'. So, I coded the algorithm in Julia and it was faster than the FORTRAN implementation
+# > and also without the evil bug. One thing to note that it was really easy to code the algorithm in Julia."*
+#
 # Having stuff in different language and wrappers can hinder further research as you can see from this example.
 
 # As you saw from the [Karpinski's talk](https://youtu.be/kc9HwsxE1OY) above, **multiple dispatch empower users to define their
@@ -642,5 +647,6 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # ## Footnotes
 #
 # [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021.
+# [^mvnimplem]: which of course I did not. The `Mvn` class is inspired by [Iason Sarantopoulos' implementation](http://blog.sarantop.com/notes/mvn).
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
