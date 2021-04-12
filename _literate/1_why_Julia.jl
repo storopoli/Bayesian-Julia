@@ -681,14 +681,14 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # [^mvnimplem]: which of course I did not. The `Mvn` class is inspired by [Iason Sarantopoulos' implementation](http://blog.sarantop.com/notes/mvn).
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
-# [^interop]: Julia has a lot of interoperability between languages. Check out:
-# [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python;
-# [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java;
-# [`Cxx.jl`](https://juliainterop.github.io/Cxx.jl/stable/) and [`CxxWrap.jl`](https://github.com/JuliaInterop/CxxWrap.jl) for C++;
-# [`Clang.jl`](https://github.com/JuliaInterop/Clang.jl) for libclang and C;
-# [`ObjectiveC.jl`](https://github.com/JuliaInterop/ObjectiveC.jl) for Objective-C;
-# [`JavaCall.jl`](https://juliainterop.github.io/JavaCall.jl/) for Java;
-# [`MATLAB.jl`](https://github.com/JuliaInterop/MATLAB.jl) for MATLAB;
-# [`MathLink.jl`](https://github.com/JuliaInterop/MathLink.jl) for Mathematica/Wolfram Engine;
-# [`OctCall.jl`](https://github.com/JuliaInterop/OctCall.jl) for GNU Octave; and
-# [`ZMQ.jl`](https://juliainterop.github.io/ZMQ.jl/stable/) for ZeroMQ.
+#   [^interop]: Julia has a lot of interoperability between languages. Check out:
+#   [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python;
+#   [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java;
+#   [`Cxx.jl`](https://juliainterop.github.io/Cxx.jl/stable/) and [`CxxWrap.jl`](https://github.com/JuliaInterop/CxxWrap.jl) for C++;
+#   [`Clang.jl`](https://github.com/JuliaInterop/Clang.jl) for libclang and C;
+#   [`ObjectiveC.jl`](https://github.com/JuliaInterop/ObjectiveC.jl) for Objective-C;
+#   [`JavaCall.jl`](https://juliainterop.github.io/JavaCall.jl/) for Java;
+#   [`MATLAB.jl`](https://github.com/JuliaInterop/MATLAB.jl) for MATLAB;
+#   [`MathLink.jl`](https://github.com/JuliaInterop/MathLink.jl) for Mathematica/Wolfram Engine;
+#   [`OctCall.jl`](https://github.com/JuliaInterop/OctCall.jl) for GNU Octave; and
+#   [`ZMQ.jl`](https://juliainterop.github.io/ZMQ.jl/stable/) for ZeroMQ.
