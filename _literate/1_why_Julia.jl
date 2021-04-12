@@ -7,7 +7,7 @@
 # It is **multi-paradigm**, combining features of imperative, functional, and object-oriented programming.
 
 # **Why was Julia created?** Definitely read this now impressively
-# [old post by Julia founders Jeff Bezanson, Stefan Karpinski, Viral B. Shah, and Alan Edelman](https://julialang.org/blog/2012/02/why-we-created-julia/).
+# [old post by Julia founders](https://julialang.org/blog/2012/02/why-we-created-julia/).
 # Here is a clarifying quote:
 
 # > We want the speed of C with the dynamism of Ruby. We want a language that's homoiconic, with true macros like Lisp, but with obvious,
@@ -647,7 +647,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # \note{On the other hand, language *interoperability* is extremely useful:
 # we want to exploit existing high-quality code in other languages from Julia (and vice versa)!
 # Julia community have worked hard on this, from the built-in intrinsic Julia `ccall` function (to call C and Fortran libraries)
-# to [JuliaInterop](https://github.com/JuliaInterop){[^interop]} packages that connect Julia to Python, R, Matlab, C++, and more.}
+# to [JuliaInterop](https://github.com/JuliaInterop)^[^interop] packages that connect Julia to Python, R, Matlab, C++, and more.}
 
 # Another example comes from a Julia podcast that unfortunately I cannot recollect either what podcast was nor who was being interviewed.
 # While being asked about how he joined the Julia bandwagon, he replied something in the likes:
@@ -682,7 +682,6 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
 # [^interop]:
-
 #     Julia has a lot of interoperability between languages. Check out:
 #     * [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python
 #     * [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java
