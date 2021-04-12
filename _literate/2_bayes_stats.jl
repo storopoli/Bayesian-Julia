@@ -52,9 +52,7 @@
 # > relates to an unforeseeable future [^subjective], or to an unnoticed past, or to a past doubtfully reported
 # > or forgotten [^objective]... The only relevant thing is uncertainty - the extent of our own knowledge and ignorance.
 # > The actual fact of whether or not the events considered are in some sense determined, or known by other people,
-# > and so on, is of no consequence."
-# >
-# > (de Finetti, 1974)
+# > and so on, is of no consequence." (de Finetti, 1974)
 
 # In conclusion: no matter what the probability is, you can use it anyway, even if it is an absolute frequency
 # (ex: probability that I will ride by bike naked is ZERO because the probability that an event that never occurred
@@ -68,7 +66,7 @@
 # [^evidencebased]: personally, like a good Popperian, I don't believe there is science without being evidence-based; what does not use evidence can be considered as logic, philosophy or social practices (no less or more important than science, just a demarcation of what is science and what is not; eg, mathematics and law).
 # [^computingpower]: your smartphone (iPhone 12 - 4GB RAM) has 1,000,000x (1 million) more computing power than the computer that was aboard the Apollo 11 (4kB RAM) which took the man to the moon. Detail: this on-board computer was responsible for lunar module navigation, route and controls.
 # [^deFinetti]: if the reader wants an in-depth discussion see Nau (2001).
-# [^subjetive]: my observation: related to the subjective Bayesian approach.
+# [^subjective]: my observation: related to the subjective Bayesian approach.
 # [^objective]: my observation: related to the objective frequentist approach.
 
 # ## References
