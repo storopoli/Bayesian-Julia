@@ -24,11 +24,52 @@
 # >
 # > de Finetti (1974)[^deFinetti]
 
+# These are the first words in the preface to the famous book by [Bruno de Finetti](https://en.wikipedia.org/wiki/Bruno_de_Finetti)
+# (figure below), one of the most important probability mathematician and philosopher.
+# Yes, probability does not exist. Or rather, probability as a physical quantity, objective chance, **does NOT exist**.
+# De Finetti showed that, in a precise sense, if we dispense with the question of objective chance *nothing is lost*.
+# The mathematics of inductive reasoning remains **exactly the same**.
+
+# ![De Finetti](/pages/images/finetti.jpg)
+
+# Consider tossing a weighted coin. The attempts are considered independent and, as a result, exhibit another
+# important property: **the order does not matter**. To say that order does not matter is to say that if you take any
+# finite sequence of heads and tails and exchange the results however you want,
+# the resulting sequence will have the same probability. We say that this probability is
+# **invariant under permutations**.
+
+# Or, to put it another way, the only thing that matters is the relative frequency.
+# Result that have the same frequency of heads and tails consequently have the same probability.
+# The frequency is considered a **sufficient statistic**. Saying that order doesn't matter or saying
+# that the only thing that matters is frequency are two ways of saying exactly the same thing.
+# This property is called **exchangeability** by de Finetti. And it is the most important property of
+# probability that makes it possible for us to manipulate it mathematically (or philosophically) even
+# if it does not exist as a physical "thing".
+
+# Still developing the argument:
+# > "Probabilistic reasoning - always understood as subjective - stems
+# > merely stems from our being uncertain about something. It makes no difference whether the uncertainty
+# > relates to an unforeseeable future [^subjective], or to an unnoticed past, or to a past doubtfully reported
+# > or forgotten [^objective]... The only relevant thing is uncertainty - the extent of our own knowledge and ignorance.
+# > The actual fact of whether or not the events considered are in some sense determined, or known by other people,
+# > and so on, is of no consequence."
+# >
+# > (de Finetti, 1974)
+
+# In conclusion: no matter what the probability is, you can use it anyway, even if it is an absolute frequency
+# (ex: probability that I will ride by bike naked is ZERO because the probability that an event that never occurred
+# will occur in the future it is ZERO) or a subjective guess (ex: maybe the probability is not ZERO, but 0.00000000000001;
+# very unlikely, but not impossible).
+
+# ### Mathematical Definition
+
 # ## Footnotes
 #
 # [^evidencebased]: personally, like a good Popperian, I don't believe there is science without being evidence-based; what does not use evidence can be considered as logic, philosophy or social practices (no less or more important than science, just a demarcation of what is science and what is not; eg, mathematics and law).
 # [^computingpower]: your smartphone (iPhone 12 - 4GB RAM) has 1,000,000x (1 million) more computing power than the computer that was aboard the Apollo 11 (4kB RAM) which took the man to the moon. Detail: this on-board computer was responsible for lunar module navigation, route and controls.
 # [^deFinetti]: if the reader wants an in-depth discussion see Nau (2001).
+# [^subjetive]: my observation: related to the subjective Bayesian approach.
+# [^objective]: my observation: related to the objective frequentist approach.
 
 # ## References
 #
