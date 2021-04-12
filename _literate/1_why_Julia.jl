@@ -647,7 +647,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # \note{On the other hand, language *interoperability* is extremely useful:
 # we want to exploit existing high-quality code in other languages from Julia (and vice versa)!
 # Julia community have worked hard on this, from the built-in intrinsic Julia `ccall` function (to call C and Fortran libraries)
-# to [JuliaInterop](https://github.com/JuliaInterop)^[^interop] packages that connect Julia to Python, R, Matlab, C++, and more.}
+# to [JuliaInterop](https://github.com/JuliaInterop)[^interop] packages that connect Julia to Python, R, Matlab, C++, and more.}
 
 # Another example comes from a Julia podcast that unfortunately I cannot recollect either what podcast was nor who was being interviewed.
 # While being asked about how he joined the Julia bandwagon, he replied something in the likes:
@@ -682,15 +682,16 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
 # [^interop]:
+#
 #     Julia has a lot of interoperability between languages. Check out:
-#     * [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python
-#     * [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java
-#     * [`Cxx.jl`](https://juliainterop.github.io/Cxx.jl/stable/) and [`CxxWrap.jl`](https://github.com/JuliaInterop/CxxWrap.jl) for C++
-#     * [`Clang.jl`](https://github.com/JuliaInterop/Clang.jl) for libclang and C
-#     * [`ObjectiveC.jl`](https://github.com/JuliaInterop/ObjectiveC.jl) for Objective-C
-#     * [`JavaCall.jl`](https://juliainterop.github.io/JavaCall.jl/) for Java
-#     * [`MATLAB.jl`](https://github.com/JuliaInterop/MATLAB.jl) for MATLAB
-#     * [`MathLink.jl`](https://github.com/JuliaInterop/MathLink.jl) for Mathematica/Wolfram Engine
-#     * [`OctCall.jl`](https://github.com/JuliaInterop/OctCall.jl) for GNU Octave
-#     * [`ZMQ.jl`](https://juliainterop.github.io/ZMQ.jl/stable/) for ZeroMQ
-
+#
+#       * [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python
+#       * [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java
+#       * [`Cxx.jl`](https://juliainterop.github.io/Cxx.jl/stable/) and [`CxxWrap.jl`](https://github.com/JuliaInterop/CxxWrap.jl) for C++
+#       * [`Clang.jl`](https://github.com/JuliaInterop/Clang.jl) for libclang and C
+#       * [`ObjectiveC.jl`](https://github.com/JuliaInterop/ObjectiveC.jl) for Objective-C
+#       * [`JavaCall.jl`](https://juliainterop.github.io/JavaCall.jl/) for Java
+#       * [`MATLAB.jl`](https://github.com/JuliaInterop/MATLAB.jl) for MATLAB
+#       * [`MathLink.jl`](https://github.com/JuliaInterop/MathLink.jl) for Mathematica/Wolfram Engine
+#       * [`OctCall.jl`](https://github.com/JuliaInterop/OctCall.jl) for GNU Octave
+#       * [`ZMQ.jl`](https://juliainterop.github.io/ZMQ.jl/stable/) for ZeroMQ
