@@ -6,7 +6,32 @@
 # meaning that is *blazing* fast, easy to prototype and read/write code.
 # It is **multi-paradigm**, combining features of imperative, functional, and object-oriented programming.
 
-# From my point-of-view julia has three main features that makes it a unique language to work with, specially in scientific computing:
+# **Why was Julia created?** Definitely read this now impressively
+# [old post by Julia founders Jeff Bezanson, Stefan Karpinski, Viral B. Shah, and Alan Edelman](https://julialang.org/blog/2012/02/why-we-created-julia/).
+# Here is a clarifying quote:
+
+# > We want the speed of C with the dynamism of Ruby. We want a language that's homoiconic, with true macros like Lisp, but with obvious,
+# > familiar mathematical notation like Matlab. We want something as usable for general programming as Python, as easy for statistics as R,
+# > as natural for string processing as Perl, as powerful for linear algebra as Matlab, as good at gluing programs together as the shell.
+# > Something that is dirt simple to learn, yet keeps the most serious hackers happy. We want it interactive and we want it compiled.
+
+# **Why this needs to be an extra language?** Why cannot Python (or R) be made that fast for instance?
+# See the official compact answer to this in the [Julia manual FAQ](https://docs.julialang.org/en/v1/manual/faq/#Why-don't-you-compile-Matlab/Python/R/%E2%80%A6-code-to-Julia?):
+
+# > The basic issue is that there is nothing special about Julia's compiler: we use a commonplace compiler (LLVM) with no
+# > "secret sauce" that other language developers don't know about.
+# > Julia's performance advantage derives almost entirely from its front-end: its language semantics allow a well-written Julia program
+# > to give more opportunities to the compiler to generate efficient code and memory layouts. If you tried to compile Matlab or
+# > Python code to Julia, our compiler would be limited by the semantics of Matlab or Python to producing code no better than that of
+# > existing compilers for those languages (and probably worse).
+# >
+# > Julia's advantage is that good performance is not limited to a small subset of "built-in" types and operations,
+# > and one can write high-level type-generic code that works on arbitrary user-defined types while remaining fast and memory-efficient.
+# > Types in languages like Python simply don't provide enough information to the compiler for similar capabilities, so as soon as you used
+# > those languages as a Julia front-end you would be stuck.
+
+# These are the "official" answers from the Julia community. Now let me share with you my opinion.
+# From my point-of-view Julia has **three main features that makes it a unique language to work with**, specially in scientific computing:
 
 # * **Speed**
 # * **Ease of Use**
@@ -619,6 +644,11 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # ![Python my ass](/pages/images/ML_code_breakdown.svg)
 
+# \note{On the other hand, language *interoperability* is extremely useful:
+# we want to exploit existing high-quality code in other languages from Julia (and vice versa)!
+# Julia community have worked hard on this, from the built-in intrinsic Julia `ccall` function (to call C and Fortran libraries)
+# to [JuliaInterop](https://github.com/JuliaInterop){[^interop]} packages that connect Julia to Python, R, Matlab, C++, and more.}
+
 # Another example comes from a Julia podcast that unfortunately I cannot recollect either what podcast was nor who was being interviewed.
 # While being asked about how he joined the Julia bandwagon, he replied something in the likes:
 #
@@ -651,3 +681,17 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # [^mvnimplem]: which of course I did not. The `Mvn` class is inspired by [Iason Sarantopoulos' implementation](http://blog.sarantop.com/notes/mvn).
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
+# [^interop]:
+
+#     Julia has a lot of interoperability between languages. Check out:
+#     * [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python
+#     * [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java
+#     * [`Cxx.jl`](https://juliainterop.github.io/Cxx.jl/stable/) and [`CxxWrap.jl`](https://github.com/JuliaInterop/CxxWrap.jl) for C++
+#     * [`Clang.jl`](https://github.com/JuliaInterop/Clang.jl) for libclang and C
+#     * [`ObjectiveC.jl`](https://github.com/JuliaInterop/ObjectiveC.jl) for Objective-C
+#     * [`JavaCall.jl`](https://juliainterop.github.io/JavaCall.jl/) for Java
+#     * [`MATLAB.jl`](https://github.com/JuliaInterop/MATLAB.jl) for MATLAB
+#     * [`MathLink.jl`](https://github.com/JuliaInterop/MathLink.jl) for Mathematica/Wolfram Engine
+#     * [`OctCall.jl`](https://github.com/JuliaInterop/OctCall.jl) for GNU Octave
+#     * [`ZMQ.jl`](https://juliainterop.github.io/ZMQ.jl/stable/) for ZeroMQ
+
