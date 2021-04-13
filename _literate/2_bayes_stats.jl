@@ -223,9 +223,9 @@
 
 # * $\theta$ -- parameter(s) of interest;
 # * $y$ -- observed data;
-# * **Prior** -- previous probability of the parameter(s) value(s)[^prior] $\theta$;
-# * **Likelihood** -- probability of the observed data $y$ conditioned on the parameter(s) value(s) $\theta$;
-# * **Posterior** -- posterior probability of the parameter(s) value(s) $\theta$ after observing the data $y$; and
+# * **Prior** -- previous probability of the parameter value(s)[^prior] $\theta$;
+# * **Likelihood** -- probability of the observed data $y$ conditioned on the parameter value(s) $\theta$;
+# * **Posterior** -- posterior probability of the parameter value(s) $\theta$ after observing the data $y$; and
 # * **Normalizing Constant ** -- $P(y)$ does not make intuitive sense. This probability is transformed and can be interpreted as something that exists only so that the result of $P(y \mid \theta) P(\theta)$ is somewhere between 0 and 1 -- a valid probability by the axioms. We will talk more about this constant in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 
 # Bayesian statistics allow us **to directly quantify the uncertainty** related to the value of one or more parameters of our model
@@ -239,6 +239,93 @@
 # To contrast with Bayesian statistics, let's look at the frequentist statistics, also known as "classical statistics".
 # And already take notice: **it is not something intuitive** like the Bayesian statistics.
 
+# For frequentist statistics, the researcher is **prohibited from making probabilistic conjectures about parameters**.
+# Because they are not uncertain, quite the contrary they are determined quantities. The only issue is that we do not
+# directly observe the parameters, but they are deterministic and do not allow any margin of uncertainty. Therefore, for
+# the frequentist approach, parameters are unobserved amounts of interest in which we do not make probabilistic conjectures.
+
+# What, then, is uncertain in frequentist statistics? Short answer: **the observed data**. For the frequentist approach, the
+# sample is uncertain. Thus, we can only make probabilistic conjectures about our sample. Therefore, the uncertainty is expressed
+# in the probability that I will obtain data similar to those that I obtained if I sampled from a population of interest infinite
+# samples of the same size as my sample[^warning]. Uncertainty is conditioned by a frequentist approach, in other words, uncertainty
+# only exists only if I consider an infinite sampling process and extract a frequency from that process. **The probability only
+# exists if it represents a frequency**. Frequentist statistics is based on an "infinite sampling process of a population that
+# I have never seen", strange that it may sounds.
+
+# For the frequentist approach, there is no *posterior* or *prior* probability since both involve parameters, and we saw that this
+# is a no-no on frequentist soil. Everything that is necessary for statistical inference is **contained within likelihood**[^likelihoodsubj].
+
+# In addition, for reasons of ease of computation, since most of these methods were invented in the first half of the 20th century
+# (without any help of a computer), only the parameter value(s) that maximize(s) the likelihood function is(are)
+# computed[^likelihoodopt]. From this optimization process we extracted the **mode** of the likelihood function
+# (*i.e.* maximum value). The maximum likelihood estimate (MLE) is(are) the parameter value(s) so that a $N$-sized sample
+# randomly sampled from a population (*i.e.* the data you've collected) is the most likely $N$-sized sample from that population.
+# All other potential samples that could be extracted from this population will have a worse estimate than the sample you actually
+# have[^warning2]. In other words, we are conditioning the parameter value(s) on the observed data from the assumption that
+# we are sampling infinite $N$-sized samples from a theoretical population and treating the parameter values as fixed and
+# our sample as random (or uncertain).
+
+# The mode works perfectly in the fairytale world, which assumes that everything follows a normal distribution, in which the mode is equal
+# to the median and to the mean -- $\text{mean} = \text{median} = \text{mode}$. There is only one problem, this assumption is rarely true
+# (see figure below), especially when we are dealing with multiple parameters with complex relationships between them (complex models).
+
+# ![Assumptions vs Reality](/pages/images/assumptions-vs-reality.jpeg)
+#
+# \center{*Assumptions vs Reality. Figure by [Katherine Hoffman](https://www.khstats.com/blog/tmle/tutorial/). Authorized Reproduction*} \\
+
+# A brief sociological and computational explanation is worthwhile of why frequentist (classical) statistics prohibit probabilistic
+# conjectures about parameters and we are only left with optimizing (finding the maximum value of a function) rather than approximating
+# or estimating a **complete likelihood density** (in other words, "to pull up the whole file" of the likelihood verisimilitude
+# instead of just the mode).
+
+# On the sociological side of things, science at the beginning of the 20th century assumed that it should be strictly objective and
+# all subjectivity must be banned. Therefore, since the estimation of the a posterior probability of parameters involves
+# elucidating an a prior probability of parameters, such a method should not be allowed in science, as it brings subjectivity
+# (we know today that nothing in human behavior is purely objective, and subjectivity permeates all human endeavors).
+
+# Regarding the computational side of things, in the 1930s without computers it was much easier to use strong assumptions about
+# the data to get a value from a statistical estimation using mathematical derivations than to calculate the statistical estimation
+# by hand without depending on such assumptions. For example: Student's famous $t$ test is a test that indicates when we can
+# reject that the mean of a certain parameter of interest between two groups is equal (famous null hypothesis - $H_0$). This
+# test starts from the assumption that if the parameter of interest is distributed according to a normal distribution (assumption 1
+# -- normality of the dependent variable), if the variance of the parameter of interest varies homogeneously between groups
+# (assumption 2 -- homogeneity of the variances), and if the number of observations in the two groups are similar (assumption 3
+# -- homogeneity of the size of the groups) the difference between the groups weighted by the variance of the groups follows a
+# Student-$t$ distribution (hence the name of the test).
+
+# So statistical estimation comes down to calculating the average of two groups, the variance of both groups for a parameter
+# of interest and looking for the associated $p$-value in a table and see if we can reject the $H_0$. This was valid when
+# everything we had to do was calculated by hand. Today, with a computer 1 million times more powerful than the Apollo 11 computer
+# (one that took humanity to the moon) in your pocket [^computingpower], I don't know if it is still valid.
+
+# ### $p$-values
+
+# > $p$-values are hard to understand, $p < 0.05$.
+
+# ![$p$-values are hard to understand](/pages/images/meme-pvalue2.jpg)
+
+# Since I've mentioned the $p$ word, let me explain what it is. First, the correct[^booksp] statistics textbook definition:
+
+# > $p$-value is the probability of obtaining test results at least as extreme as the results actually observed, under the assumption that the null hypothesis is correct.
+
+# Unfortunately with frequentist statistics you have to choose one of two qualities for explanations: intuitive or accurate^[gelman].
+
+# If you write this definition in any test, book or scientific paper, you are 100% accurate and correct in defining what a $p$-value is.
+# Now, understanding this definition is complicated. For that, let's break this definition down into parts for a better understanding:
+
+# * **"probability of obtaining test results.."**: notice that $p$-values are related your data and not your theory or hypothesis.
+# * **"...at least as extreme as the results actually observed..."**: "at least as extreme" implies defining a threshold for the characterization of some relevant finding, which is commonly called $\alpha$. We generally stipulate alpha at 5% ($\alpha = 0.05$) and anything more extreme than alpha (ie less than 5%) we characterize as **significant**.
+# * **"... under the assumption that the null hypothesis is correct."**: every statistical test that has a $p$-value has a null hypothesis (usually written as $H_0$). Null hypotheses, always have to do with some **null effect**. For example, the null hypothesis of the Shapiro-Wilk and Komolgorov-Smirnov test is "the data is distributed according to a Normal distribution" and that of the Levene test is "the group variances are equal". Whenever you see a $p$-value, ask yourself: "What is the null hypothesis that this test assumes is correct?".
+
+# To understand the $p$-value any statistical test first find out what is the null hypothesis behind that test. The
+# definition of $p$-value will not change. In every test it is always the same. What changes with the test is the null hypothesis.
+# Each test has its $H_0$. For example, some common statistical tests ($\text{D}$ = data):
+
+# * $t$ Test: $P(D \mid \text{the difference between groups are zero})$
+# * ANOVA: $P(D \mid \text{there is no difference between groups})$
+# * Regression: $P(D \mid \text{the coefficient is zero})$
+# * Shapiro-Wilk: $P(D \mid \text{the sample follows a normal distribution})$
+
 # ## Footnotes
 #
 # [^evidencebased]: personally, like a good Popperian, I don't believe there is science without being evidence-based; what does not use evidence can be considered as logic, philosophy or social practices (no less or more important than science, just a demarcation of what is science and what is not; eg, mathematics and law).
@@ -247,11 +334,17 @@
 # [^subjective]: my observation: related to the subjective Bayesian approach.
 # [^objective]: my observation: related to the objective frequentist approach.
 # [^realnumber]: a number that can be expressed as a point on a continuous line that originates from minus infinity and ends and plus infinity $(-\infty, +\infty)$; for those who like computing it is a floating point `float` or` double`.
-# [^mutually]: i.e the events are "mutually exclusive".
+# [^mutually]: *i.e.* the events are "mutually exclusive".
 # [^axioms]: in mathematics, axioms are assumptions assumed to be true that serve as premises or starting points for the elaboration of arguments and theorems. Often the axioms are questionable, for example non-Euclidean geometry refutes Euclid's fifth axiom on parallel lines. So far there is no questioning that has supported the scrutiny of time and science about the three axioms of probability.
 # [^mutually2]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
 # [^thomaspricelaplace]: the formal name of the theorem is Bayes-Price-Laplace, as Thomas Bayes was the first to discover, Richard Price took his drafts, formalized in mathematical notation and presented to the Royal Society of London, and Pierre Laplace rediscovered the theorem without having had previous contact in the late 18th century in France by using probability for statistical inference with Census data in the Napoleonic era.
 # [^prior]: I will cover prior probabilities in the content of tutorial [4. **How to use Turing**](/pages/4_Turing/).
+# [^warning]: I warned you that it was not intuitive...
+# [^likelihoodsubj]: something worth noting: likelihood also carries **a lot of subjectivity**.
+# [^likelihoodopt]: for those who have a thing for mathematics (like myself), we calculate at which point of $\theta$ the derivative of the likelihood function is zero - $\mathcal{L}^\prime = 0$. So we are talking really about an optimization problem that for some likelihood functions we can have a closed-form analytical solution.
+# [^warning2]: have I forgot to warn you that it is not so intuitive?
+# [^booksp]: there are several statistics textbooks that have wrong definitions of what a $p$-value is. If you don't believe me, see Wasserstein & Lazar (2016).
+# [^gelman]: this duality is attributed to Andrew Gelman -- Bayesian statistician.
 
 # ## References
 #
