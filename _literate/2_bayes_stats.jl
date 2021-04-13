@@ -416,13 +416,11 @@
 # and the 75% percentile of the probability density of $\theta$. In this example, MLE leads to estimated values that are not
 # consistent with the actual probability density of the value of $\theta$.
 
-# hideall
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
-d = LogNormal(0, 2);
+d = LogNormal(0, 2); # hideall
 range_d = 0:0.0001:4;
 fill_range = pdf.(d, quantile(d, [0.75, 0.25]))
-range_cred = quantile_d[1]:0.0001:quantile_d[2]
 q25 = quantile(d, 0.25)
 q75 = quantile(d, 0.75)
 plot((range_d, pdf.(d, range_d)),
