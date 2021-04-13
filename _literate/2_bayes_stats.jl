@@ -32,7 +32,7 @@
 
 # ![De Finetti](/pages/images/finetti.jpg)
 #
-# *Bruno de Finetti*
+# \center{*Bruno de Finetti*}
 
 # Consider tossing a weighted coin. The attempts are considered independent and, as a result, exhibit another
 # important property: **the order does not matter**. To say that order does not matter is to say that if you take any
@@ -84,7 +84,7 @@
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
 #
-# *Andrey Nikolaevich Kolmogorov*
+# \center{*Andrey Nikolaevich Kolmogorov*}
 
 # With these three simple (and intuitive) axioms, we are able to **derive and construct all the mathematics of probability**.
 
@@ -172,7 +172,7 @@
 
 # ![Thomas Bayes](/pages/images/thomas_bayes.gif)
 #
-# *Thomas Bayes*
+# \center{*Thomas Bayes*}
 
 # Let's move on to Theorem. Remember that we have the following identity in probability:
 

@@ -30,3 +30,4 @@ For instance:
 \newcommand{\scal}[1]{\langle #1 \rangle}
 \newcommand{\note}[1]{@@note @@title ⚠ Note@@ @@content #1 @@ @@}
 \newcommand{\warn}[1]{@@warning @@title ⚠ Warning!@@ @@content #1 @@ @@}
+\newcommand{\center}[1]{@@text-center #1 @@}

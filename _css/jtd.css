@@ -693,3 +693,7 @@ franklin-toc {
   color: white;
   background: crimson;
 }
+
+.text-center{
+  text-align: center;
+}
