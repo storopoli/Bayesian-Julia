@@ -32,7 +32,7 @@
 
 # ![De Finetti](/pages/images/finetti.jpg)
 #
-# \center{*Bruno de Finetti*}
+# \center{*Bruno de Finetti*} \\
 
 # Consider tossing a weighted coin. The attempts are considered independent and, as a result, exhibit another
 # important property: **the order does not matter**. To say that order does not matter is to say that if you take any
@@ -84,7 +84,7 @@
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
 #
-# \center{*Andrey Nikolaevich Kolmogorov*}
+# \center{*Andrey Nikolaevich Kolmogorov*} \\
 
 # With these three simple (and intuitive) axioms, we are able to **derive and construct all the mathematics of probability**.
 
@@ -172,7 +172,7 @@
 
 # ![Thomas Bayes](/pages/images/thomas_bayes.gif)
 #
-# \center{*Thomas Bayes*}
+# \center{*Thomas Bayes*} \\
 
 # Let's move on to Theorem. Remember that we have the following identity in probability:
 
@@ -215,6 +215,29 @@
 
 # Now that you know what probability is and what Bayes' theorem is, I will propose the following model:
 
+# $$
+# \underbrace{P(\theta \mid y)}_{\text{Posterior}} = \frac{\overbrace{P(y \mid  \theta)}^{\text{Likelihood}} \cdot \overbrace{P(\theta)}^{\text{Prior}}}{\underbrace{P(y)}_{\text{Normalizing Constant}}} \label{bayesianstats} ,
+# $$
+
+# where:
+
+# * $\theta$ -- parameter(s) of interest;
+# * $y$ -- observed data;
+# * **Prior** -- previous probability of the parameter(s) value(s)[^prior] $\theta$;
+# * **Likelihood** -- probability of the observed data $y$ conditioned on the parameter(s) value(s) $\theta$;
+# * **Posterior** -- posterior probability of the parameter(s) value(s) $\theta$ after observing the data $y$; and
+# * **Normalizing Constant ** -- $P(y)$ does not make intuitive sense. This probability is transformed and can be interpreted as something that exists only so that the result of $P(y \mid \theta) P(\theta)$ is somewhere between 0 and 1 -- a valid probability by the axioms. We will talk more about this constant in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
+
+# Bayesian statistics allow us **to directly quantify the uncertainty** related to the value of one or more parameters of our model
+# conditioned to the observed data. This is the **main feature** of Bayesian statistics, for we are directly estimating
+# $P (\theta \mid y)$ using Bayes' theorem. The resulting estimate is totally intuitive: it simply quantifies the uncertainty
+# we have about the value of one or more parameters conditioned on the data, the assumptions of our model (likelihood) and
+# the previous probability(prior) we have about such values.
+
+# ## Frequentist Statistics
+
+# To contrast with Bayesian statistics, let's look at the frequentist statistics, also known as "classical statistics".
+# And already take notice: **it is not something intuitive** like the Bayesian statistics.
 
 # ## Footnotes
 #
@@ -228,6 +251,7 @@
 # [^axioms]: in mathematics, axioms are assumptions assumed to be true that serve as premises or starting points for the elaboration of arguments and theorems. Often the axioms are questionable, for example non-Euclidean geometry refutes Euclid's fifth axiom on parallel lines. So far there is no questioning that has supported the scrutiny of time and science about the three axioms of probability.
 # [^mutually2]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
 # [^thomaspricelaplace]: the formal name of the theorem is Bayes-Price-Laplace, as Thomas Bayes was the first to discover, Richard Price took his drafts, formalized in mathematical notation and presented to the Royal Society of London, and Pierre Laplace rediscovered the theorem without having had previous contact in the late 18th century in France by using probability for statistical inference with Census data in the Napoleonic era.
+# [^prior]: I will cover prior probabilities in the content of tutorial [4. **How to use Turing**](/pages/4_Turing/).
 
 # ## References
 #

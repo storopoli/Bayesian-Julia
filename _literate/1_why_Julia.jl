@@ -55,7 +55,7 @@
 
 # ![Common Benchmarks](/pages/images/benchmarks.svg)
 #
-# \center{*Common Benchmarks*}
+# \center{*Common Benchmarks*} \\
 
 # Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
 # "split-apply-combine" operations in three languages[^updatedversion] :
@@ -634,7 +634,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # ![Scientific Computing Language Comparisons](/pages/images/language_comparisons.svg)
 #
-# \center{*Scientific Computing Language Comparisons*}
+# \center{*Scientific Computing Language Comparisons*} \\
 
 # What I want to say with this image is that if you want to **code fast and easy** use Julia.
 
@@ -648,7 +648,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 
 # ![Python my ass](/pages/images/ML_code_breakdown.svg)
 #
-# \center{*Python my a**!*}
+# \center{*Python my a**!*} \\
 
 # \note{On the other hand, language *interoperability* is extremely useful:
 # we want to exploit existing high-quality code in other languages from Julia (and vice versa)!
