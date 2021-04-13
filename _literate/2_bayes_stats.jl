@@ -31,6 +31,7 @@
 # The mathematics of inductive reasoning remains **exactly the same**.
 
 # ![De Finetti](/pages/images/finetti.jpg)
+# *Bruno de Finetti*
 
 # Consider tossing a weighted coin. The attempts are considered independent and, as a result, exhibit another
 # important property: **the order does not matter**. To say that order does not matter is to say that if you take any
@@ -81,6 +82,7 @@
 # 3. **Normalization**: The probability of all possible events $A_1, A_2, \ dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
+# *Andrey Nikolaevich Kolmogorov*
 
 # With these three simple (and intuitive) axioms, we are able to **derive and construct all the mathematics of probability**.
 
@@ -167,6 +169,7 @@
 # Some speculate that he was motivated to refute David Hume's argument against belief in miracles based on evidence from the testimony in "An Inquiry Concerning Human Understanding".
 
 # ![Thomas Bayes](/pages/images/thomas_bayes.gif)
+# *Thomas Bayes*
 
 # Let's move on to Theorem. Remember that we have the following identity in probability:
 

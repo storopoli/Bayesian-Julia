@@ -6,6 +6,7 @@
 # Bayesian Statistics using Julia and Turing
 
 ![Bayesian for Everyone](images/bayes-meme.jpg)
+*Bayesian for Everyone*
 
 Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
 
