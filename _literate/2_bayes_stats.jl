@@ -373,7 +373,7 @@
 
 # With the definition and a well-anchored intuition of what $p$-value is, we can move on to what the $p$-value **is not**!
 
-# 1. **$p$-value is not the probability of the null hypothesis** - Famous confusion between $P(D \mid H_0)$ and $P(H_0 \mid D)$. $p$-value is not the probability of the null hypothesis, but the probability of the data you obtained. To get the $P(H_0 \mid D) you need Bayesian statistics.
+# 1. **$p$-value is not the probability of the null hypothesis** - Famous confusion between $P(D \mid H_0)$ and $P(H_0 \mid D)$. $p$-value is not the probability of the null hypothesis, but the probability of the data you obtained. To get the $P(H_0 \mid D)$ you need Bayesian statistics.
 
 # 2. **$p$-value is not the probability of the data being produced by chance** - No! Nobody said anything of "being produced by chance". Again: $p$-value is the probability to get results at least as extreme as those that were observed, given that the null hypothesis is true.
 
