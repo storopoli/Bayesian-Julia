@@ -20,7 +20,7 @@
 
 # ## What is Probability?
 
-# > PROBABILITY DOES NOT EXIST! \\ de Finetti (1974)[^deFinetti]
+# > PROBABILITY DOES NOT EXIST! \\ \\ de Finetti (1974)[^deFinetti]
 
 # These are the first words in the preface to the famous book by [Bruno de Finetti](https://en.wikipedia.org/wiki/Bruno_de_Finetti)
 # (figure below), one of the most important probability mathematician and philosopher.
@@ -386,12 +386,35 @@
 # > An X% confidence interval for a parameter $\theta$ is an interval $(L, U)$ generated
 # > by a procedure that in repeated sampling has an X% probability of containing the true value of $\theta$, for all possible
 # > values of $\theta$.
-# > \\
+# > \\ \\
 # > Jerzy Neyman, the "father" of confidence intervals (see figure below) (Neyman, 1937).
 
 # ![Jerzy Neyman](/pages/images/neyman.jpeg)
 #
 # \center{*Jerzy Neyman*} \\
+
+# Again the idea of sampling an infinite number of times from a population you have never seen. For example: let's say
+# that you performed a statistical analysis to compare the effectiveness of a public policy in two groups and you obtained
+# the difference between the average of those groups. You can express this difference as a confidence interval. We generally
+# choose 95% confidence (since it is analogous as $p < 0.05$). You then write in your paper that the "observed difference between
+# groups is 10.5 - 23.5 (95% CI)." This means that 95 studies out of 100, which would use the same sample size and target population,
+# applying the same statistical test, will expect to find a result of mean differences between groups between 10.5 and 23.5. The
+# units here are arbitrary, but to conclude the example we assume that they are life expectancy.
+
+# #### Confidence Intervals (Frequentist) vs Credible Intervals (Bayesian)
+
+# Bayesian statistics have a concept similar to the confidence intervals of frequentist statistics. This concept is called
+# **credibility interval**. And, unlike the confidence interval, its definition is intuitive. **Credibility interval** measures
+# an interval in which we are sure that the value of the parameter of interest is, based on the likelihood conditioned on the observed
+# data - $P(y \mid \theta)$; and the prior probability of the parameter of interest - $P(\theta)$. It is basically a "slice" of
+# the posterior probability of the parameter restricted to a certain level of certainty. For example: a 95% credibility interval
+# shows the interval that we are 95% sure that captures the value of our parameter of intereest. That simple...
+
+# For example, see figure below, which shows a Log-Normal distribution with mean 0 and standard deviation 2. The graph at the
+# top shows the maximum likelihood estimation (MLE) of the value of $\theta$ which is somply the mode of distribution. And in
+# the bottom graph we have the 50% credibility interval of the value of $\theta$, which is the interval between the 25% percentile
+# and the 75% percentile of the probability density of $\theta$. In this example, MLE leads to estimated values that are not
+# consistent with the actual probability density of the value of $\theta$.
 
 # ## Footnotes
 #
