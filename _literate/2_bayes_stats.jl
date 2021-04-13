@@ -416,12 +416,15 @@
 # and the 75% percentile of the probability density of $\theta$. In this example, MLE leads to estimated values that are not
 # consistent with the actual probability density of the value of $\theta$.
 
+# hideall
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
 d = LogNormal(0, 2);
 range_d = 0:0.0001:4;
-quantile_d = quantile(d, [0.25, 0.75])
+fill_range = pdf.(d, quantile(d, [0.75, 0.25]))
 range_cred = quantile_d[1]:0.0001:quantile_d[2]
+q25 = quantile(d, 0.25)
+q75 = quantile(d, 0.75)
 plot((range_d, pdf.(d, range_d)),
      leg=false,
      xlims=(0, 4),
@@ -429,10 +432,17 @@ plot((range_d, pdf.(d, range_d)),
      xlabel=L"$\theta$",
      ylabel="Density")
 scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=4)
+plot!(range(q25, stop=q75, length=100),
+      x -> pdf(d, x),
+      lc=false, fc=:blues,
+      fill=true, fillalpha=0.5)
 savefig(joinpath(@OUTPUT, "lognormal.svg")) # hide
 
-# \fig{test}
+# \fig{lognormal}
 # \center{*Maximum Likelihood Estimate vs Credible Intervals*} \\
+
+# https://link.springer.com/content/pdf/10.3758%2Fs13423-015-0947-8.pdf
+# http://www.deeplytrivial.com/2017/09/great-minds-in-statistics-jerzy-neymans.html
 
 # ## Footnotes
 #
