@@ -410,11 +410,29 @@
 # the posterior probability of the parameter restricted to a certain level of certainty. For example: a 95% credibility interval
 # shows the interval that we are 95% sure that captures the value of our parameter of intereest. That simple...
 
-# For example, see figure below, which shows a Log-Normal distribution with mean 0 and standard deviation 2. The graph at the
-# top shows the maximum likelihood estimation (MLE) of the value of $\theta$ which is somply the mode of distribution. And in
-# the bottom graph we have the 50% credibility interval of the value of $\theta$, which is the interval between the 25% percentile
+# For example, see figure below, which shows a Log-Normal distribution with mean 0 and standard deviation 2. The green dot
+# shows the maximum likelihood estimation (MLE) of the value of $\theta$ which is somply the mode of distribution. And in
+# the shaded area we have the 50% credibility interval of the value of $\theta$, which is the interval between the 25% percentile
 # and the 75% percentile of the probability density of $\theta$. In this example, MLE leads to estimated values that are not
 # consistent with the actual probability density of the value of $\theta$.
+
+using Plots, StatsPlots, Distributions, LaTeXStrings
+
+d = LogNormal(0, 2);
+range_d = 0:0.0001:4;
+quantile_d = quantile(d, [0.25, 0.75])
+range_cred = quantile_d[1]:0.0001:quantile_d[2]
+plot((range_d, pdf.(d, range_d)),
+     leg=false,
+     xlims=(0, 4),
+     lw=3,
+     xlabel=L"$\theta$",
+     ylabel="Density")
+scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=4)
+savefig(joinpath(@OUTPUT, "lognormal.svg")) # hide
+
+# \fig{test}
+# \center{*Maximum Likelihood Estimate vs Credible Intervals*} \\
 
 # ## Footnotes
 #
