@@ -20,9 +20,7 @@
 
 # ## What is Probability?
 
-# > PROBABILITY DOES NOT EXIST!
-# >
-# > de Finetti (1974)[^deFinetti]
+# > PROBABILITY DOES NOT EXIST! \\ de Finetti (1974)[^deFinetti]
 
 # These are the first words in the preface to the famous book by [Bruno de Finetti](https://en.wikipedia.org/wiki/Bruno_de_Finetti)
 # (figure below), one of the most important probability mathematician and philosopher.
@@ -333,7 +331,7 @@
 # only evaluating whether the data conforms to this null hypothesis or not**. If you leave this tutorial armed with this intuition,
 # the world will be rewarded with researchers better prepared to qualify and interpret evidence ($p <0.05$).
 
-# \note{**Intuitive Example**:
+# \note{**Intuitive Example** of a $p$-value:
 #
 # Imagine that you have a coin that you suspect is biased towards a higher probability of flipping "heads" than "tails".
 # (Your null hypothesis is then that the coin is fair.) You flip the coin 100 times and get more heads than tails.
@@ -380,6 +378,20 @@
 # 3. **$p$-value measures the size of the effect of a statistical test** - Also wrong... $p$-value does not say anything about the size of the effect. Just about whether the observed data differs from what is expected under the null hypothesis. It is clear that large effects are more likely to be statistically significant than small effects. But this is not a rule and never judge a finding by its $p$-value, but by its effect size. In addition, $p$-values ​​can be "hacked" in a number of ways (Head et al., 2015) and often their value is a direct consequence of the sample size.
 
 # ### Confidence Intervals
+
+# To conclude, let's talk about the famous **confidence intervals**, which are not a measure that quantifies the uncertainty of
+# the value of a parameter (remember probabilistic conjectures about parameters are prohibited in frequentist-land). Wait for it!
+# Here is the definition of confidence intervals:
+
+# > An X% confidence interval for a parameter $\theta$ is an interval $(L, U)$ generated
+# > by a procedure that in repeated sampling has an X% probability of containing the true value of $\theta$, for all possible
+# > values of $\theta$.
+# > \\
+# > Jerzy Neyman, the "father" of confidence intervals (see figure below) (Neyman, 1937).
+
+# ![Jerzy Neyman](/pages/images/neyman.jpeg)
+#
+# \center{*Jerzy Neyman*} \\
 
 # ## Footnotes
 #
