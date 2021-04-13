@@ -418,11 +418,10 @@
 
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
-d = LogNormal(0, 2); # hideall
+d = LogNormal(0, 2);
 range_d = 0:0.0001:4;
-fill_range = pdf.(d, quantile(d, [0.75, 0.25]))
-q25 = quantile(d, 0.25)
-q75 = quantile(d, 0.75)
+q25 = quantile(d, 0.25);
+q75 = quantile(d, 0.75);
 plot((range_d, pdf.(d, range_d)),
      leg=false,
      xlims=(0, 4),
@@ -434,7 +433,7 @@ plot!(range(q25, stop=q75, length=100),
       x -> pdf(d, x),
       lc=false, fc=:blues,
       fill=true, fillalpha=0.5)
-savefig(joinpath(@OUTPUT, "lognormal.svg")) # hide
+savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 
 # \fig{lognormal}
 # \center{*Maximum Likelihood Estimate vs Credible Intervals*} \\
