@@ -78,7 +78,7 @@
 
 # 1. **Non-negativity**: For all $A$, $P(A) \geq 0$. Every probability is positive (greater than or equal to zero), regardless of the event.
 # 2. **Additivity**: For two mutually exclusive $A$ and $B$ (cannot occur at the same time[^mutually2]): $P(A) = 1 - P(B)$ and $P(B) = 1 - P(A)$.
-# 3. **Normalization**: The probability of all possible events $A_1, A_2, \ dots$ must add up to 1: $\ sum_{n \ in \ mathbb{N}} A_n = 1$.
+# 3. **Normalization**: The probability of all possible events $A_1, A_2, \ dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
 
@@ -135,13 +135,80 @@
 
 # But this symmetry does not always exist (in fact it very rarely exists). The identity we have is as follows:
 
-# $$ P(A) \cdot P(K \mid A) = P(K) \cdot P(A \mid K). $$
+# $$ P(A) \cdot P(K \mid A) = P(K) \cdot P(A \mid K) . $$
 
 # So this symmetry only exists when the baseline rates for conditional events are equal:
 
 # $$ P(A) = P(K). $$
 
 # Which is what happens in our example.
+
+# #### Conditional Probability is not "commutative"
+
+# $$ P(A \mid B) \neq P(B \mid A) \label{noncommutative} $$
+
+# Let's see a practical example. For example, I’m feeling good and start coughing in line at the supermarket.
+# What do you think will happen? Everyone will think I have COVID, which is equivalent to thinking about
+# $P(\text{cough} \mid \text{covid})$. Seeing the most common symptoms of COVID, **if you have COVID, the chance of
+# coughing is very high**. But we actually cough a lot more often than we have COVID -- $P(\text{cough}) \neq P(\text{COVID})$, so:
+
+# $$ P(\text{COVID} \mid \text{cough}) \neq P(\text{cough} \mid \text{COVID}) . $$
+
+# ### Bayes' Theorem
+
+# This is the last concept of probability that we need to address before diving into Bayesian statistics,
+# but it is the most important. Note that it is not a semantic coincidence that Bayesian statistics and Bayes' theorem
+# have the same prefix.
+
+# [Thomas Bayes](https://en.wikipedia.org/wiki/Thomas_Bayes) (1701 - 1761, figure below) was an English Presbyterian statistician,
+# philosopher and minister known for formulating a specific case of the theorem that bears his name: Bayes' theorem.
+# Bayes never published what would become his most famous accomplishment; his notes were edited and published
+# after his death by his friend Richard Price[^thomaspricelaplace]. In his later years, Bayes was deeply interested in probability.
+# Some speculate that he was motivated to refute David Hume's argument against belief in miracles based on evidence from the testimony in "An Inquiry Concerning Human Understanding".
+
+# ![Thomas Bayes](/pages/images/thomas_bayes.gif)
+
+# Let's move on to Theorem. Remember that we have the following identity in probability:
+
+# $$
+# \begin{aligned}
+# P(A,B) &= P(B,A) \\
+# P(A) \cdot P(B \mid A) &= P(B) \cdot P(A \mid B) \label{jointidentity} .
+# \end{aligned}
+# $$
+
+# Ok, now move $P(B)$ in the right of \eqref{jointidentity} to the left as a division:
+
+# $$
+# \begin{aligned}
+# P(A) \cdot P(B \mid A) &= \overbrace{P(B)}^{\text{this goes to $\leftarrow$}} \cdot P(A \mid B) \\
+# &\\
+# \frac{P(A) \cdot P(B \mid A)}{P(B)} &= P(A \mid B) \\
+# P(A \mid B) &= \frac{P(A) \cdot P(B \mid A)}{P(B)}.
+# \end{aligned}
+# $$
+
+# And the final result is:
+
+# $$ P(A \mid B) = \frac{P(A) \cdot P(B \mid A)}{P(B)}. $$
+
+# Bayesian statistics uses this theorem as **inference engine** of **parameters** of a model
+# **conditioned** on **observed data**.
+
+# ### Discrete vs Continuous Parameters
+
+# Everything that has been exposed so far is based on the assumption that the parameters are discrete.
+# This was done in order to provide a better intuition of what is probability. We do not always work with discrete parameters.
+# The parameters can be continuous, for example: age, height, weight, etc. But don't despair, all the rules and axioms of
+# probability are also valid for continuous parameters. The only thing we have to do is to exchange all the sums $\sum$
+# for integrals $\int$. For example, the third axiom of **Normalization** for continuous random variables becomes:
+
+# $$ \int_{x \in X} p(x) dx = 1 . $$
+
+# ## Bayesian Statistics
+
+# Now that you know what probability is and what Bayes' theorem is, I will propose the following model:
+
 
 # ## Footnotes
 #
@@ -154,6 +221,7 @@
 # [^mutually]: i.e the events are "mutually exclusive".
 # [^axioms]: in mathematics, axioms are assumptions assumed to be true that serve as premises or starting points for the elaboration of arguments and theorems. Often the axioms are questionable, for example non-Euclidean geometry refutes Euclid's fifth axiom on parallel lines. So far there is no questioning that has supported the scrutiny of time and science about the three axioms of probability.
 # [^mutually2]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
+# [^thomaspricelaplace]: the formal name of the theorem is Bayes-Price-Laplace, as Thomas Bayes was the first to discover, Richard Price took his drafts, formalized in mathematical notation and presented to the Royal Society of London, and Pierre Laplace rediscovered the theorem without having had previous contact in the late 18th century in France by using probability for statistical inference with Census data in the Napoleonic era.
 
 # ## References
 #
