@@ -226,7 +226,7 @@
 # * **Prior** -- previous probability of the parameter value(s)[^prior] $\theta$;
 # * **Likelihood** -- probability of the observed data $y$ conditioned on the parameter value(s) $\theta$;
 # * **Posterior** -- posterior probability of the parameter value(s) $\theta$ after observing the data $y$; and
-# * **Normalizing Constant ** -- $P(y)$ does not make intuitive sense. This probability is transformed and can be interpreted as something that exists only so that the result of $P(y \mid \theta) P(\theta)$ is somewhere between 0 and 1 -- a valid probability by the axioms. We will talk more about this constant in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
+# * **Normalizing Constant** -- $P(y)$ does not make intuitive sense. This probability is transformed and can be interpreted as something that exists only so that the result of $P(y \mid \theta) P(\theta)$ is somewhere between 0 and 1 -- a valid probability by the axioms. We will talk more about this constant in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 
 # Bayesian statistics allow us **to directly quantify the uncertainty** related to the value of one or more parameters of our model
 # conditioned to the observed data. This is the **main feature** of Bayesian statistics, for we are directly estimating
@@ -302,7 +302,7 @@
 
 # > $p$-values are hard to understand, $p < 0.05$.
 
-# ![$p$-values are hard to understand](/pages/images/meme-pvalue2.jpg)
+# ![p-values are hard to understand](/pages/images/meme-pvalue2.jpg)
 
 # Since I've mentioned the $p$ word, let me explain what it is. First, the correct[^booksp] statistics textbook definition:
 
