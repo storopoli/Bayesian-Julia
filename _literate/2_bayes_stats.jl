@@ -107,6 +107,42 @@
 # Since we have one less card ($52 - 1 = 51$) because you have been dealt already an Ace (thus $A$ has been observed),
 # we have 4 Kings still in the deck, so the \eqref{kingace} is $\frac{4}{51}$.
 
+# ### Joint Probability
+
+# Conditional probability leads us to another important concept: joint probability. **Joint probability
+# is the "probability that two events will both occur"**. Continuing with our Poker example, the probability
+# that you will receive two Ace cards ($A$) and a King ($K$) as two starting cards is:
+
+# $$
+# \begin{aligned}
+# P(A,K) &= P(A) \cdot P(K \mid A) \label{aceandking}\\
+# &= P \left(\frac{1}{13}\right) \cdot P \left(\frac{4}{51}\right)\\
+# &= P \left(\frac{4}{51 \cdot 13}\right) \\
+# &\approx 0.006 .
+# \end{aligned}
+# $$
+
+# Note that $P(A,K) = P(K,A)$:
+
+# $$
+# \begin{aligned}
+# P(K,A) &= P(K) \cdot P(A \mid K) \label{kingandace}\\
+# &= P \left(\frac{1}{13}\right) \cdot P \left(\frac{4}{51}\right)\\
+# &= P \left(\frac{4}{51 \cdot 13}\right) \\
+# &\approx 0.006 .
+# \end{aligned}
+# $$
+
+# But this symmetry does not always exist (in fact it very rarely exists). The identity we have is as follows:
+
+# $$ P(A) \cdot P(K \mid A) = P(K) \cdot P(A \mid K). $$
+
+# So this symmetry only exists when the baseline rates for conditional events are equal:
+
+# $$ P(A) = P(K). $$
+
+# Which is what happens in our example.
+
 # ## Footnotes
 #
 # [^evidencebased]: personally, like a good Popperian, I don't believe there is science without being evidence-based; what does not use evidence can be considered as logic, philosophy or social practices (no less or more important than science, just a demarcation of what is science and what is not; eg, mathematics and law).
@@ -117,7 +153,7 @@
 # [^realnumber]: a number that can be expressed as a point on a continuous line that originates from minus infinity and ends and plus infinity $(-\infty, +\infty)$; for those who like computing it is a floating point `float` or` double`.
 # [^mutually]: i.e the events are "mutually exclusive".
 # [^axioms]: in mathematics, axioms are assumptions assumed to be true that serve as premises or starting points for the elaboration of arguments and theorems. Often the axioms are questionable, for example non-Euclidean geometry refutes Euclid's fifth axiom on parallel lines. So far there is no questioning that has supported the scrutiny of time and science about the three axioms of probability.
-# [^mutually]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
+# [^mutually2]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
 
 # ## References
 #
