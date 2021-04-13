@@ -54,6 +54,7 @@
 # [Julia's website](https://julialang.org/benchmarks/). As you can see Julia is **indeed** fast:
 
 # ![Common Benchmarks](/pages/images/benchmarks.svg)
+#
 # *Common Benchmarks*
 
 # Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
@@ -632,6 +633,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # to be hard and slow, so this quadrant is empty.
 
 # ![Scientific Computing Language Comparisons](/pages/images/language_comparisons.svg)
+#
 # *Scientific Computing Language Comparisons*
 
 # What I want to say with this image is that if you want to **code fast and easy** use Julia.
@@ -645,6 +647,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # [`Flux.jl`](https://github.com/FluxML/Flux.jl)(Julia's Deep Learning package). This figure I would call *"Python my a**!"* 😂:
 
 # ![Python my ass](/pages/images/ML_code_breakdown.svg)
+#
 # *Python my a**!*
 
 # \note{On the other hand, language *interoperability* is extremely useful:
