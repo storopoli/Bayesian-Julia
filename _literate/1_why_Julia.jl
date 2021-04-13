@@ -312,7 +312,7 @@
 
 # note that the [PDF for a multivariate normal](https://en.wikipedia.org/wiki/Multivariate_normal_distribution) is:
 #
-# $$ \text{PDF}(\boldsymbol{\mu}, \boldsymbol{\Sigma}) = (2\pi)^{-{\frac{k}{2}}}\det({\boldsymbol{\Sigma}})^{-{\frac {1}{2}}}e^{-{\frac{1}{2}}(\mathbf{x}-{\boldsymbol{\mu}})^{T}{\boldsymbol{\Sigma }}^{-1}(\mathbf{x} -{\boldsymbol{\mu}})} \label{mvnpdf} $$
+# $$ \text{PDF}(\boldsymbol{\mu}, \boldsymbol{\Sigma}) = (2\pi)^{-{\frac{k}{2}}}\det({\boldsymbol{\Sigma}})^{-{\frac {1}{2}}}e^{-{\frac{1}{2}}(\mathbf{x}-{\boldsymbol{\mu}})^{T}{\boldsymbol{\Sigma }}^{-1}(\mathbf{x} -{\boldsymbol{\mu}})} \label{mvnpdf} , $$
 #
 # where $\boldsymbol{\mu}$ is a vector of means, $\boldsymbol{\Sigma}$ is a covariance matrix, $\det$ is the determinant and $\mathbf{x}$
 # is a vector of values that the PDF is evaluted for.
@@ -354,11 +354,11 @@
 
 # This means that I've simplified the PDF [^mathbinormal] from equation \eqref{mvnpdf} into:
 #
-# $$ \text{PDF}(x, y)= \frac{1}{2 \pi \sqrt{1 - \rho^2 } \sigma_X \sigma_Y} e^{-\frac{\frac{x^{2}}{\sigma_{X}^{2}}-2 \rho-\frac{x y}{\sigma_{X} \sigma_{Y}}+\frac{y^{2}}{\sigma_{Y}^{2}}}{2\left(1-\rho^{2}\right)}} \label{bvnpdf} $$
+# $$ \text{PDF}(x, y)= \frac{1}{2 \pi \sqrt{1 - \rho^2 } \sigma_X \sigma_Y} e^{-\frac{\frac{x^{2}}{\sigma_{X}^{2}}-2 \rho-\frac{x y}{\sigma_{X} \sigma_{Y}}+\frac{y^{2}}{\sigma_{Y}^{2}}}{2\left(1-\rho^{2}\right)}} \label{bvnpdf} .$$
 #
-# since $\sigma_{X} = \sigma_{Y} = 1$, equation \eqref{bvnpdf} boils down to:
+# Since $\sigma_{X} = \sigma_{Y} = 1$, equation \eqref{bvnpdf} boils down to:
 #
-# $$ \text{PDF}(x, y)=\frac{1}{2 \pi \sqrt{1 - \rho^2 }} e^{-\frac{x^{2} -2 \rho-x y+y^{2}}{2\left(1-\rho^{2}\right)}} $$
+# $$ \text{PDF}(x, y)=\frac{1}{2 \pi \sqrt{1 - \rho^2 }} e^{-\frac{x^{2} -2 \rho-x y+y^{2}}{2\left(1-\rho^{2}\right)}} .$$
 #
 # no more determinants or matrix inversions. Easy-peasy for C++.
 

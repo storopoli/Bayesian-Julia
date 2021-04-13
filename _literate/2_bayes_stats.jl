@@ -61,6 +61,52 @@
 
 # ### Mathematical Definition
 
+# With the philosophical intuition of probability elaborated, we move on to **mathematical intuitions**.
+# The probability of an event is a real number[^realnumber], $\in \mathbb{R}$ between 0 and 1, where, roughly,
+# 0 indicates the impossibility of the event and 1 indicates the certainty of the event. The greater the likelihood of an event,
+# the more likely it is that the event will occur. A simple example is the tossing of a fair (impartial) coin. Since the coin is fair,
+# both results ("heads" and "tails") are equally likely; the probability of "heads" is equal to the probability of "tails";
+#  and since no other result is possible[^mutually], the probability of "heads" or "tails" is $\frac{1}{2}$
+# (which can also be written as 0.5 or 50%).
+
+# Regarding notation, we define $A$ as an event and $P(A)$ as the probability of event $A$, thus:
+
+# $$\{P(A) \in \mathbb{R} : 0 \geq P(A) \geq 1 \}.$$
+
+# This means the "probability of the event to occur is the set of all real numbers between 0 and 1; including 0 and 1".
+# In addition, we have three axioms[^axioms], originated from Kolmogorov(1933) (figure below):
+
+# 1. **Non-negativity**: For all $A$, $P(A) \geq 0$. Every probability is positive (greater than or equal to zero), regardless of the event.
+# 2. **Additivity**: For two mutually exclusive $A$ and $B$ (cannot occur at the same time[^mutually2]): $P(A) = 1 - P(B)$ and $P(B) = 1 - P(A)$.
+# 3. **Normalization**: The probability of all possible events $A_1, A_2, \ dots$ must add up to 1: $\ sum_{n \ in \ mathbb{N}} A_n = 1$.
+
+# ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
+
+# With these three simple (and intuitive) axioms, we are able to **derive and construct all the mathematics of probability**.
+
+# ### Conditional Probability
+
+# An important concept is the **conditional probability** that we can define as the "probability that one event will occur if another
+# has occurred or not". The notation we use is $ P(A \mid B)$, which reads as "the probability that we have observed $A$ given
+# we have already observed $B$".
+
+# A good example is the [Texas Hold'em Poker game](https://en.wikipedia.org/wiki/Texas_hold_%27em),
+# where the player receives two cards and can use five "community cards" to set up
+# his "hand". The probability that you are dealt a King ($K$) is $\frac{4}{52}$:
+
+# $$ P(K) = \left(\frac{4}{52}\right) = \left(\frac{1}{13}\right) \label{king} . $$
+
+# And the probability of being dealt an Ace is also the same as \eqref{king}, $\frac{4}{52}$:
+
+# $$ P(A) = \left(\frac{4}{52}\right) = \left(\frac{1}{13}\right) \label{ace} . $$
+
+# However, the probability that you are dealt a King as a second card since you have been dealt an Ace as a first card is:
+
+# $$ P(K \mid A) = \left(\frac{4}{51}\right) \label{kingace} . $$
+
+# Since we have one less card ($52 - 1 = 51$) because you have been dealt already an Ace (thus $A$ has been observed),
+# we have 4 Kings still in the deck, so the \eqref{kingace} is $\frac{4}{51}$.
+
 # ## Footnotes
 #
 # [^evidencebased]: personally, like a good Popperian, I don't believe there is science without being evidence-based; what does not use evidence can be considered as logic, philosophy or social practices (no less or more important than science, just a demarcation of what is science and what is not; eg, mathematics and law).
@@ -68,6 +114,10 @@
 # [^deFinetti]: if the reader wants an in-depth discussion see Nau (2001).
 # [^subjective]: my observation: related to the subjective Bayesian approach.
 # [^objective]: my observation: related to the objective frequentist approach.
+# [^realnumber]: a number that can be expressed as a point on a continuous line that originates from minus infinity and ends and plus infinity $(-\infty, +\infty)$; for those who like computing it is a floating point `float` or` double`.
+# [^mutually]: i.e the events are "mutually exclusive".
+# [^axioms]: in mathematics, axioms are assumptions assumed to be true that serve as premises or starting points for the elaboration of arguments and theorems. Often the axioms are questionable, for example non-Euclidean geometry refutes Euclid's fifth axiom on parallel lines. So far there is no questioning that has supported the scrutiny of time and science about the three axioms of probability.
+# [^mutually]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
 
 # ## References
 #
