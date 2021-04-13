@@ -326,6 +326,61 @@
 # * Regression: $P(D \mid \text{the coefficient is zero})$
 # * Shapiro-Wilk: $P(D \mid \text{the sample follows a normal distribution})$
 
+# $p$-value is the probability of the data you obtained given that the null hypothesis is true. For those who like
+# mathematical formalism: $p = P(D \mid H_0)$. In English, this expression means "the probability of $D$ conditioned to $H_0$".
+# Before moving on to some examples and attempts to formalize an intuition about $p$-values, it is important to note that
+# $p$-values say something about **data** and not **hypotheses**. For $p$-value, **the null hypothesis is true, and we are
+# only evaluating whether the data conforms to this null hypothesis or not**. If you leave this tutorial armed with this intuition,
+# the world will be rewarded with researchers better prepared to qualify and interpret evidence ($p <0.05$).
+
+# \note{**Intuitive Example**:
+#
+# Imagine that you have a coin that you suspect is biased towards a higher probability of flipping "heads" than "tails".
+# (Your null hypothesis is then that the coin is fair.) You flip the coin 100 times and get more heads than tails.
+# The $p$-value will not tell you if the coin is fair, but it will tell you the probability that you will get at least as
+# many heads as if the coin were fair. That's it - nothing more.}
+
+# #### $p$-values -- A historical perspective
+
+# There is no way to understand $p$-values ​​if we do not understand its origins and historical trajectory.
+# The first mention of the term was made by statistician Ronald Fisher[^fisher] (figure below). In 1925, Fisher (Fisher, 1925) defined
+# the $p$-value as an "index that measures the strength of the evidence against the null hypothesis". To quantify the
+# strength of the evidence against the null hypothesis, Fisher defended "$p <0.05$ (5% significance) as a standard level
+# to conclude that there is evidence against the tested hypothesis, although not as an absolute rule". Fisher did not stop
+# there but rated the strength of the evidence against the null hypothesis. He proposed "if $p$ is between 0.1 and 0.9 there
+# is certainly no reason to suspect the hypothesis tested. If it is below 0.02 it is strongly indicated that the hypothesis fails
+# to account for the whole of the facts. We shall not often be astray if we draw a conventional line at 0.05". Since Fisher made
+# this statement almost 100 years ago, the 0.05 threshold has been used by researchers and scientists worldwide and it has become
+# ritualistic to use 0.05 as a threshold as if other thresholds could not be used or even considered.
+
+# ![Ronald Fisher](/pages/images/fisher.jpg)
+#
+# \center{*Ronald Fisher*} \\
+
+# After that, the threshold of 0.05, now established as unquestionable, strongly influenced statistics and science. But there is
+# no reason against adopting other thresholds ($\alpha$) like 0.1 or 0.01 (Lakens et al., 2018). If well argued, the choice of
+# thresholds other than 0.05 can be welcomed by editors, reviewers and advisors. Since the $p$-value is a probability, it is a
+# continuous quantity. There is no reason to differentiate a $p$ of 0.049 against a $p$ of 0.051. Robert Rosenthal, a psychologist
+# already said "God loves $p$ 0.06 as much as a $p$ 0.05" (Rosnow & Rosenthal, 1989).
+
+# In the last year of his life, Fisher published an article (Fisher, 1962) examining the possibilities of Bayesian methods,
+# but with a prior probabilities to be determined experimentally. Some authors even speculate (Jaynes, 2003) that if Fisher
+# were alive today, he would probably be a "Bayesian".
+
+# ### What the $p$-value is not
+
+# ![meme-pvalue](/pages/images/meme-pvalue.jpg)
+
+# With the definition and a well-anchored intuition of what $p$-value is, we can move on to what the $p$-value **is not**!
+
+# 1. **$p$-value is not the probability of the null hypothesis** - Famous confusion between $P(D \mid H_0)$ and $P(H_0 \mid D)$. $p$-value is not the probability of the null hypothesis, but the probability of the data you obtained. To get the $P(H_0 \mid D) you need Bayesian statistics.
+
+# 2. **$p$-value is not the probability of the data being produced by chance** - No! Nobody said anything of "being produced by chance". Again: $p$-value is the probability to get results at least as extreme as those that were observed, given that the null hypothesis is true.
+
+# 3. **$p$-value measures the size of the effect of a statistical test** - Also wrong... $p$-value does not say anything about the size of the effect. Just about whether the observed data differs from what is expected under the null hypothesis. It is clear that large effects are more likely to be statistically significant than small effects. But this is not a rule and never judge a finding by its $p$-value, but by its effect size. In addition, $p$-values ​​can be "hacked" in a number of ways (Head et al., 2015) and often their value is a direct consequence of the sample size.
+
+# ### Confidence Intervals
+
 # ## Footnotes
 #
 # [^evidencebased]: personally, like a good Popperian, I don't believe there is science without being evidence-based; what does not use evidence can be considered as logic, philosophy or social practices (no less or more important than science, just a demarcation of what is science and what is not; eg, mathematics and law).
@@ -345,6 +400,7 @@
 # [^warning2]: have I forgot to warn you that it is not so intuitive?
 # [^booksp]: there are several statistics textbooks that have wrong definitions of what a $p$-value is. If you don't believe me, see Wasserstein & Lazar (2016).
 # [^gelman]: this duality is attributed to Andrew Gelman -- Bayesian statistician.
+# [^fisher]: Ronald Fisher's personality and life controversy deserves a footnote. His contributions were undoubtedly crucial to the advancement of science and statistics. His intellect was brilliant and his talent already flourished young: before turning 33 years old he had proposed the maximum likelihood estimation method (MLE) (Stigler, 2007) and also created the concept of degrees of freedom when proposing a correction in Pearson's chi-square test (Baird, 1983). He also invented the Analysis of Variance (ANOVA) and was the first to propose randomization as a way of carrying out experiments, being considered the "father" of randomized clinical trials (RCTs). Not everything is golden in Fisher's life, he was a eugenicist and had a very strong view on ethnicity and race, advocating the superiority of certain ethnicities. Furthermore, he was extremely invariant, chasing, harming and mocking any critic of his theories and publications. What we see today in the monopoly of the Neyman-Pearson paradigm (Neyman & Pearson, 1933) with $p$-values ​​and null hypotheses the result of this Fisherian effort to silence critics and let only his voice echo.
 
 # ## References
 #
@@ -386,7 +442,7 @@
 #
 # Rosnow, R. L., & Rosenthal, R. (1989). Statistical procedures and the justification of knowledge in psychological science. *American Psychologist*, 44, 1276–1284.
 #
-# Stigler, S. M., & others. (2007). The epic story of maximum likelihood. *Statistical Science*, 22(4), 598–620.
+# Stigler, S. M. (2007). The epic story of maximum likelihood. *Statistical Science*, 22(4), 598–620.
 #
 # van de Schoot, R., Depaoli, S., King, R., Kramer, B., Märtens, K., Tadesse, M. G., … Yau, C. (2021). Bayesian statistics and modelling. *Nature Reviews Methods Primers*, 1(1, 1), 1–26. https://doi.org/10.1038/s43586-020-00001-2
 #
