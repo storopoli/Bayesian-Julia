@@ -11,7 +11,7 @@
 # Bayesian statistics **incorporate uncertainty** (and prior knowledge) by allowing probability statements about parameters,
 # and the process of parameter value inference is a direct result of the **Bayes' theorem**.
 
-# Bayesian statistics is **revolutionizing all fields of evidence-based science**[^evidencebased] (van de Schoot et al. 2021).
+# Bayesian statistics is **revolutionizing all fields of evidence-based science**[^evidencebased] (van de Schoot et al., 2021).
 # Dissatisfaction with traditional methods of statistical inference (frequentist statistics) and the advent of computers with exponential
 # growth in computing power[^computingpower] provided a rise in Bayesian statistics because it is an approach aligned with the human
 # intuition of uncertainty, robust to scientific malpractices, but computationally intensive.
@@ -411,7 +411,7 @@
 # shows the interval that we are 95% sure that captures the value of our parameter of intereest. That simple...
 
 # For example, see figure below, which shows a Log-Normal distribution with mean 0 and standard deviation 2. The green dot
-# shows the maximum likelihood estimation (MLE) of the value of $\theta$ which is somply the mode of distribution. And in
+# shows the maximum likelihood estimation (MLE) of the value of $\theta$ which is simply the mode of distribution. And in
 # the shaded area we have the 50% credibility interval of the value of $\theta$, which is the interval between the 25% percentile
 # and the 75% percentile of the probability density of $\theta$. In this example, MLE leads to estimated values that are not
 # consistent with the actual probability density of the value of $\theta$.
@@ -419,16 +419,16 @@
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
 d = LogNormal(0, 2);
-range_d = 0:0.0001:4;
+range_d = 0:0.001:4;
 q25 = quantile(d, 0.25);
 q75 = quantile(d, 0.75);
 plot((range_d, pdf.(d, range_d)),
      leg=false,
-     xlims=(0, 4),
+     xlims=(-0.2, 4.2),
      lw=3,
      xlabel=L"$\theta$",
      ylabel="Density")
-scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=4)
+scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=5)
 plot!(range(q25, stop=q75, length=100),
       x -> pdf(d, x),
       lc=false, fc=:blues,
@@ -436,10 +436,114 @@ plot!(range(q25, stop=q75, length=100),
 savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 
 # \fig{lognormal}
-# \center{*Maximum Likelihood Estimate vs Credible Intervals*} \\
+# \center{***Log-Normal**: Maximum Likelihood Estimate vs Credible Intervals*} \\
 
-# https://link.springer.com/content/pdf/10.3758%2Fs13423-015-0947-8.pdf
-# http://www.deeplytrivial.com/2017/09/great-minds-in-statistics-jerzy-neymans.html
+# Now an example of a multimodal distribution[^multimodal]. The figure below shows a bimodal distribution with two modes
+# 2 and 10[^multimodal2] The green dot shows the maximum likelihood estimation (MLE) of the value of $\theta$
+# which is the mode of distribution. See that even with 2 modes, maximum likelihood defaults to the highest mode[^multimodal3].
+# And in the shaded area we have the 50% credibility interval of the value of $\theta$, which is the interval between the
+# 25% percentile and the 75% percentile of the probability density of $\theta$. In this example, estimation by
+# maximum likelihood again lead us to estimated values ​​that are not consistent with the actual probability density
+# of the value of $\theta$.
+
+d1 = Normal(10, 1);
+d2 = Normal(2, 1);
+mix_d = [0.4, 0.6];
+d = MixtureModel([d1, d2], mix_d);
+range_d = -2:0.01:14;
+sim_d = rand(d, 10_000);
+q25 = quantile(sim_d, 0.25);
+q75 = quantile(sim_d, 0.75);
+plot((range_d, pdf.(d, range_d)),
+     leg=false,
+     xlims=(-2, 14),
+     xticks=[0, 5, 10],
+     lw=3,
+     xlabel=L"$\theta$",
+     ylabel="Density")
+scatter!((mode(d2), pdf(d, mode(d2))), mc=:green, ms=5)
+plot!(range(q25, stop=q75, length=100),
+      x -> pdf(d, x),
+      lc=false, fc=:blues,
+      fill=true, fillalpha=0.5)
+savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
+
+# \fig{mixture}
+# \center{***Mixture**:Maximum Likelihood Estimate vs Credible Intervals*} \\
+
+# ## Bayesian Statistics vs Frequentist Statistics
+
+# What we've seen so fat can be resumed in the table below:
+
+# |                   | **Bayesian Statistics**                           | **Frequentist Statistics**                                          |
+# |-------------------|---------------------------------------------------|---------------------------------------------------------------------|
+# | **Data**          | Fixed -- Non-random                               | Uncertain -- Random                                                 |
+# | **Parameters**    | Uncertain -- Random                               | Fixed -- Non-random                                                 |
+# | **Inference**     | Uncertainty over parameter values                 | Uncertainty over a sampling procedure from an infinite population   |
+# | **Probability**   | Subjective                                        | Objective (but with strong model assumptions)                       |
+# | **Uncertainty**   | Credible Interval -- $P(\theta \mid y)$           | Confidence Interval -- $P(y \mid \theta)$                           |
+
+# ## Advantages of Bayesian Statistics
+
+# Finally, I summarize the main **advantages of Bayesian statistics**:
+
+# * Natural approach to express uncertainty
+# * Ability to incorporate prior information
+# * Greater model flexibility
+# * Complete posterior distribution of parameters
+#    * Confidence Intervals vs Credibility Intervals
+# * Natural propagation of uncertainty
+
+# And I believe that I also need to show the main **disadvantage**:
+
+# * Slow model estimation speed (30 seconds instead of 3 seconds using the frequentist approach)
+
+# ## The beginning of the end of Frequentist Statistics
+
+# \center{*Götterdämmerung*}
+
+# Dear reader, know that you are at a time in history when Statistics is undergoing major changes.
+# I believe that frequentist statistics, especially the way we qualify evidence and hypotheses with $p$-values,
+# will transform in a "significant" way. Five years ago, the American Statistical Association (ASA, the world's
+# largest professional statistical organization) published a statement on $p$-values (Wasserstein & Lazar, 2016).
+# The statement says exactly what we talk about here. The main concepts of the null hypothesis significance test, and in
+# particular $p$-values, fail to provide what researchers require of them. Despite what many statistical books, teaching
+# materials and published articles say, $p$-values ​​below 0.05 do not "prove" the reality of anything. Nor, at this point,
+# do the $p$-values ​​above 0.05 refute anything. ASA's statement has more than 3,600 citations causing significant impact.
+# As an example, an international symposium was held in 2017 that led to a special open access edition of *The American
+# Statistician* dedicated to practical ways to abandon $p <0.05$ (Wasserstein, Schirm & Lazar 2019).
+
+# Soon after, more attempts and claims followed. In September 2017, *Nature Human Behavior* published an editorial proposing
+# that the significance level of the $p$-value be reduced from $0.05$ to $0.005$ (Benjamin et al., 2018).
+# Several authors, including many highly influential and important statisticians, have argued that this simple step would help
+# tackle the problem of the science replicability crisis, which many believe is the main consequence of the abusive use of
+# $p$-values (Ioannidis, 2019). In addition, many have gone a step further and suggest that science discard once and for all
+# $p$-values (Nature, 2019). Many suggest (myself included) that the main inference tool be Bayesian statistics
+# (Amrhein, Greenland & McShane, 2019; Goodman, 2016; van de Schoot et al., 2021)
+
+# ## Turing
+
+# [Turing](https://turing.ml/) (Ge, Xu & Ghahramani, 2018) is a **probabilistic programming interface written in Julia**
+# (Bezanson, Edelman, Karpinski & Shah, 2017). It enables **intuitive modeling syntax** with
+# **flexible composable probabilistic programming inference**. Turing supports a wide range of
+# **sampling based inference algorithms** by **combining model inference with differentiable
+# programming interfaces** in Julia. Yes, Julia is that amazing. The same differentiable stuff that you develop
+# for optimization in neural networks you can plug it in to a probabilistic programming framework and it will work
+# *without* much effort and boiler-plate code. Most importantly, Turing inference is **composable**: it combines Markov chain
+# sampling operations on subsets of model variables, e.g. using a combination of a Hamiltonian Monte Carlo (HMC) engine and
+# a particle Gibbs (PG) engine. This composable inference engine allows the user to **easily switch** between black-box style
+# inference methods such as HMC, and customized inference methods.
+
+# I believe Turing is the most **important and popular probabilistic language framework in Julia**. It is what PyMC3 and Stan
+# are for Python and R, but for Julia. Furthermore, you don't have to do "cartwheels" with Theano backends and tensors like
+# in PyMC3 or learn a new language to declare your models like in Stan (or even have to debug C++ stuff).
+# Turing is **all** Julia. It uses Julia arrays, Julia distributions, Julia autodiff, Julia plots, Julia randon number generator,
+# Julia MCMC algorithms etc. I think that developing and estimating Bayesian probabilistic models using Julia and Turing is
+# **powerful**, **intuitive**, **fun**, **expressive** and allows **easily new breakthroughs** simply by being 100% Julia and
+# embedded in Julia ecosystem. As discussed in [1. **Why Julia?**](/pages/1_why_Julia/), having multiple dispatch with
+# LLVM's JIT compilation allows us to combine code, types and algorithms in a very powerful and yet simple way.
+# By using Turing in this context, a researcher (or a curious Joe) can develop new methods and extend the frontiers
+# of Bayesian inference with new models, samplers, algorithms, or any mix-match of those.
 
 # ## Footnotes
 #
@@ -461,6 +565,9 @@ savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 # [^booksp]: there are several statistics textbooks that have wrong definitions of what a $p$-value is. If you don't believe me, see Wasserstein & Lazar (2016).
 # [^gelman]: this duality is attributed to Andrew Gelman -- Bayesian statistician.
 # [^fisher]: Ronald Fisher's personality and life controversy deserves a footnote. His contributions were undoubtedly crucial to the advancement of science and statistics. His intellect was brilliant and his talent already flourished young: before turning 33 years old he had proposed the maximum likelihood estimation method (MLE) (Stigler, 2007) and also created the concept of degrees of freedom when proposing a correction in Pearson's chi-square test (Baird, 1983). He also invented the Analysis of Variance (ANOVA) and was the first to propose randomization as a way of carrying out experiments, being considered the "father" of randomized clinical trials (RCTs). Not everything is golden in Fisher's life, he was a eugenicist and had a very strong view on ethnicity and race, advocating the superiority of certain ethnicities. Furthermore, he was extremely invariant, chasing, harming and mocking any critic of his theories and publications. What we see today in the monopoly of the Neyman-Pearson paradigm (Neyman & Pearson, 1933) with $p$-values ​​and null hypotheses the result of this Fisherian effort to silence critics and let only his voice echo.
+# [^multimodal]: which is not uncommon to see in the real world.
+# [^multimodal2]: for the curious it is a mixture of two normal distributions both with standard deviation 1, but with different means. To complete it assigns the weights of 60% for the distribution with an average of 2 and 40% for the distribution with an average of 10.
+# [^multimodal3]: to be more precise, estimation by maximum likelihood in non-convex functions cannot find an analytical solution and, if we are going to use another iterative maximization procedure, there is a risk of it becoming stuck in the second -- lower-valued -- mode of distribution.
 
 # ## References
 #
@@ -470,6 +577,8 @@ savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 #
 # Benjamin, D. J., Berger, J. O., Johannesson, M., Nosek, B. A., Wagenmakers, E.-J., Berk, R., … Johnson, V. E. (2018). Redefine statistical significance. *Nature Human Behaviour*, 2(1), 6–10. https://doi.org/10.1038/s41562-017-0189-z
 #
+# Bezanson, J., Edelman, A., Karpinski, S., & Shah, V. B. (2017). Julia: A fresh approach to numerical computing. SIAM Review, 59(1), 65–98.
+#
 # de Finetti, B. (1974). *Theory of Probability*. New York: John Wiley & Sons.
 #
 # Eckhardt, R. (1987). Stan Ulam, John von Neumann, and the Monte Carlo Method. *Los Alamos Science*, 15(30), 131–136.
@@ -477,6 +586,8 @@ savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 # Fisher, R. A. (1925). *Statistical methods for research workers*. Oliver; Boyd.
 #
 # Fisher, R. A. (1962). Some Examples of Bayes’ Method of the Experimental Determination of Probabilities A Priori. *Journal of the Royal Statistical Society. Series B (Methodological)*, 24(1), 118–124. Retrieved from https://www.jstor.org/stable/2983751
+#
+# Ge, H., Xu, K., & Ghahramani, Z. (2018). Turing: A Language for Flexible Probabilistic Inference. International Conference on Artificial Intelligence and Statistics, 1682–1690. http://proceedings.mlr.press/v84/ge18b.html
 #
 # Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). *Bayesian Data Analysis*. Chapman and Hall/CRC.
 #
