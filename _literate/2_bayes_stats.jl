@@ -426,7 +426,7 @@ plot((range_d, pdf.(d, range_d)),
      leg=false,
      xlims=(-0.2, 4.2),
      lw=3,
-     xlabel=L"$\theta$",
+     xlabel=L"\theta",
      ylabel="Density")
 scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=5)
 plot!(range(q25, stop=q75, length=100),
@@ -459,7 +459,7 @@ plot((range_d, pdf.(d, range_d)),
      xlims=(-2, 14),
      xticks=[0, 5, 10],
      lw=3,
-     xlabel=L"$\theta$",
+     xlabel=L"\theta",
      ylabel="Density")
 scatter!((mode(d2), pdf(d, mode(d2))), mc=:green, ms=5)
 plot!(range(q25, stop=q75, length=100),
