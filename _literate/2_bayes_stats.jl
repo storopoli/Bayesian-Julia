@@ -383,9 +383,9 @@
 # the value of a parameter (remember probabilistic conjectures about parameters are prohibited in frequentist-land). Wait for it!
 # Here is the definition of confidence intervals:
 
-# > An X% confidence interval for a parameter $\theta$ is an interval $(L, U)$ generated
+# > "An X% confidence interval for a parameter $\theta$ is an interval $(L, U)$ generated
 # > by a procedure that in repeated sampling has an X% probability of containing the true value of $\theta$, for all possible
-# > values of $\theta$.
+# > values of $\theta$."
 # > \\ \\
 # > Jerzy Neyman, the "father" of confidence intervals (see figure below) (Neyman, 1937).
 
@@ -436,7 +436,7 @@ plot!(range(q25, stop=q75, length=100),
 savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 
 # \fig{lognormal}
-# \center{***Log-Normal**: Maximum Likelihood Estimate vs Credible Intervals*} \\
+# \center{_**Log-Normal**: Maximum Likelihood Estimate vs Credible Intervals_} \\
 
 # Now an example of a multimodal distribution[^multimodal]. The figure below shows a bimodal distribution with two modes
 # 2 and 10[^multimodal2] The green dot shows the maximum likelihood estimation (MLE) of the value of $\theta$
@@ -469,7 +469,7 @@ plot!(range(q25, stop=q75, length=100),
 savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
 
 # \fig{mixture}
-# \center{***Mixture**:Maximum Likelihood Estimate vs Credible Intervals*} \\
+# \center{_**Mixture**:Maximum Likelihood Estimate vs Credible Intervals_} \\
 
 # ## Bayesian Statistics vs Frequentist Statistics
 
@@ -500,9 +500,9 @@ savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
 
 # ## The beginning of the end of Frequentist Statistics
 
-# \center{*Götterdämmerung*}
+# \center{*Götterdämmerung*} \\
 
-# Dear reader, know that you are at a time in history when Statistics is undergoing major changes.
+# Dear reader, know that you are at a time in history when Statistics is undergoing **major changes**.
 # I believe that frequentist statistics, especially the way we qualify evidence and hypotheses with $p$-values,
 # will transform in a "significant" way. Five years ago, the American Statistical Association (ASA, the world's
 # largest professional statistical organization) published a statement on $p$-values (Wasserstein & Lazar, 2016).
