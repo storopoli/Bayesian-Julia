@@ -172,7 +172,7 @@ savefig(joinpath(@OUTPUT, "negbinomial.svg")); # hide
 # real numbers line, so we need to specify the probability that $X$ takes values in a **range** $[a,b]$. The probability
 # density function $\text {PDF}$ is defined as:
 
-# $$ \text{FDP}(x) = P(a \leq X \leq b) = \int_a^b f(x) dx $$
+# $$ \text{PDF}(x) = P(a \leq X \leq b) = \int_a^b f(x) dx $$
 
 # ### Normal / Gaussian
 
@@ -185,7 +185,7 @@ savefig(joinpath(@OUTPUT, "negbinomial.svg")); # hide
 
 # The normal distribution has two parameters and its notation is $\text{Normal} (\mu, \sigma^2)$ or $\text{N}(\mu, \sigma^2)$:
 
-# * Mean ($\mu$): distribution mean which is also both the mode and the median
+# * Mean ($\mu$): distribution mean which is also both the mode and the median of the distribution
 # * Standard Deviation ($\sigma$): the variance of the distribution ($\sigma^2$) is a measure of the dispersion of the observations in relation to the mean
 
 # Example: Height, Weight, etc.
@@ -194,7 +194,8 @@ plot(Normal(0, 1),
         label=L"\sigma=1",
         lw=5,
         xlabel=L"\theta",
-        ylabel="Density"
+        ylabel="Density",
+        xlims=(-4, 4)
     )
 plot!(Normal(0, 0.5), label=L"\sigma=0.5", lw=5)
 plot!(Normal(0, 2), label=L"\sigma=2", lw=5)
