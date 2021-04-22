@@ -97,14 +97,13 @@ savefig(joinpath(@OUTPUT, "dice.svg")); # hide
 # which is a N-dimensional vector of integers representing the observed data, *i.e.* the outcomes of $N$ 6-sided dice throws:
 
 using Turing
-p = nothing; # hide
 
 @model dice_throw(y) = begin
-    # Our prior belief about the probability of each result in a 6-sided dice.
-    # p is a vector of length 6 each with probability p that sums up to 1.
+    #Our prior belief about the probability of each result in a 6-sided dice.
+    #p is a vector of length 6 each with probability p that sums up to 1.
     p ~ Dirichlet(6, 1)
 
-    # Each outcome of the 6-sided dice has a probability p.
+    #Each outcome of the 6-sided dice has a probability p.
     y .~ Categorical(p)
 end;
 
