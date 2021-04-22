@@ -1,6 +1,6 @@
 # # Why Julia?
 
-# [Julia](https://www.julialang.org) is a relatively new language, first released in 2012, aims to be both **high-level** and **fast**.
+# [Julia](https://www.julialang.org) (Bezanson, Edelman, Karpinski & Shah, 2017) is a relatively new language, first released in 2012, aims to be both **high-level** and **fast**.
 # Julia is a fast dynamic-typed language that just-in-time (JIT)
 # compiles into native code using LLVM. It ["runs like C but reads like Python"](https://www.nature.com/articles/d41586-019-02310-3),
 # meaning that is *blazing* fast, easy to prototype and read/write code.
@@ -688,3 +688,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
 # [^interop]: Julia has a lot of interoperability between languages. Check out: [`PyCall.jl`](https://github.com/JuliaPy/PyCall.jl) and [`JuliaPy`](https://github.com/JuliaPy) for Python; [`RCall.jl`](https://juliainterop.github.io/RCall.jl/stable/) for Java; [`Cxx.jl`](https://juliainterop.github.io/Cxx.jl/stable/) and [`CxxWrap.jl`](https://github.com/JuliaInterop/CxxWrap.jl) for C++; [`Clang.jl`](https://github.com/JuliaInterop/Clang.jl) for libclang and C; [`ObjectiveC.jl`](https://github.com/JuliaInterop/ObjectiveC.jl) for Objective-C; [`JavaCall.jl`](https://juliainterop.github.io/JavaCall.jl/) for Java; [`MATLAB.jl`](https://github.com/JuliaInterop/MATLAB.jl) for MATLAB; [`MathLink.jl`](https://github.com/JuliaInterop/MathLink.jl) for Mathematica/Wolfram Engine; [`OctCall.jl`](https://github.com/JuliaInterop/OctCall.jl) for GNU Octave; and [`ZMQ.jl`](https://juliainterop.github.io/ZMQ.jl/stable/) for ZeroMQ.
+
+# ## References
+
+# Bezanson, J., Edelman, A., Karpinski, S., & Shah, V. B. (2017). Julia: A fresh approach to numerical computing. SIAM Review, 59(1), 65–98.
