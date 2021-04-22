@@ -469,7 +469,7 @@ plot!(range(q25, stop=q75, length=100),
 savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
 
 # \fig{mixture}
-# \center{_**Mixture**:Maximum Likelihood Estimate vs Credible Intervals_} \\
+# \center{_**Mixture**: Maximum Likelihood Estimate vs Credible Intervals_} \\
 
 # ## Bayesian Statistics vs Frequentist Statistics
 
