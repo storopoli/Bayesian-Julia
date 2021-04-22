@@ -180,9 +180,9 @@ sum([idx * i for (i, idx) in enumerate(summaries[:, :mean])])
 # Bingo! The estimated expectation is very *close* to the theoretical expectation of $\frac{7}{2} = 3.5$, as we've show
 # in \eqref{expectationdice}.
 
-# ### visualizations
+# ### Visualizations
 
-# Note that the type of our `chain` is a `Chains` object:
+# Note that the type of our `chain` is a `Chains` object from `MCMCChains.jl`:
 
 typeof(chain)
 
