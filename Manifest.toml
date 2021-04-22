@@ -61,6 +61,12 @@ git-tree-sha1 = "a2a1884863704e0414f6f164a1f6f4a2a62faf4e"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
 version = "2.14.17"
 
+[[ArrayLayouts]]
+deps = ["FillArrays", "LinearAlgebra"]
+git-tree-sha1 = "951c3fc1ff93497c88fb1dfa893f4de55d0b38e3"
+uuid = "4c555306-a7a7-4459-81d9-ec55ddd5c99a"
+version = "0.3.8"
+
 [[Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 
@@ -511,6 +517,12 @@ git-tree-sha1 = "1925f6838df247e7853f3f9727dd8a52a78f60f4"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
 version = "0.15.2"
 
+[[LazyArrays]]
+deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra", "MacroTools", "MatrixFactorizations", "StaticArrays"]
+git-tree-sha1 = "e0b604d3b6da2a6e9e91c6cf928f79d2092619f3"
+uuid = "5078a376-72f3-5289-bfd5-ec5146d43c02"
+version = "0.16.16"
+
 [[LazyArtifacts]]
 deps = ["Artifacts", "Pkg"]
 uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
@@ -657,6 +669,12 @@ version = "0.2.2"
 [[Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+
+[[MatrixFactorizations]]
+deps = ["ArrayLayouts", "LinearAlgebra", "Random"]
+git-tree-sha1 = "f609fbed57eede4fd9c8529f59b3d30454f9e5ca"
+uuid = "a3b82374-2e81-5b9e-98ce-41277c0e4c87"
+version = "0.5.2"
 
 [[MbedTLS]]
 deps = ["Dates", "MbedTLS_jll", "Random", "Sockets"]

@@ -93,23 +93,73 @@ savefig(joinpath(@OUTPUT, "dice.svg")); # hide
 # \fig{dice}
 # \center{*A "fair" 6-sided Dice: Discrete Uniform between 1 and 6*} \\
 
-# So let's specify our first Turing model:
+# So let's specify our first Turing model. It will be named `dice_throw` and will have a single parameter `y`
+# which is a N-dimensional vector of integers representing the observed data, *i.e.* the outcomes of $N$ 6-sided dice throws:
 
 using Turing
 
 @model dice_throw(y) = begin
     # Our prior belief about the probability of each result in a 6-sided dice.
-    p ~ Uniform(1, 6)
+    # p is a vector of length 6 each with probability p that sums up to 1.
+    p ~ Dirichlet(6, 1)
 
-    # The number of observations.
-    N = length(y)
+    # Each outcome of the 6-sided dice has a probability p.
+    y .~ Categorical(p)
 
-    y ~ Categorical(repeat([p], 6))
+end;
 
-end
+# Here we are using the [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) which
+# is the multivariate generalization of the [Beta distribution](https://en.wikipedia.org/wiki/Beta_distribution).
+# The Dirichlet distribution is often used as the conjugate prior for Categorical or Multinomial distributions. Since our dice
+# is modelled as a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution)
+# with 6 possible results $y \in \{ 1, 2, 3, 4, 5, 6 \}$ with some probability vector
+# $\mathbf{p} = (p_1, \dots, p_6)$. Since all outcomes must sum up to 1 to be a valid probability, we impose the constraint that
+# all $p$s must sum up to 1 $\sum^n_{i=1} p_i = 1$. We could use a  vector o 6 Beta distributions but it would be hard and
+# inefficient to enforce this constraint. Instead, I've opted for a Dirichlet with a weekly informative prior towards a
+# "fair" dice which is encoded as a `Dirichlet(6,1)`. This is translated as a 6-dimensional vector of elements that sum to 1:
 
-# \fig{dice}
-# \center{*A "fair" 6-sided Dice: Discrete Uniform between 1 and 6*} \\
+mean(Dirichlet(6, 1))
+
+# Also, since the outcome of a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution) is an integer
+# and `y` is a 1,000-dimensional vector of integers we need to apply some sort of broadcasting here. This is
+# done by adding the familiar dot `.` broadcasting operator in Julia: `y .~ Categorical` this means that all elements of `y` are
+# distributed as a Categorical distribution.
+
+# Now let's set a seed for the pseudo-random number generator and simulate 1,000 throws of a 6-sided dice:
+
+using Random
+
+Random.seed!(123)
+
+data = rand(dice, 1_000); # remember dice = DiscreteUniform(1, 6)
+
+# The vector `data` is a 1,000-length vector of `Int`s ranging from 1 to 6, like a regular 6-sided dice outcome would be:
+
+first(data, 5)
+
+# Once the model is specified we instantiate the model with the single parameter `y` as the simulated `data`:
+
+model = dice_throw(data);
+
+# and apply to it the Turing's `sample()` function that takes a Turing model as a first argument, along with a
+# sampler as the second argument, and the third argument is the number of iterations. Here, I will use the `NUTS()` sampler from
+# `AdvancedHMC.jl` and 2,000 iterations. Please note that as default Turing samplers will discard the first half of iterations as
+# warmup. So the sampler will output 1,000 samples (`floor(2_000 / 2)`):
+
+chain = sample(model, NUTS(), 2_000);
+
+# Now let's inspect the chain. We can do that with the function `describe()` that will return a 2-element vector of
+# `ChainDataFrame` (this is the type defined by `MCMCChains.jl` to store Markov chain's information regarding the inferred
+# parameters). The first `ChainDataFrame` has information regarding the parameters' summary statistics (mean, std, r_hat, ...)
+# and the second is the parameters' quantiles. Since `describe(chain)` returns a 2-element vector, I will output it to two variables:
+
+summaries, quantiles = describe(chain);
+
+# We won't be focusing on quantiles, so let's put it aside for now. Let's then take a look at the parameters' summary statistics:
+
+summaries
+
+# Here
 
 # ## Footnotes
 #
