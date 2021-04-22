@@ -97,6 +97,7 @@ savefig(joinpath(@OUTPUT, "dice.svg")); # hide
 # which is a N-dimensional vector of integers representing the observed data, *i.e.* the outcomes of $N$ 6-sided dice throws:
 
 using Turing
+p = nothing; # hide
 
 @model dice_throw(y) = begin
     # Our prior belief about the probability of each result in a 6-sided dice.
@@ -158,7 +159,15 @@ summaries, quantiles = describe(chain);
 
 summaries
 
-# Here
+# Here `p` is a 6-dimensional vector of probabilities, which each one associated with a mutually exclusive outcome of a 6-sided
+# dice throw. As we expected, the probabilities are almost equal to $\frac{1}{6}$, like a "fair" 6-sided dice that we simulated
+# data from (sampling from `DiscreteUniform(1, 6)`). Indeed, just for a sanity check, the mean of the estimates of `p` sums up to 1:
+
+sum(summaries[:, :mean])
+
+# ## Conlusion
+
+# This is the basic overview of Turing usage. You see how simple and intuitive is to specify probabilistic models using Turing?!
 
 # ## Footnotes
 #
