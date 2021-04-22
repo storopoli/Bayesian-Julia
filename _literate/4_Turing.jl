@@ -73,7 +73,7 @@
 
 # Note that the expectation of $X$ is:
 
-## $$ E(X) = \frac{a+b}{2} = \frac{7}{2} = 3.5 $$
+# $$ E(X) = \frac{a+b}{2} = \frac{7}{2} = 3.5 $$
 
 # Graphically this means:
 
@@ -90,7 +90,23 @@ plot(dice,
 vline!([mean(dice)], lw=5, col=:red, label=L"E(\theta)")
 savefig(joinpath(@OUTPUT, "dice.svg")); # hide
 
-# So
+# \fig{dice}
+# \center{*A "fair" 6-sided Dice: Discrete Uniform between 1 and 6*} \\
+
+# So let's specify our first Turing model:
+
+using Turing
+
+@model dice_throw(y) = begin
+    # Our prior belief about the probability of each result in a 6-sided dice.
+    p ~ Uniform(1, 6)
+
+    # The number of observations.
+    N = length(y)
+
+    y ~ Categorical(repeat([p], 6))
+
+end
 
 # \fig{dice}
 # \center{*A "fair" 6-sided Dice: Discrete Uniform between 1 and 6*} \\
