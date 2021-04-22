@@ -13,13 +13,18 @@ Random.seed!(123)
 
 data = rand(Normal());
 
+# ```julia
 # @btime sample(linear_reg($data), NUTS(), 2_000)
+# ```
+
 
 # Takes XXX in my machine
 
 # Using `FillArrays.jl`
 
+# ```julia
 # x ~ MvNormal(Fill(m, length(x)), 0.2)
+# ```
 
 # Now the efficient stuff
 
