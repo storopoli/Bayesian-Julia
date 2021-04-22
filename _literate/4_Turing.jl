@@ -71,9 +71,9 @@
 
 # $$ X \sim \text{Uniform}(1,6) \label{uniformdice} $$
 
-# Note that the expectation of $X$ is:
+# Note that the expectation of a random variable $X \sim \text{Uniform}(a,b)$ is:
 
-# $$ E(X) = \frac{a+b}{2} = \frac{7}{2} = 3.5 $$
+# $$ E(X) = \frac{a+b}{2} = \frac{7}{2} = 3.5 \label{expectationdice} $$
 
 # Graphically this means:
 
@@ -163,6 +163,15 @@ summaries
 # data from (sampling from `DiscreteUniform(1, 6)`). Indeed, just for a sanity check, the mean of the estimates of `p` sums up to 1:
 
 sum(summaries[:, :mean])
+
+# And, finally let's compute the $E(\widetilde{X})$ using the standard expectation definition for a discrete random variable:
+
+# $$ E(X) = \sum_{x \in X} x \cdot P(x) $$
+
+sum([idx * i for (i, idx) in enumerate(summaries[:, :mean])])
+
+# Bingo! The estimated expectation is very close to the theoretical expectation of $\frac{7}{2} = 3.5$ as we've show
+# in \eqref{expectationdice}.
 
 # ## Conlusion
 
