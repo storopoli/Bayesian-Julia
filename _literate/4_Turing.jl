@@ -21,7 +21,7 @@
 
 # ## Turing's Ecosystem
 
-# Before we dive into how to specify models in Turing. Let's discuss Turing's ecosystem.
+# Before we dive into how to specify models in Turing. Let's discuss Turing's **ecosystem**.
 # We have several Julia packages under the Turing's GitHub organization [TuringLang](https://github.com/TuringLang),
 # but I will focus on 5 of those:
 
@@ -34,8 +34,8 @@
 # The first one is [`Turing.jl`](https://github.com/TuringLang/Turing.jl) itself, the main package that we use to
 # **interface with all the Turing ecosystem** of packages and the backbone of the PPL Turing.
 
-# The second, [`MCMCChains.jl`](https://github.com/TuringLang/MCMCChains.jl), is an interface to summarizing MCMC
-# simulations and has several utility functions for diagnostics and visualizations.
+# The second, [`MCMCChains.jl`](https://github.com/TuringLang/MCMCChains.jl), is an interface to **summarizing MCMC
+# simulations** and has several utility functions for **diagnostics** and **visualizations**.
 
 # The third package is [`DynamicPPL.jl`](https://github.com/TuringLang/DynamicPPL.jl) (Tarek, Xu, Trapp, Ge & Ghahramani, 2020)
 # which specifies a domain-specific language and backend for Turing (which itself is a PPL). The main feature of `DynamicPPL.jl`
@@ -177,16 +177,39 @@ sum(summaries[:, :mean])
 
 sum([idx * i for (i, idx) in enumerate(summaries[:, :mean])])
 
-# Bingo! The estimated expectation is very close to the theoretical expectation of $\frac{7}{2} = 3.5$, as we've show
+# Bingo! The estimated expectation is very *close* to the theoretical expectation of $\frac{7}{2} = 3.5$, as we've show
 # in \eqref{expectationdice}.
+
+# ### visualizations
+
+# Note that the type of our `chain` is a `Chains` object:
+
+typeof(chain)
+
+# We can use plotting capabilities of `MCMCChains.jl` with any `Chains` object:
+
+plot(chain)
+savefig(joinpath(@OUTPUT, "chain.svg")); # hide
+
+# \fig{chain}
+# \center{*Visualization of a MCMC Chain simulation*} \\
+
+# On the figure above we can see, for each parameter in the model, on the left the
+# parameter's traceplot and on the right the parameter's density[^visualization].
 
 # ## Conclusion
 
-# This is the basic overview of Turing usage. You see how simple and intuitive is to specify probabilistic models using Turing?!
+# This is the basic overview of Turing usage. I hope that I could show you how simple and intuitive is to
+# specify probabilistic models using Turing. First, specify a **model** with the macro `@model`, then **sample from it** by
+# specifying the **data**, **sampler** and **number of interactions**. All **probabilistic parameters** (the ones that you've specified
+# using `~`) will be **inferred** with a full **posterior density**. Finally, you inspect the **parameters' statistics** like
+# **mean** and **standard deviation**, along with **convergence diagnostics** like `r_hat`. Conveniently, you can **plot** stuff
+# easily if you want to.
 
 # ## Footnotes
 #
 # [^MCMC]: see [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
+# [^visualization]: we'll cover those plots and diagnostics in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 
 # ## References
 
