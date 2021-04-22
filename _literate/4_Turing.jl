@@ -105,7 +105,6 @@ using Turing
 
     # Each outcome of the 6-sided dice has a probability p.
     y .~ Categorical(p)
-
 end;
 
 # Here we are using the [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) which
