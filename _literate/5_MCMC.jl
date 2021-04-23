@@ -89,9 +89,98 @@
 # Monte Carlo methods are used mainly in three classes of problems: optimization, numerical integration and generating sample from a
 # probability distribution.
 
+# The idea for the method came to Ulam while playing solitaire during his recovery from surgery, as he thought about playing hundreds
+# of games to statistically estimate the probability of a successful outcome. As he himself mentions in Eckhardt (1987):
+#
+# > "The first thoughts and attempts I made to practice [the Monte Carlo method] were suggested by a question which occurred to me
+# > in 1946 as I was convalescing from an illness and playing solitaires. The question was what are the chances that a Canfield solitaire
+# > laid out with 52 cards will come out successfully? After spending a lot of time trying to estimate them by pure combinatorial
+# > calculations, I wondered whether a more practical method than "abstract thinking" might not be to lay it out say one hundred times and
+# > simply observe and count the number of successful plays. This was already possible to envisage with the beginning of the new era of
+# > fast computers, and I immediately thought of problems of neutron diffusion and other questions of mathematical physics, and more
+# > generally how to change processes described by certain differential equations into an equivalent form interpretable as a succession
+# > of random operations. Later... [in 1946, I ] described the idea to John von Neumann and we began to plan actual calculations."
+
+# Because it was secret, von Neumann and Ulam's work required a codename. A colleague of von Neumann and Ulam, Nicholas Metropolis
+# (figure below), suggested using the name "Monte Carlo", which refers to Casino Monte Carlo in Monaco, where Ulam's uncle
+# (Michał Ulam) borrowed money from relatives to gamble.
+
+# ![Nicholas Metropolis](/pages/images/nicholas_metropolis.png)
+#
+# \center{*Nicholas Metropolis*} \\
+
+# The [applications of the Monte Carlo method](https://en.wikipedia.org/wiki/Monte_Carlo_method#Applications) are numerous:
+# physical sciences, engineering, climate change, computational biology, computer graphics, applied statistics, artificial intelligence,
+# search and rescue, finance and business and law. In the scope of these tutorials we will focus on applied statistics and specifically
+# in the context of Bayesian inference: providing a random sample of the posterior distribution.
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
+
+# ### Simulations
+
+# I will do some simulations to ilustrate MCMC algorithms and techniques. So, here's the initial setup:
+
+using Plots, StatsPlots, Distributions, LaTeXStrings, Random
+
+Random.seed!(123);
+
+# Let's start with a toy problem of a multivariate normal distribution of $X$ and $Y$, where
+
+# $$
+# \begin{bmatrix}
+# X \\
+# Y
+# \end{bmatrix} \sim \text{Multivariate Normal} \left(
+# \begin{bmatrix}
+# \mu_X \\
+# \mu_Y
+# \end{bmatrix}, \mathbf{\Sigma}
+# \right) \\
+# \mathbf{\Sigma} \sim
+# \begin{pmatrix}
+# \sigma^2_{X} & \sigma_{X}\sigma_{Y} \rho \\
+# \sigma_{X}\sigma_{Y} \rho & \sigma^2_{Y}
+# \end{pmatrix}
+# \label{mvnormal}
+# $$
+
+# If we designate $\ mu_X = \ mu_Y = 0$ and $\sigma_X = \sigma_Y = 1$ (mean 0 and standard deviation 1
+# for both $X$ and $Y$), we have the following formulation from \eqref{mvnormal}:
+
+# $$
+# \begin{bmatrix}
+# X \\
+# Y
+# \end{bmatrix} \sim \text{Normal Multivariada} \left(
+# \begin{bmatrix}
+# 0 \\
+# 0
+# \end{bmatrix}, \mathbf{\Sigma}
+# \right), \\
+# \mathbf{\Sigma} \sim
+# \begin{pmatrix}
+# 1 & \rho \\
+# \rho & 1
+# \end{pmatrix}
+# \label{stdmvnormal}
+# $$
+
+# All that remains is to designate a value of $\ rho$ in \eqref{stdmvnormal} for the correlation between $X$ and $Y$.
+# For our example we will use correlation of 0.8 ($\rho = 0.8$):
+
+# $$
+# \mathbf{\Sigma} \sim
+# \begin{pmatrix}
+# 1 & 0.8 \\
+# 0.8 & 1
+# \end{pmatrix}
+# \label{Sigma}
+# $$
+
+N = 10_000;
+μ = [0, 0];
 
 # ## References
 
