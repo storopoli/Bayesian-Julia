@@ -283,13 +283,58 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 # the proposals. Here I am using the same proposal distribution for both $X$ and $Y$: a uniform distribution
 # parameterized with a `width` parameter:
 
-# # $$
+# $$
 # X \sim \text{Uniform} \left( X - \frac{\text{width}}{2}, X + \frac{\text{width}}{2} \right) \\
 # Y \sim \text{Uniform} \left( Y - \frac{\text{width}}{2}, Y + \frac{\text{width}}{2} \right)
 # $$
 
 # I will use the already known `Distributions.jl` `MvNormal` from the plots above along with the `logpdf()`
-# function
+# function to calculate the PDF of the proposed and current $\theta$s. It is easier to work with
+# probability logs than with the absolute values. This is due to computational complexity and
+# also numerical underflow. Mathematically we will compute:
+
+# \begin{aligned}
+# r &= \frac{
+# \operatorname{PDF}\left(
+# \text{Multivariate Normal} \left(
+# \begin{bmatrix}
+# x_{\text{proposed}} \\
+# y_{\text{proposed}}
+# \end{bmatrix}
+# \right)
+# \Bigg|
+# \text{Multivariate Normal} \left(
+# \begin{bmatrix}
+# \mu_X \\
+# \mu_Y
+# \end{bmatrix}, \mathbf{\Sigma}
+# \right)
+# \right)}
+# {
+# \operatorname{PDF}\left(
+# \text{Multivariate Normal} \left(
+# \begin{bmatrix}
+# x_{\text{current}} \\
+# y_{\text{current}}
+# \end{bmatrix}
+# \right)
+# \Bigg|
+# \text{Multivariate Normal} \left(
+# \begin{bmatrix}
+# \mu_X \\
+# \mu_Y
+# \end{bmatrix}, \mathbf{\Sigma}
+# \right)
+# \right)}\\
+# &=\frac{\operatorname{PDF}_{\text{proposed}}}{\operatorname{PDF}_{\text{current}}}\\
+# &= \exp\Big(
+# \log\left(\operatorname{PDF}_{\text{proposed}}\right)
+# -
+# \log\left(\operatorname{PDF}_{\text{current}}\right)
+# \Big)
+# \end{aligned}
+
+# Here is a simple implementation in Julia:
 
 function metropolis(S::Int64, width::Float64, ρ::Float64;
                     μ_x::Float64=0.0, μ_y::Float64=0.0,
@@ -310,9 +355,11 @@ function metropolis(S::Int64, width::Float64, ρ::Float64;
         end
         @inbounds draws[s, :] = [x y];
     end
-    println("Acceptance rate is ", accepted / S)
+    println("Acceptance rate is: $(accepted / S)")
     return draws
 end
+
+#
 
 
 # ## Footnotes
