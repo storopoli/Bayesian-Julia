@@ -175,11 +175,11 @@ Random.seed!(123);
 # \label{Sigma}
 # $$
 
-N = 100_000
-μ = [0, 0]
-Σ = [1 0.8; 0.8 1]
+const N = 100_000
+const μ = [0, 0]
+const Σ = [1 0.8; 0.8 1]
 
-mvnormal = MvNormal(μ, Σ)
+const mvnormal = MvNormal(μ, Σ)
 
 data = rand(mvnormal, N)';
 
@@ -415,7 +415,7 @@ mean(summarystats(chain_met)[:, :ess]) / 10_000
 plt = covellipse(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.3,
+    alpha=0.5,
     label="90% HPD",
     xlabel=L"\theta_1", ylabel=L"\theta_2")
 
@@ -424,12 +424,47 @@ met_anim = @animate for i in 1:100
              label=false, mc=:red, ma=0.3)
     plot!(X_met[i:i + 1, 1], X_met[i:i + 1, 2], seriestype=:path,
           lc=:green, label=false)
-    frame(anim)
 end
 gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5) # hide
 
 # \fig{met_anim}
-# \center{*Animation of the first 100 samples generate from the Metropolis algorithm*} \\
+# \center{*Animation of the First 100 Samples Generated from the Metropolis Algorithm*} \\
+
+# Now let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
+
+const warmup = 1_000
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+scatter!(plt, (X_met[warmup:warmup + 1_000, 1], X_met[warmup:warmup + 1_000, 2]),
+         label=false, mc=:red, ma=0.3)
+savefig(joinpath(@OUTPUT, "met_first1000.svg")); # hide
+
+# \fig{met_first1000}
+# \center{*First 1,000 Samples Generated from the Metropolis Algorithm after warm-up*} \\
+
+# And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+scatter!(plt, (X_met[warmup:end, 1], X_met[warmup:end, 2]),
+         label=false, mc=:red, ma=0.3)
+savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
+
+# \fig{met_all}
+# \center{*All 9,000 Samples Generated from the Metropolis Algorithm after warm-up*} \\
+
+# ### Gibbs
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
