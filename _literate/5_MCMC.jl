@@ -249,20 +249,20 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 #
 # 2. For $t = 1, 2, \dots$:
 
-    # -   Sample a proposed $\theta^*$ from a proposal distribution in time $t$, $J_t (\theta^* \mid \theta^{t-1})$.
+#    -   Sample a proposed $\theta^*$ from a proposal distribution in time $t$, $J_t (\theta^* \mid \theta^{t-1})$.
 
-    # -   Calculate the ratio of probabilities:
+#    -   Calculate the ratio of probabilities:
 
-    #     -   **Metropolis**: $r = \frac{p(\theta^*  \mid y)}{p(\theta^{t-1} \mid y)}$
-    #     -   **Metropolis-Hastings**: $r = \frac{\frac{p(\theta^* \mid y)}{J_t(\theta^* \mid \theta^{t-1})}}{\frac{p(\theta^{t-1} \mid y)}{J_t(\theta^{t-1} \mid \theta^*)}}$
+#        -   **Metropolis**: $r = \frac{p(\theta^*  \mid y)}{p(\theta^{t-1} \mid y)}$
+#        -   **Metropolis-Hastings**: $r = \frac{\frac{p(\theta^* \mid y)}{J_t(\theta^* \mid \theta^{t-1})}}{\frac{p(\theta^{t-1} \mid y)}{J_t(\theta^{t-1} \mid \theta^*)}}$
 
-    # -   Assign:
+#    -   Assign:
 
-    #     $$\theta^t =
-    #       \begin{cases}
-    #       \theta^* & \text{with probability $\min(r,1)$}\\
-    #       \theta^{t-1} & \text{otherwise}
-    #       \end{cases}$$
+#        $$\theta^t =
+#          \begin{cases}
+#          \theta^* & \text{with probability $\min(r,1)$}\\
+#          \theta^{t-1} & \text{otherwise}
+#          \end{cases}$$
 
 
 # ## Footnotes
