@@ -6,7 +6,7 @@
 
 # In discrete cases we can turn the denominator into a sum of all parameters using the chain rule of probability:
 
-# $$ P(A,B\midC)=P(A\midB,C) \times P(B\midC) \label{chainrule} $$
+# $$ P(A,B \mid C)=P(A \mid B,C) \times P(B \mid C) \label{chainrule} $$
 
 # This is also called marginalization:
 
@@ -17,11 +17,11 @@
 # $$ P(\text{data})=\int_{\theta} P(\text{data} \mid \theta) \times P(\theta)d \theta \label{continuousmarginalization} $$
 
 # In many cases this integral becomes *intractable* (incalculable) and therefore we must find other ways to calculate
-# the posterior probability $P(\theta \mid \ text {data})$ in \eqref{bayes} without using the denominator $P(\text{data})$.
+# the posterior probability $P(\theta \mid \text{data})$ in \eqref{bayes} without using the denominator $P(\text{data})$.
 
 # ## What is the denominator $P(\text{data})$ for?
 
-# To normalize the posterior in order to make it a valid probability distribution. This means that the sum of all probabilities
+# Quick answer: to normalize the posterior in order to make it a valid probability distribution. This means that the sum of all probabilities
 # of the possible events in the probability distribution must be equal to 1:
 
 # - in the case of discrete probability distribution:  $\sum_{\theta} P(\theta \mid \text{data}) = 1$
@@ -30,7 +30,7 @@
 # ## What if we remove this denominator?
 
 # When we remove the denominator $(\text{data})$ we have that the posterior $P(\theta \mid \text{data})$ is **proportional** to the
-# prior multiplied by the likelihood $P(\theta) \cdot P(\text{data} \mid \theta)$[^propto]:
+# prior multiplied by the likelihood $P(\theta) \cdot P(\text{data} \mid \theta)$[^propto].
 
 # $$ P(\theta \mid \text{data}) \propto P(\theta) \cdot P(\text{data} \mid \theta) \label{proptobayes} $$
 
@@ -40,8 +40,99 @@
 # <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/8FbqSVFzmoY' frameborder='0' allowfullscreen></iframe></div>
 # ~~~
 
+# ## Markov Chain Monte Carlo - (MCMC)
+
+# This is where Markov Chain Monte Carlo comes in. MCMC is a broad class of computational tools for approximating integrals and generating samples from
+# a posterior probability (Brooks, Gelman, Jones & Meng, 2011). MCMC is used when it is not possible to sample $\theta$ directly from the subsequent
+# probabilistic distribution $P(\theta \mid \text{data})$. Instead, we sample in an iterative manner such that at each step of the process we expect the
+# distribution from which we sample $P^* (\theta^* \mid \text{data})$ (here $*$ means simulated) becomes increasingly similar to the posterior
+# $P(\theta \mid \text{data})$. All of this is to eliminate the (often impossible) calculation of the denominator $P(\text{data})$.
+
+# The idea is to define an ergodic Markov chain (that is to say that there is a single stationary distribution) of which the set of possible states
+# is the sample space and the stationary distribution is the distribution to be approximated (or sampled). Let $X_0, X_1, \dots, X_n$ be a
+# simulation of the chain. The Markov chain converges to the stationary distribution of any initial state $X_0$ after a large enough number
+# of iterations $r$, the distribution of the state $X_r$ will be similar to the stationary distribution, so we can use it as a sample.
+# Markov chains have a property that the probability distribution of the next state depends only on the current state and not on the
+# sequence of events that preceded: $P(X_{n+1}=x \mid X_{0},X_{1},X_{2},\ldots ,X_{n}) = P(X_{n+1}=x \mid X_{n})$. This property is
+# called Markovian, after the mathematician [Andrey Markov](https://en.wikipedia.org/wiki/Andrey_Markov) (see figure below).
+# Similarly, repeating this argument with $X_r$ as the starting point, we can use $X_{2r}$ as a sample, and so on.
+# We can then use the state sequence $X_r, X_{2r}, X_{3r}, \dots$ as almost independent samples of the stationary distribution
+# of the Markov chain.
+
+# ![Andrey Markov](/pages/images/andrey_markov.jpg)
+#
+# \center{*Andrey Markov*} \\
+
+# The effectiveness of this approach depends on:
+
+# 1. how big $r$ must be to ensure a suitably good sample; and
+
+# 2. computational power required for each iteration of the Markov chain.
+
+# In addition, it is customary to discard the first iterations of the algorithm as they are usually not representative
+# of the distribution to be approximated. In the initial iterations of MCMC algorithms, generally the Markov current is
+# in a *warm-up* process[^warmup] and its state is far from ideal to start a reliable sampling. It is generally recommended
+# to discard half of the iterations (Gelman, Carlin, Stern, Dunson, Vehtari, & Rubin, 2013a). For example:
+# if the Markov chain has 4,000 iterations, we discard the first 2,000 as warm-up.
+
+# ### Monte Carlo Method
+
+# Stanislaw Ulam (figure below), who participated in the Manhattan project and when trying to calculate the neutron diffusion
+# process for the hydrogen bomb ended up creating a class of methods called **_Monte Carlo_**.
+
+# ![Stanislaw Ulam](/pages/images/stanislaw.jpg)
+#
+# \center{*Stanislaw Ulam*} \\
+
+# Monte Carlo methods have the underlying concept of using randomness to solve problems that can be deterministic in principle.
+# They are often used in physical and mathematical problems and are most useful when it is difficult or impossible to use other approaches.
+# Monte Carlo methods are used mainly in three classes of problems: optimization, numerical integration and generating sample from a
+# probability distribution.
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
+# [^warmup]: some references call this process *burnin*.
 
 # ## References
+
+# Betancourt, M. (2017, January 9). A Conceptual Introduction to Hamiltonian Monte Carlo. Retrieved November 6, 2019, from http://arxiv.org/abs/1701.02434
+#
+# Brooks, S., Gelman, A., Jones, G., & Meng, X.-L. (2011). Handbook of Markov Chain Monte Carlo. Retrieved from https://books.google.com?id=qfRsAIKZ4rIC
+#
+# Brooks, S. P., & Gelman, A. (1998). General Methods for Monitoring Convergence of Iterative Simulations. Journal of Computational and Graphical Statistics, 7(4), 434–455. https://doi.org/10.1080/10618600.1998.10474787
+#
+# Casella, G., & George, E. I. (1992). Explaining the gibbs sampler. The American Statistician, 46(3), 167–174. https://doi.org/10.1080/00031305.1992.10475878
+#
+# Chib, S., & Greenberg, E. (1995). Understanding the Metropolis-Hastings Algorithm. The American Statistician, 49(4), 327–335. https://doi.org/10.1080/00031305.1995.10476177
+#
+# Duane, S., Kennedy, A. D., Pendleton, B. J., & Roweth, D. (1987). Hybrid Monte Carlo. Physics Letters B, 195(2), 216–222. https://doi.org/10.1016/0370-2693(87)91197-X
+#
+# Eckhardt, R. (1987). Stan Ulam, John von Neumann, and the Monte Carlo Method. Los Alamos Science, 15(30), 131–136.
+#
+# Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., & Gelman, A. (2019). Visualization in Bayesian workflow. Journal of the Royal Statistical Society: Series A (Statistics in Society), 182(2), 389–402. https://doi.org/10.1111/rssa.12378
+#
+# Gelman, A. (1992). Iterative and Non-Iterative Simulation Algorithms. Computing Science and Statistics (Interface Proceedings), 24, 457–511. PROCEEDINGS PUBLISHED BY VARIOUS PUBLISHERS.
+#
+# Gelman, A. (2008). The folk theorem of statistical computing. Retrieved from https://statmodeling.stat.columbia.edu/2008/05/13/the_folk_theore/
+#
+# Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013a). Basics of Markov Chain Simulation. In Bayesian Data Analysis. Chapman and Hall/CRC.
+#
+# Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013b). Bayesian Data Analysis. Chapman and Hall/CRC.
+#
+# Gelman, A., & Rubin, D. B. (1992). Inference from Iterative Simulation Using Multiple Sequences. Statistical Science, 7(4), 457–472. https://doi.org/10.1214/ss/1177011136
+#
+# Geman, S., & Geman, D. (1984). Stochastic Relaxation, Gibbs Distributions, and the Bayesian Restoration of Images. IEEE Transactions on Pattern Analysis and Machine Intelligence, PAMI-6(6), 721–741. https://doi.org/10.1109/TPAMI.1984.4767596
+#
+# Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57(1), 97–109. https://doi.org/10.1093/biomet/57.1.97
+#
+# Hoffman, M. D., & Gelman, A. (2011). The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo. Journal of Machine Learning Research, 15(1), 1593–1623. Retrieved from http://arxiv.org/abs/1111.4246
+#
+# Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., & Teller, E. (1953). Equation of State Calculations by Fast Computing Machines. The Journal of Chemical Physics, 21(6), 1087–1092. https://doi.org/10.1063/1.1699114
+#
+# Neal, Radford M. (1994). An Improved Acceptance Procedure for the Hybrid Monte Carlo Algorithm. Journal of Computational Physics, 111(1), 194–203. https://doi.org/10.1006/jcph.1994.1054
+#
+# Neal, Radford M. (2003). Slice Sampling. The Annals of Statistics, 31(3), 705–741. Retrieved from https://www.jstor.org/stable/3448413
+#
+# Neal, Radford M. (2011). MCMC using Hamiltonian dynamics. In S. Brooks, A. Gelman, G. L. Jones, & X.-L. Meng (Eds.), Handbook of markov chain monte carlo.
+#
+# Roberts, G. O., Gelman, A., & Gilks, W. R. (1997). Weak convergence and optimal scaling of random walk Metropolis algorithms. Annals of Applied Probability, 7(1), 110–120. https://doi.org/10.1214/aoap/1034625254
