@@ -258,13 +258,11 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 #    -   Assign:
 
-#        $$
-#        \theta^t =
+#        $\theta^t =
 #        \begin{cases}
 #        \theta^* & \text{with probability } \min(r,1)}\\
 #        \theta^{t-1} & \text{otherwise}
-#        \end{cases}
-#        $$
+#        \end{cases}$
 
 # #### Limitations of the Metropolis Algorithm
 
@@ -368,6 +366,12 @@ end
 
 X_met = metropolis(10_000, 2.75, 0.8);
 
+# Take a quick peek into `X_met`, we'll see it's a Matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
+
+X_met[1:10, :]
+
+# Also note that the acceptance of the proposals was 20.7%, the expected for Metropolis algorithms (around 20-25%)
+# (Roberts et. al, 1997).
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
