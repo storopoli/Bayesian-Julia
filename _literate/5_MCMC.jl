@@ -214,7 +214,7 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 # The Metropolis algorithm uses a **proposal distribution** $J_t(\theta^*)$ ($J$ stands for *jumping distribution*
 # and $t$ indicates which state of the Markov chain we are in) to define next values of the distribution
-# $$P^*(\theta^* \mid \text{data})$. This distribution must be symmetrical:
+# $P^*(\theta^* \mid \text{data})$. This distribution must be symmetrical:
 
 # $$ J_t (\theta^* \mid \theta^{t-1}) = J_t(\theta^{t-1} \mid \theta^*) \label{symjump} $$
 
@@ -289,7 +289,7 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 # $$
 
 # I will use the already known `Distributions.jl` `MvNormal` from the plots above along with the `logpdf()`
-# function to calculate the PDF of the proposed and current $\theta$'s. It is easier to work with
+# function to calculate the PDF of the proposed and current $\theta$s. It is easier to work with
 # probability logs than with the absolute values. This is due to computational complexity and
 # also numerical underflow. Mathematically we will compute:
 
