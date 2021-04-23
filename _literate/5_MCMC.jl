@@ -206,9 +206,69 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 # ### Metropolis and Metropolis-Hastings
 
+# The first MCMC algorithm widely used to generate samples from Markov chain originated in physics in the 1950s
+# (in a very close relationship with the atomic bomb at the Manhattan project) and is called **Metropolis**
+# (Metropolis, Rosenbluth, Rosenbluth, Teller, & Teller, 1953) in honor of the first author [Nicholas Metropolis](https://en.wikipedia.org/wiki/Nicholas_Metropolis)
+# (figure above). In summary, the Metropolis algorithm is an adaptation of a random walk with
+# an acceptance/rejection rule to converge to the target distribution.
+
+# The Metropolis algorithm uses a **proposal distribution** $J_t(\theta^*)$ ($J$ stands for *jumping distribution*
+# and $t$ indicates which state of the Markov chain we are in) to define next values of the distribution
+# $$P^*(\theta^* \mid \text{data})$. This distribution must be symmetrical:
+
+# $$ J_t (\theta^* \mid \theta^{t-1}) = J_t(\theta^{t-1} \mid \theta^*) \label{symjump} $$
+
+# In the 1970s, a generalization of the Metropolis algorithm emerged that **does not** require that the proposal distributions
+# be symmetric. The generalization was proposed by [Wilfred Keith Hastings](https://en.wikipedia.org/wiki/W._K._Hastings)
+# (Hastings, 1970) (figure below) and is called **Metropolis-Hastings algorithm**.
+
+# ![Wilfred Hastings](/pages/images/hastings.jpg)
+#
+# \center{*Wilfred Hastings*} \\
+
+# #### Metropolis Algorithm
+
+# The essence of the algorithm is a random walk through the parameters' sample space, where the probability of the Markov chain
+# changing state is defined as:
+
+# $$ P_{\text{change}} = \min \left( {\frac{P (\theta_{\text{proposed}})}{P (\theta_{\text{current}})}}, 1 \right) \label{proposal} $$
+
+# This means that the Markov chain will only change to a new state under two conditions:
+
+# 1. When the probability of the parameters proposed by the random walk $P(\theta_{\text{proposed}})$ is **greater** than the probability of the parameters of the current state $P(\theta_{\text{current}})$, we change with 100% probability. Note that if $P(\theta_{\text{proposed}}) > P(\theta_{\text{current}})$ then the function $\min$ chooses the value 1 which means 100%.
+# 2. When the probability of the parameters proposed by the random walk $P(\theta_{\text{proposed}})$ is **less** than the probability of the parameters of the current state $P(\theta_{\text{current}})$, we changed with a probability equal to the proportion of that difference. Note that if $P(\theta_{\text{proposed}}) < P(\theta_{\text{current}})$ then the function $\min$ **does not** choose the value 1, but the value $\frac{P(\theta_{\text{proposed}})}{P(\theta_{\text{current}})}$ which equates the proportion of the probability of the proposed parameters to the probability of the parameters at the current state.
+
+# Anyway, at each iteration of the Metropolis algorithm, even if the Markov chain changes state or not, we sample the parameter
+# $\theta$ anyway. That is, if the chain does not change to a new state, $\theta$ will be sampled twice (or
+# more if the current is stationary in the same state).
+
+# The Metropolis-Hastings algorithm can be described in the following way [^metropolis] ($\theta$ is the parameter, or set of
+# parameters, of interest and $y$ is the data):
+
+# 1. Define a starting point $\theta^0$ of which $p(\theta^0 \mid y) > 0$, or sample it from an initial distribution $p_0(\theta)$. $p_0(\theta)$ can be a normal distribution or a prior distribution of $\theta$ ($p(\theta)$).
+#
+# 2. For $t = 1, 2, \dots$:
+
+    # -   Sample a proposed $\theta^*$ from a proposal distribution in time $t$, $J_t (\theta^* \mid \theta^{t-1})$.
+
+    # -   Calculate the ratio of probabilities:
+
+    #     -   **Metropolis**: $r = \frac{p(\theta^*  \mid y)}{p(\theta^{t-1} \mid y)}$
+    #     -   **Metropolis-Hastings**: $r = \frac{\frac{p(\theta^* \mid y)}{J_t(\theta^* \mid \theta^{t-1})}}{\frac{p(\theta^{t-1} \mid y)}{J_t(\theta^{t-1} \mid \theta^*)}}$
+
+    # -   Assign:
+
+    #     $$\theta^t =
+    #       \begin{cases}
+    #       \theta^* & \text{with probability $\min(r,1)$}\\
+    #       \theta^{t-1} & \text{otherwise}
+    #       \end{cases}$$
+
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
+# [^metropolis]: if you want a better explanation of the Metropolis and Metropolis-Hastings algorithms I suggest to see Chib & Greenberg (1995).
 
 # ## References
 
