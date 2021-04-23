@@ -114,10 +114,6 @@
 # search and rescue, finance and business and law. In the scope of these tutorials we will focus on applied statistics and specifically
 # in the context of Bayesian inference: providing a random sample of the posterior distribution.
 
-# ## Footnotes
-# [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
-# [^warmup]: some references call this process *burnin*.
-
 # ### Simulations
 
 # I will do some simulations to ilustrate MCMC algorithms and techniques. So, here's the initial setup:
@@ -146,14 +142,14 @@ Random.seed!(123);
 # \label{mvnormal}
 # $$
 
-# If we designate $\ mu_X = \ mu_Y = 0$ and $\sigma_X = \sigma_Y = 1$ (mean 0 and standard deviation 1
+# If we designate $\mu_X = \mu_Y = 0$ and $\sigma_X = \sigma_Y = 1$ (mean 0 and standard deviation 1
 # for both $X$ and $Y$), we have the following formulation from \eqref{mvnormal}:
 
 # $$
 # \begin{bmatrix}
 # X \\
 # Y
-# \end{bmatrix} \sim \text{Normal Multivariada} \left(
+# \end{bmatrix} \sim \text{Multivariate Normal} \left(
 # \begin{bmatrix}
 # 0 \\
 # 0
@@ -167,7 +163,7 @@ Random.seed!(123);
 # \label{stdmvnormal}
 # $$
 
-# All that remains is to designate a value of $\ rho$ in \eqref{stdmvnormal} for the correlation between $X$ and $Y$.
+# All that remains is to designate a value of $\rho$ in \eqref{stdmvnormal} for the correlation between $X$ and $Y$.
 # For our example we will use correlation of 0.8 ($\rho = 0.8$):
 
 # $$
@@ -179,8 +175,40 @@ Random.seed!(123);
 # \label{Sigma}
 # $$
 
-N = 10_000;
-μ = [0, 0];
+N = 10_000
+μ = [0, 0]
+Σ = [1 0.8; 0.8 1]
+
+mvnormal = MvNormal(μ, Σ)
+
+data = rand(mvnormal, N)';
+
+# In the figure below it is possible to see a countour plot of the PDF of a multivariate normal distribution composed of two normal
+# variables $X$ and $Y$, both with mean 0 and standard deviation 1.
+# The correlation between $X$ and $Y$ is $\rho = 0.8$:
+
+x = -3:0.01:3
+y = -3:0.01:3
+dens_mvnormal = [pdf(mvnormal, [i, j]) for i in x, j in y]
+contour(dens_mvnormal, xlabel=L"X", ylabel=L"Y", fill=true)
+savefig(joinpath(@OUTPUT, "countour_mvnormal.svg")); # hide
+
+# \fig{countour_mvnormal}
+# \center{*Countour Plot of the PDF of a Multivariate Normal Distribution*} \\
+
+# Also a surface plot can be seen below for you to get a 3-D intuition of what is going on:
+
+surface(dens_mvnormal, xlabel=L"X", ylabel=L"Y", zlabel="PDF")
+savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
+
+# \fig{surface_mvnormal}
+# \center{*Surface Plot of the PDF of a Multivariate Normal Distribution*} \\
+
+# ### Metropolis and Metropolis-Hastings
+
+# ## Footnotes
+# [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
+# [^warmup]: some references call this process *burnin*.
 
 # ## References
 
