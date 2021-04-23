@@ -175,7 +175,7 @@ Random.seed!(123);
 # \label{Sigma}
 # $$
 
-N = 10_000
+N = 100_000
 μ = [0, 0]
 Σ = [1 0.8; 0.8 1]
 
@@ -289,10 +289,11 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 # $$
 
 # I will use the already known `Distributions.jl` `MvNormal` from the plots above along with the `logpdf()`
-# function to calculate the PDF of the proposed and current $\theta$s. It is easier to work with
+# function to calculate the PDF of the proposed and current $\theta$'s. It is easier to work with
 # probability logs than with the absolute values. This is due to computational complexity and
 # also numerical underflow. Mathematically we will compute:
 
+# $$
 # \begin{aligned}
 # r &= \frac{
 # \operatorname{PDF}\left(
@@ -333,6 +334,7 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 # \log\left(\operatorname{PDF}_{\text{current}}\right)
 # \Big)
 # \end{aligned}
+# $$
 
 # Here is a simple implementation in Julia:
 
@@ -359,7 +361,10 @@ function metropolis(S::Int64, width::Float64, ρ::Float64;
     return draws
 end
 
-#
+# Now let's run our `metropolis()` algorithm for the bivariate normal case with
+# `S = 10_000`, `width = 2.75` and `ρ = 0.8`:
+
+X_met = metropolis(10_000, 2.75, 0.8);
 
 
 # ## Footnotes
