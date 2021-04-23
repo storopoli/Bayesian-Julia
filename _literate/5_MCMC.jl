@@ -258,11 +258,13 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 #    -   Assign:
 
-#        $$\theta^t =
-#          \begin{cases}
-#          \theta^* & \text{with probability } \min(r,1)}\\
-#          \theta^{t-1} & \text{otherwise}
-#          \end{cases}$$
+#        $$
+#        \theta^t =
+#        \begin{cases}
+#        \theta^* & \text{with probability } \min(r,1)}\\
+#        \theta^{t-1} & \text{otherwise}
+#        \end{cases}
+#        $$
 
 # #### Limitations of the Metropolis Algorithm
 
