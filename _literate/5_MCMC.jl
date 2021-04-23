@@ -368,7 +368,11 @@ end
 # Now let's run our `metropolis()` algorithm for the bivariate normal case with
 # `S = 10_000`, `width = 2.75` and `ρ = 0.8`:
 
-X_met = metropolis(10_000, 2.75, 0.8);
+const S = 10_000
+const width = 2.75
+const ρ = 0.8
+
+X_met = metropolis(S, width, rho);
 
 # Take a quick peek into `X_met`, we'll see it's a Matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
 
@@ -396,7 +400,7 @@ summarystats(chain_met)
 
 # $$ \text{efficiency} = \frac{\text{ESS}}{\text{iterations}} \label{ESS} $$
 
-mean(summarystats(chain_met)[:, :ess]) / 10_000
+mean(summarystats(chain_met)[:, :ess]) / S
 
 # So, our Metropolis algorithm has around 9% efficiency. Which, in my honest opinion, *sucks*...
 
