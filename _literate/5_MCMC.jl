@@ -258,11 +258,13 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 #    -   Assign:
 
-#        $\theta^t =
+#        $$
+#        \theta^t =
 #        \begin{cases}
-#        \theta^* & \text{with probability } \min(r,1)}\\
+#        \theta^* & \text{with probability } \min (r, 1) \\
 #        \theta^{t-1} & \text{otherwise}
-#        \end{cases}$
+#        \end{cases}
+#        $$
 
 # #### Limitations of the Metropolis Algorithm
 
@@ -372,6 +374,28 @@ X_met[1:10, :]
 
 # Also note that the acceptance of the proposals was 20.7%, the expected for Metropolis algorithms (around 20-25%)
 # (Roberts et. al, 1997).
+
+# We can construct `Chains` object using `MCMCChains.jl` by passing a matrix along with the parameters names as
+# symbols inside the `Chains()` constructor:
+
+using MCMCChains
+
+chain_met = Chains(X_met, [:X, :Y]);
+
+# Then we can get summary statistics regarding our Markov chain derived from the Metropolis algorithm:
+
+summarystats(chain_met)
+
+# Both of `X` and `Y` have mean close to 0 and standard deviation close to 1.
+# Take notice of the `ess` (effective sample size - ESS) that is between 800-900.
+# So let's calculate the efficiency of our Metropolis algorithm by dividing
+# the ESS by the number of sampling iterations that we've performed:
+
+# $$ \text{efficiency} = \frac{\text{ESS}}{\text{Iterations}} \label{ESS} $$
+
+mean(summarystats(chain_met)[:, :ess]) / 10_000
+
+# So, our Metropolis algorithm has around 9% efficiency. Which, in my honest opinion, *sucks*...
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
