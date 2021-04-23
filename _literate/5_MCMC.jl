@@ -190,7 +190,7 @@ data = rand(mvnormal, N)';
 x = -3:0.01:3
 y = -3:0.01:3
 dens_mvnormal = [pdf(mvnormal, [i, j]) for i in x, j in y]
-contour(dens_mvnormal, xlabel=L"X", ylabel=L"Y", fill=true)
+contour(x, y, dens_mvnormal, xlabel=L"X", ylabel=L"Y", fill=true)
 savefig(joinpath(@OUTPUT, "countour_mvnormal.svg")); # hide
 
 # \fig{countour_mvnormal}
@@ -198,7 +198,7 @@ savefig(joinpath(@OUTPUT, "countour_mvnormal.svg")); # hide
 
 # Also a surface plot can be seen below for you to get a 3-D intuition of what is going on:
 
-surface(dens_mvnormal, xlabel=L"X", ylabel=L"Y", zlabel="PDF")
+surface(x, y, dens_mvnormal, xlabel=L"X", ylabel=L"Y", zlabel="PDF")
 savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 # \fig{surface_mvnormal}
@@ -342,17 +342,19 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 function metropolis(S::Int64, width::Float64, ρ::Float64;
                     μ_x::Float64=0.0, μ_y::Float64=0.0,
-                    σ_x::Float64=1.0, σ_y::Float64=1.0)
+                    σ_x::Float64=1.0, σ_y::Float64=1.0,
+                    seed=123)
+    rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y]);
     draws = Matrix{Float64}(undef, S, 2);
-    x = randn(); y = randn();
+    x = randn(rgn); y = randn(rgn);
     accepted = 0::Int64;
     for s in 1:S
-        x_ = rand(Uniform(x - width, x + width));
-        y_ = rand(Uniform(y - width, y + width));
+        x_ = rand(rgn, Uniform(x - width, x + width));
+        y_ = rand(rgn, Uniform(y - width, y + width));
         r = exp(logpdf(binormal, [x_, y_]) - logpdf(binormal, [x, y]));
 
-        if r > rand(Uniform())
+        if r > rand(rgn, Uniform())
             x = x_;
             y = y_;
             accepted += 1;
@@ -375,7 +377,7 @@ X_met[1:10, :]
 # Also note that the acceptance of the proposals was 20.7%, the expected for Metropolis algorithms (around 20-25%)
 # (Roberts et. al, 1997).
 
-# We can construct `Chains` object using `MCMCChains.jl` by passing a matrix along with the parameters names as
+# We can construct `Chains` object using `MCMCChains.jl`[^mcmcchains] by passing a matrix along with the parameters names as
 # symbols inside the `Chains()` constructor:
 
 using MCMCChains
@@ -386,21 +388,54 @@ chain_met = Chains(X_met, [:X, :Y]);
 
 summarystats(chain_met)
 
-# Both of `X` and `Y` have mean close to 0 and standard deviation close to 1.
+# Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
+# are the theoretical values).
 # Take notice of the `ess` (effective sample size - ESS) that is between 800-900.
 # So let's calculate the efficiency of our Metropolis algorithm by dividing
 # the ESS by the number of sampling iterations that we've performed:
 
-# $$ \text{efficiency} = \frac{\text{ESS}}{\text{Iterations}} \label{ESS} $$
+# $$ \text{efficiency} = \frac{\text{ESS}}{\text{iterations}} \label{ESS} $$
 
 mean(summarystats(chain_met)[:, :ess]) / 10_000
 
 # So, our Metropolis algorithm has around 9% efficiency. Which, in my honest opinion, *sucks*...
 
+# ##### Metropolis - Visual Intuition
+
+# I believe that a good visual intuition, even if you have not understood any mathematical formula, is the key for you to start a
+# fruitful learning journey. So I made some animations!
+
+# The animation in figure below shows the first 100 simulations of the Metropolis algorithm used to generate `X_met`.
+# Note that in several iterations the proposal is rejected and the algorithm samples the parameters $\theta_1$ and $\theta_2$
+# from the previous state (which becomes the current one, since the proposal is refused). The blue-filled ellipsis represents
+# the 90% HPD of our bivariate normal from the toy example.
+
+# Note: `HPD` stands for *Highest Probability Density* (which in our case the posterior's 90% probability range).
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.3,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+met_anim = @animate for i in 1:100
+    scatter!(plt, (X_met[i, 1], X_met[i, 2]),
+             label=false, mc=:red, ma=0.3)
+    plot!(X_met[i:i + 1, 1], X_met[i:i + 1, 2], seriestype=:path,
+          lc=:green, label=false)
+    frame(anim)
+end
+gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5) # hide
+
+# \fig{met_anim}
+# \center{*Animation of the first 100 samples generate from the Metropolis algorithm*} \\
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
 # [^metropolis]: if you want a better explanation of the Metropolis and Metropolis-Hastings algorithms I suggest to see Chib & Greenberg (1995).
+# [^mcmcchains]: this is one of the packages of Turing's ecosystem. I recommend you to take a look into [4. **How to use Turing**](/pages/4_Turing/).
 
 # ## References
 
