@@ -372,13 +372,13 @@ const S = 10_000
 const width = 2.75
 const ρ = 0.8
 
-X_met = metropolis(S, width, rho);
+X_met = metropolis(S, width, ρ);
 
-# Take a quick peek into `X_met`, we'll see it's a Matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
+# Take a quick peek into `X_met`, we'll see it's a matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
 
 X_met[1:10, :]
 
-# Also note that the acceptance of the proposals was 20.7%, the expected for Metropolis algorithms (around 20-25%)
+# Also note that the acceptance of the proposals was 21.6%, the expected for Metropolis algorithms (around 20-25%)
 # (Roberts et. al, 1997).
 
 # We can construct `Chains` object using `MCMCChains.jl`[^mcmcchains] by passing a matrix along with the parameters names as
@@ -402,7 +402,7 @@ summarystats(chain_met)
 
 mean(summarystats(chain_met)[:, :ess]) / S
 
-# So, our Metropolis algorithm has around 9% efficiency. Which, in my honest opinion, *sucks*...
+# So, our Metropolis algorithm has around 8.7% efficiency. Which, in my honest opinion, *sucks*...(😂)
 
 # ##### Metropolis - Visual Intuition
 
@@ -412,7 +412,7 @@ mean(summarystats(chain_met)[:, :ess]) / S
 # The animation in figure below shows the first 100 simulations of the Metropolis algorithm used to generate `X_met`.
 # Note that in several iterations the proposal is rejected and the algorithm samples the parameters $\theta_1$ and $\theta_2$
 # from the previous state (which becomes the current one, since the proposal is refused). The blue-filled ellipsis represents
-# the 90% HPD of our bivariate normal from the toy example.
+# the 90% HPD of our toy example's bivariate normal distribution.
 
 # Note: `HPD` stands for *Highest Probability Density* (which in our case the posterior's 90% probability range).
 
@@ -420,6 +420,7 @@ plt = covellipse(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
     alpha=0.5,
+    c=:steelblue,
     label="90% HPD",
     xlabel=L"\theta_1", ylabel=L"\theta_2")
 
@@ -429,7 +430,7 @@ met_anim = @animate for i in 1:100
     plot!(X_met[i:i + 1, 1], X_met[i:i + 1, 2], seriestype=:path,
           lc=:green, label=false)
 end
-gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5) # hide
+gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5); # hide
 
 # \fig{met_anim}
 # \center{*Animation of the First 100 Samples Generated from the Metropolis Algorithm*} \\
@@ -438,15 +439,19 @@ gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5) # hide
 
 const warmup = 1_000
 
-plt = covellipse(μ, Σ,
+scatter((X_met[warmup:warmup + 1_000, 1], X_met[warmup:warmup + 1_000, 2]),
+         label=false, mc=:red, ma=0.3,
+         xlims=(-3, 3), ylims=(-3, 3),
+         xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
     alpha=0.5,
-    label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
+    c=:steelblue,
+    label="90% HPD")
 
-scatter!(plt, (X_met[warmup:warmup + 1_000, 1], X_met[warmup:warmup + 1_000, 2]),
-         label=false, mc=:red, ma=0.3)
+
 savefig(joinpath(@OUTPUT, "met_first1000.svg")); # hide
 
 # \fig{met_first1000}
@@ -454,15 +459,17 @@ savefig(joinpath(@OUTPUT, "met_first1000.svg")); # hide
 
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
-plt = covellipse(μ, Σ,
+scatter((X_met[warmup:end, 1], X_met[warmup:end, 2]),
+         label=false, mc=:red, ma=0.3,
+         xlims=(-3, 3), ylims=(-3, 3),
+         xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
     alpha=0.5,
-    label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-scatter!(plt, (X_met[warmup:end, 1], X_met[warmup:end, 2]),
-         label=false, mc=:red, ma=0.3)
+    c=:steelblue,
+    label="90% HPD")
 savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 
 # \fig{met_all}
