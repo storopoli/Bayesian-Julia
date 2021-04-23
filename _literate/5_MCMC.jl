@@ -477,11 +477,70 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 
 # ### Gibbs
 
+# To circumvent the problem of low acceptance rate of the Metropolis (and Metropolis-Hastings) algorithm,
+# the Gibbs algorithm was developed, which does not have an acceptance/rejection rule for new proposals
+# to change the state of the Markov chain. **All proposals are accepted**.
+
+# Gibbs' algorithm had an original idea conceived by physicist Josiah Willard Gibbs (figure below),
+# in reference to an analogy between a sampling algorithm and statistical physics (a branch of physics which
+# is based on statistical mechanics). The algorithm was described by brothers Stuart and Donald Geman
+# in 1984 (Geman & Geman, 1984), about eight decades after Gibbs's death.
+
+# ![Josiah Gibbs](/pages/images/josiah_gibbs.jpg)
+#
+# \center{*Josiah Gibbs*} \\
+
+# The Gibbs algorithm is very useful in multidimensional sample spaces (in which there are more than 2 parameters to be
+# sampled for the posterior probability). It is also known as **alternating conditional sampling**, since we always sample
+# a parameter **conditioned** to the probability of the other parameters.
+
+# The Gibbs algorithm can be seen as a **special case** of the Metropolis-Hastings algorithm because all proposals are
+# accepted (Gelman, 1992).
+
+# #### Gibbs Algorithm
+
+# The essence of Gibbs' algorithm is an iterative sampling of parameters conditioned to other parameters
+# $P(\theta_1 \ mid \theta_2, \dots \theta_n)$.
+
+# Gibbs's algorithm can be described in the following way[^gibbs] ($\theta$ is the parameter, or set of
+# parameters, of interest and $y$ is the data):
+
+# 1. Define $P(\theta_1), P(\theta_2), \dots, P(\theta_n)$: the prior probability of each of the $\theta_n$ parameters.
+
+# 2. Sample a starting point $\theta^0_1, \theta^0_2, \dots, \theta^0_n$. We usually sample from a normal distribution or from a distribution specified as the prior distribution of $\theta_n$.
+
+# 3. For $t = 1, 2, \dots$:
+
+#     $$\begin{aligned}
+#     \theta^t_1 &\sim p(\theta_1 \mid \theta^0_2, \dots, \theta^0_n) \\
+#     \theta^t_2 &\sim p(\theta_2 \mid \theta^{t-1}_1, \dots, \theta^0_n) \\
+#     &\vdots \\
+#     \theta^t_n &\sim p(\theta_n \mid \theta^{t-1}_1, \dots, \theta^{t-1}_{n-1})
+#     \end{aligned}$$
+
+# #### Limitations of the Gibbs Algorithm
+
+# The main limitation of the Gibbs algorithm is with regard to alternative conditional sampling.
+
+# If we compare with the Metropolis algorithm (and consequently Metropolis-Hastings) we have random proposals
+# from a proposal distribution in which we sample each parameter unconditionally to other parameters. In order
+# for the proposals to take us to the posterior probability's correct locations to sample, we have an
+# acceptance/rejection rule for these proposals, otherwise the samples of the Metropolis algorithm would not
+# approach the target distribution of interest. The state changes of the Markov chain are then carried out
+# multidimensionally [^gibbs2]. As you saw in the Metropolis' figures, in a 2-D space (as is our example's bivariate
+# normal distribution), when there is a change of state in the Markov chain, the new proposal location considers
+# both $\theta_1$ and $\theta_2$, causing **diagonal** movement in space 2-D sample. In other words,
+# the proposal is done regarding all dimensions of the parameter space.
+
+# In the case of the Gibbs algorithm, in our example, this movement occurs only in a single parameter, as we sample sequentially and conditionally to other parameters. This causes ** horizontal ** movements (in the case of $ \ theta_1 $) and ** vertical movements ** (in the case of $ \ theta_2 $), but never diagonal movements like the one we see in the Metropolis algorithm.
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
 # [^metropolis]: if you want a better explanation of the Metropolis and Metropolis-Hastings algorithms I suggest to see Chib & Greenberg (1995).
 # [^mcmcchains]: this is one of the packages of Turing's ecosystem. I recommend you to take a look into [4. **How to use Turing**](/pages/4_Turing/).
+# [^gibbs]: if you want a better explanation of the Gibbs algorithm I suggest to see Casella & George (1992).
+# [^gibbs2]: this will be clear in the animations and images.
 
 # ## References
 
