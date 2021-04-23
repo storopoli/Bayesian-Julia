@@ -260,9 +260,59 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 #        $$\theta^t =
 #          \begin{cases}
-#          \theta^* & \text{with probability $\min(r,1)$}\\
+#          \theta^* & \text{with probability } \min(r,1)}\\
 #          \theta^{t-1} & \text{otherwise}
 #          \end{cases}$$
+
+# #### Limitations of the Metropolis Algorithm
+
+# The limitations of the Metropolis-Hastings algorithm are mainly computational. With randomly generated proposals,
+# it usually takes a large number of iterations to enter areas of higher (more likely) posterior densities. Even
+# efficient Metropolis-Hastings algorithms sometimes accept less than 25% of the proposals (Roberts, Gelman & Gilks, 1997).
+# In lower-dimensional situations, the increased computational power can compensate for the lower efficiency to some extent.
+# But in higher-dimensional and more complex modeling situations, bigger and faster computers alone are rarely
+# enough to overcome the challenge.
+
+# #### Metropolis - Implementation
+
+# In our toy example we will assume that $J_t (\theta^* \mid \theta^{t-1})$ is symmetric, thus
+# $J_t(\theta^* \mid \theta^{t-1}) = J_t (\theta^{t-1} \mid \theta^*)$, so I'll just implement
+# the Metropolis algorithm (not the Metropolis-Hastings algorithm).
+
+# Below I created a Metropolis sampler for our toy example. At the end it prints the acceptance rate of
+# the proposals. Here I am using the same proposal distribution for both $X$ and $Y$: a uniform distribution
+# parameterized with a `width` parameter:
+
+# # $$
+# X \sim \text{Uniform} \left( X - \frac{\text{width}}{2}, X + \frac{\text{width}}{2} \right) \\
+# Y \sim \text{Uniform} \left( Y - \frac{\text{width}}{2}, Y + \frac{\text{width}}{2} \right)
+# $$
+
+# I will use the already known `Distributions.jl` `MvNormal` from the plots above along with the `logpdf()`
+# function
+
+function metropolis(S::Int64, width::Float64, ρ::Float64;
+                    μ_x::Float64=0.0, μ_y::Float64=0.0,
+                    σ_x::Float64=1.0, σ_y::Float64=1.0)
+    binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y]);
+    draws = Matrix{Float64}(undef, S, 2);
+    x = randn(); y = randn();
+    accepted = 0::Int64;
+    for s in 1:S
+        x_ = rand(Uniform(x - width, x + width));
+        y_ = rand(Uniform(y - width, y + width));
+        r = exp(logpdf(binormal, [x_, y_]) - logpdf(binormal, [x, y]));
+
+        if r > rand(Uniform())
+            x = x_;
+            y = y_;
+            accepted += 1;
+        end
+        @inbounds draws[s, :] = [x y];
+    end
+    println("Acceptance rate is ", accepted / S)
+    return draws
+end
 
 
 # ## Footnotes
