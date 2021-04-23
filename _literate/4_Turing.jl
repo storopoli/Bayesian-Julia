@@ -97,6 +97,7 @@ savefig(joinpath(@OUTPUT, "dice.svg")); # hide
 # which is a $N$-dimensional vector of integers representing the observed data, *i.e.* the outcomes of $N$ six-sided dice throws:
 
 using Turing
+setprogress!(false) # hide
 
 @model dice_throw(y) = begin
     #Our prior belief about the probability of each result in a six-sided dice.
