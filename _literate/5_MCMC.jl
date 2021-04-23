@@ -343,23 +343,25 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 function metropolis(S::Int64, width::Float64, ρ::Float64;
                     μ_x::Float64=0.0, μ_y::Float64=0.0,
                     σ_x::Float64=1.0, σ_y::Float64=1.0,
+                    start_x=-2.5, start_y=2.5,
                     seed=123)
     rgn = MersenneTwister(seed)
-    binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y]);
-    draws = Matrix{Float64}(undef, S, 2);
-    x = randn(rgn); y = randn(rgn);
+    binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
+    draws = Matrix{Float64}(undef, S, 2)
     accepted = 0::Int64;
-    for s in 1:S
-        x_ = rand(rgn, Uniform(x - width, x + width));
-        y_ = rand(rgn, Uniform(y - width, y + width));
-        r = exp(logpdf(binormal, [x_, y_]) - logpdf(binormal, [x, y]));
+    x = start_x; y = start_x
+    @inbounds draws[1, :] = [x y]
+    for s in 2:S
+        x_ = rand(rgn, Uniform(x - width, x + width))
+        y_ = rand(rgn, Uniform(y - width, y + width))
+        r = exp(logpdf(binormal, [x_, y_]) - logpdf(binormal, [x, y]))
 
         if r > rand(rgn, Uniform())
-            x = x_;
-            y = y_;
-            accepted += 1;
+            x = x_
+            y = y_
+            accepted += 1
         end
-        @inbounds draws[s, :] = [x y];
+        @inbounds draws[s, :] = [x y]
     end
     println("Acceptance rate is: $(accepted / S)")
     return draws
@@ -394,7 +396,7 @@ summarystats(chain_met)
 
 # Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
 # are the theoretical values).
-# Take notice of the `ess` (effective sample size - ESS) that is between 800-900.
+# Take notice of the `ess` (effective sample size - ESS) that is between 700-800.
 # So let's calculate the efficiency of our Metropolis algorithm by dividing
 # the ESS by the number of sampling iterations that we've performed:
 
@@ -402,7 +404,7 @@ summarystats(chain_met)
 
 mean(summarystats(chain_met)[:, :ess]) / S
 
-# So, our Metropolis algorithm has around 8.7% efficiency. Which, in my honest opinion, *sucks*...(😂)
+# Our Metropolis algorithm has around 7.5% efficiency. Which, in my honest opinion, *sucks*...(😂)
 
 # ##### Metropolis - Visual Intuition
 
@@ -500,7 +502,7 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # #### Gibbs Algorithm
 
 # The essence of Gibbs' algorithm is an iterative sampling of parameters conditioned to other parameters
-# $P(\theta_1 \ mid \theta_2, \dots \theta_n)$.
+# $P(\theta_1 \mid \theta_2, \dots \theta_n)$.
 
 # Gibbs's algorithm can be described in the following way[^gibbs] ($\theta$ is the parameter, or set of
 # parameters, of interest and $y$ is the data):
@@ -532,7 +534,162 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # both $\theta_1$ and $\theta_2$, causing **diagonal** movement in space 2-D sample. In other words,
 # the proposal is done regarding all dimensions of the parameter space.
 
-# In the case of the Gibbs algorithm, in our example, this movement occurs only in a single parameter, as we sample sequentially and conditionally to other parameters. This causes ** horizontal ** movements (in the case of $ \ theta_1 $) and ** vertical movements ** (in the case of $ \ theta_2 $), but never diagonal movements like the one we see in the Metropolis algorithm.
+# In the case of the Gibbs algorithm, in our toy example, this movement occurs only in a single parameter
+#, *i.e* single dimension, as we sample sequentially and conditionally to other parameters. This causes **horizontal**
+# movements (in the case of $\theta_1$) and **vertical movements** (in the case of $\theta_2$), but never
+# diagonal movements like the ones we saw in the Metropolis algorithm.
+
+# #### Gibbs - Implementation
+
+# Here are some new things compared to the Metropolis algorithm implementation. First to conditionally
+# sample the parameters $P(\theta_1 \mid \theta_2)$ and $P(\theta_2 \mid \theta_1)$, we need to create
+# two new variables `β` and `λ`. These variables represent the correlation between $X$ and $Y$ ($\theta_1$
+# and $\theta_2$ respectively) scaled by the ratio of the variance of $X$ and $Y$.
+# And then we use these variables in the sampling of $\theta_1$ and $\theta_2$:
+
+# $$
+# \begin{aligned}
+# \beta &= \rho \cdot \frac{\sigma_Y}{\sigma_X} = \rho \\
+# \lambda &= \rho \cdot \frac{\sigma_X}{\sigma_Y} = \rho \\
+# \sigma_{YX} &= 1 - \rho^2\\
+# \sigma_{XY} &= 1 - \rho^2\\
+# \theta_1 &\sim \text{Normal} \bigg( \mu_X + \lambda \cdot (y^* - \mu_Y), \sigma_{XY} \bigg) \\
+# \theta_2 &\sim \text{Normal} \bigg( \mu_y + \beta \cdot (x^* - \mu_X), \sigma_{YX} \bigg).
+# \end{aligned}
+# $$
+
+function gibbs(S::Int64, ρ::Float64;
+               μ_x::Float64=0.0, μ_y::Float64=0.0,
+               σ_x::Float64=1.0, σ_y::Float64=1.0,
+               start_x=-2.5, start_y=2.5,
+               seed=123)
+    rgn = MersenneTwister(seed)
+    binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
+    draws = Matrix{Float64}(undef, S, 2)
+    accepted = 0::Int64
+    x = start_x; y = start_x
+    β = ρ * σ_y / σ_x
+    λ = ρ * σ_x / σ_y
+    sqrt1mrho2 = sqrt(1 - ρ^2)
+    σ_YX = σ_y * sqrt1mrho2
+    σ_XY = σ_x * sqrt1mrho2
+    @inbounds draws[1, :] = [x y]
+    for s in 2:S
+        if s % 2 == 0
+            y = rand(rgn, Normal(μ_y + β * (x - μ_x), σ_YX))
+        else
+            x = rand(rgn, Normal(μ_x + λ * (y - μ_y), σ_XY))
+        end
+        @inbounds draws[s, :] = [x y]
+    end
+    return draws
+end
+
+# Generally a Gibbs sampler is not implemented in this way. Here I coded the Gibbs algorithm so that it samples a parameter for each iteration.
+# To be more computationally efficient we would sample all parameters are on each iteration. I did it on purpose because I want
+# to show in the animations the real trajectory of the Gibbs sampler in the sample space (vertical and horizontal, not diagonal).
+# So to remedy this I will provide `gibbs()` double the ammount of `S` (20,000 in total). Also take notice that we are now proposing
+# new parameters' values conditioned on other parameters, so there is not an acceptance/rejection rule here.
+
+X_gibbs = gibbs(S * 2, ρ);
+
+# As before lets' take a quick peek into `X_gibbs`, we'll see it's a matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
+
+X_gibbs[1:10, :]
+
+# Again, we construct a `Chains` object by passing a matrix along with the parameters names as
+# symbols inside the `Chains()` constructor:
+
+chain_gibbs = Chains(X_gibbs, [:X, :Y]);
+
+# Then we can get summary statistics regarding our Markov chain derived from the Metropolis algorithm:
+
+summarystats(chain_gibbs)
+
+# Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
+# are the theoretical values).
+# Take notice of the `ess` (effective sample size - ESS) that is between 2,100-2,200.
+# Since we used `S * 2` as the number of samples, in order for we to compare with Metropolis,
+# we would need to divide the ESS by 2. So our ESS is between 1,000-1,100, which is a nice
+# improvement over Metropolis.
+# Now let's calculate the efficiency of our Gibbs algorithm by dividing
+# the ESS by the number of sampling iterations that we've performed also
+# accounting for the `S * 2`:
+
+(mean(summarystats(chain_gibbs)[:, :ess]) / 2) / S
+
+# Our Gibbs algorithm has around 10.6% efficiency. Which, in my honest opinion, despite the
+# improvement still *sucks*...(😂)
+
+# ##### Gibbs - Visual Intuition
+
+# Oh yes, we have animations for Gibbs also!
+
+# The animation in figure below shows the first 100 simulations of the Gibbs algorithm used to generate `X_gibbs`.
+# Note that all proposals are accepted now, so the at each iteration we sample new parameters values.
+# The blue-filled ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:steelblue,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+gibbs_anim = @animate for i in 1:200
+    scatter!(plt, (X_gibbs[i, 1], X_gibbs[i, 2]),
+             label=false, mc=:red, ma=0.3)
+    plot!(X_gibbs[i:i + 1, 1], X_gibbs[i:i + 1, 2], seriestype=:path,
+          lc=:green, label=false)
+end
+gif(gibbs_anim, joinpath(@OUTPUT, "gibbs_anim.gif"), fps=5); # hide
+
+# \fig{gibbs_anim}
+# \center{*Animation of the First 100 Samples Generated from the Gibbs Algorithm*} \\
+
+# Now let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
+
+scatter((X_gibbs[2 * warmup:2 * warmup + 1_000, 1], X_gibbs[2 * warmup:2 * warmup + 1_000, 2]),
+         label=false, mc=:red, ma=0.3,
+         xlims=(-3, 3), ylims=(-3, 3),
+         xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+covellipse!(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:steelblue,
+    label="90% HPD")
+
+
+savefig(joinpath(@OUTPUT, "gibbs_first1000.svg")); # hide
+
+# \fig{gibbs_first1000}
+# \center{*First 1,000 Samples Generated from the Gibbs Algorithm after warm-up*} \\
+
+# And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
+
+scatter((X_gibbs[2 * warmup:end, 1], X_gibbs[2 * warmup:end, 2]),
+         label=false, mc=:red, ma=0.3,
+         xlims=(-3, 3), ylims=(-3, 3),
+         xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+covellipse!(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:steelblue,
+    label="90% HPD")
+savefig(joinpath(@OUTPUT, "gibbs_all.svg")); # hide
+
+# \fig{gibbs_all}
+# \center{*All 9,000 Samples Generated from the Gibbs Algorithm after warm-up*} \\
+
+# ### What happens when we run Markov chains in parallel?
+
+# Since the Markov chains are **independent**, we can run them in **parallel**. The key to this is
+# ** defining different starting points for each Markov chain ** (if you use a sample of a previous distribution of parameters as a starting point this is not a problem). We will use the same didactic example of a normal bivariate distribution $ X $ and $ Y $ that we used in the previous examples, but now with ** 4 Markov chains with different starting points **.
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
