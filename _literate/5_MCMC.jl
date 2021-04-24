@@ -710,7 +710,7 @@ X_met_2 = metropolis(S_parallel, width, ρ, seed=125, start_x=first(starts[2]), 
 X_met_3 = metropolis(S_parallel, width, ρ, seed=126, start_x=first(starts[3]), start_y=last(starts[3]));
 X_met_4 = metropolis(S_parallel, width, ρ, seed=127, start_x=first(starts[4]), start_y=last(starts[4]));
 
-# There have been some significant changes in the approval rate for Metropolis proposals. All were around 13% -27%,
+# There have been some significant changes in the approval rate for Metropolis proposals. All were around 13%-24%,
 # this is due to the low number of samples (only 100 for each Markov chain), if the samples were larger we would see
 # these values converge to close to 20% according to the previous example of 10,000 samples with a single stream
 # (Roberts et. al, 1997).
