@@ -421,16 +421,16 @@ mean(summarystats(chain_met)[:, :ess]) / S
 plt = covellipse(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
+    alpha=0.3,
     c=:steelblue,
     label="90% HPD",
     xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 met_anim = @animate for i in 1:100
     scatter!(plt, (X_met[i, 1], X_met[i, 2]),
-             label=false, mc=:red, ma=0.3)
+             label=false, mc=:red, ma=0.5)
     plot!(X_met[i:i + 1, 1], X_met[i:i + 1, 2], seriestype=:path,
-          lc=:green, label=false)
+          lc=:green, la=0.5, label=false)
 end
 gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5); # hide
 
@@ -632,16 +632,16 @@ summarystats(chain_gibbs)
 plt = covellipse(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
+    alpha=0.3,
     c=:steelblue,
     label="90% HPD",
     xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 gibbs_anim = @animate for i in 1:200
     scatter!(plt, (X_gibbs[i, 1], X_gibbs[i, 2]),
-             label=false, mc=:red, ma=0.3)
+             label=false, mc=:red, ma=0.5)
     plot!(X_gibbs[i:i + 1, 1], X_gibbs[i:i + 1, 2], seriestype=:path,
-          lc=:green, label=false)
+          lc=:green, la=0.5, label=false)
 end
 gif(gibbs_anim, joinpath(@OUTPUT, "gibbs_anim.gif"), fps=5); # hide
 
@@ -721,7 +721,7 @@ X_met_4 = metropolis(S_parallel, width, ρ, seed=127, start_x=first(starts[4]), 
 plt = covellipse(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
+    alpha=0.3,
     c=:grey,
     label="90% HPD",
     xlabel=L"\theta_1", ylabel=L"\theta_2")
@@ -731,21 +731,21 @@ const logocolors = Colors.JULIA_LOGO_COLORS;
 parallel_met = Animation()
 for i in 1:99
     scatter!(plt, (X_met_1[i, 1], X_met_1[i, 2]),
-             label=false, mc=logocolors.blue, ma=0.3)
+             label=false, mc=logocolors.blue, ma=0.5)
     plot!(X_met_1[i:i + 1, 1], X_met_1[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.blue, label=false)
+          lc=logocolors.blue, la=0.5, label=false)
     scatter!(plt, (X_met_2[i, 1], X_met_2[i, 2]),
-             label=false, mc=logocolors.red, ma=0.3)
+             label=false, mc=logocolors.red, ma=0.5)
     plot!(X_met_2[i:i + 1, 1], X_met_2[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.red, label=false)
+          lc=logocolors.red, la=0.5, label=false)
     scatter!(plt, (X_met_3[i, 1], X_met_3[i, 2]),
-             label=false, mc=logocolors.green, ma=0.3)
+             label=false, mc=logocolors.green, ma=0.5)
     plot!(X_met_3[i:i + 1, 1], X_met_3[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.green, label=false)
+          lc=logocolors.green, la=0.5, label=false)
     scatter!(plt, (X_met_4[i, 1], X_met_4[i, 2]),
-             label=false, mc=logocolors.purple, ma=0.3)
+             label=false, mc=logocolors.purple, ma=0.5)
     plot!(X_met_4[i:i + 1, 1], X_met_4[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.purple, label=false)
+          lc=logocolors.purple, la=0.5, label=false)
     frame(parallel_met)
 end
 gif(parallel_met, joinpath(@OUTPUT, "parallel_met.gif"), fps=5); # hide
@@ -766,7 +766,7 @@ X_gibbs_4 = gibbs(S_parallel * 2, ρ, seed=127, start_x=first(starts[4]), start_
 plt = covellipse(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
     xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
+    alpha=0.3,
     c=:grey,
     label="90% HPD",
     xlabel=L"\theta_1", ylabel=L"\theta_2")
@@ -774,21 +774,21 @@ plt = covellipse(μ, Σ,
 parallel_gibbs = Animation()
 for i in 1:199
     scatter!(plt, (X_gibbs_1[i, 1], X_gibbs_1[i, 2]),
-             label=false, mc=logocolors.blue, ma=0.3)
+             label=false, mc=logocolors.blue, ma=0.5)
     plot!(X_gibbs_1[i:i + 1, 1], X_gibbs_1[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.blue, label=false)
+          lc=logocolors.blue, la=0.5, label=false)
     scatter!(plt, (X_gibbs_2[i, 1], X_gibbs_2[i, 2]),
-             label=false, mc=logocolors.red, ma=0.3)
+             label=false, mc=logocolors.red, ma=0.5)
     plot!(X_gibbs_2[i:i + 1, 1], X_gibbs_2[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.red, label=false)
+          lc=logocolors.red, la=0.5, label=false)
     scatter!(plt, (X_gibbs_3[i, 1], X_gibbs_3[i, 2]),
-             label=false, mc=logocolors.green, ma=0.3)
+             label=false, mc=logocolors.green, ma=0.5)
     plot!(X_gibbs_3[i:i + 1, 1], X_gibbs_3[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.green, label=false)
+          lc=logocolors.green, la=0.5, label=false)
     scatter!(plt, (X_gibbs_4[i, 1], X_gibbs_4[i, 2]),
-             label=false, mc=logocolors.purple, ma=0.3)
+             label=false, mc=logocolors.purple, ma=0.5)
     plot!(X_gibbs_4[i:i + 1, 1], X_gibbs_4[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.purple, label=false)
+          lc=logocolors.purple, la=0.5, label=false)
     frame(parallel_gibbs)
 end
 gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
