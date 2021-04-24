@@ -40,7 +40,7 @@
 # <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/8FbqSVFzmoY' frameborder='0' allowfullscreen></iframe></div>
 # ~~~
 
-# ## Markov Chain Monte Carlo - (MCMC)
+# ## Markov Chain Monte Carlo (MCMC)
 
 # This is where Markov Chain Monte Carlo comes in. MCMC is a broad class of computational tools for approximating integrals and generating samples from
 # a posterior probability (Brooks, Gelman, Jones & Meng, 2011). MCMC is used when it is not possible to sample $\theta$ directly from the subsequent
@@ -275,7 +275,7 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 # But in higher-dimensional and more complex modeling situations, bigger and faster computers alone are rarely
 # enough to overcome the challenge.
 
-# #### Metropolis - Implementation
+# #### Metropolis -- Implementation
 
 # In our toy example we will assume that $J_t (\theta^* \mid \theta^{t-1})$ is symmetric, thus
 # $J_t(\theta^* \mid \theta^{t-1}) = J_t (\theta^{t-1} \mid \theta^*)$, so I'll just implement
@@ -349,7 +349,7 @@ function metropolis(S::Int64, width::Float64, ρ::Float64;
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
     accepted = 0::Int64;
-    x = start_x; y = start_x
+    x = start_x; y = start_y
     @inbounds draws[1, :] = [x y]
     for s in 2:S
         x_ = rand(rgn, Uniform(x - width, x + width))
@@ -380,7 +380,7 @@ X_met = metropolis(S, width, ρ);
 
 X_met[1:10, :]
 
-# Also note that the acceptance of the proposals was 21.6%, the expected for Metropolis algorithms (around 20-25%)
+# Also note that the acceptance of the proposals was 21%, the expected for Metropolis algorithms (around 20-25%)
 # (Roberts et. al, 1997).
 
 # We can construct `Chains` object using `MCMCChains.jl`[^mcmcchains] by passing a matrix along with the parameters names as
@@ -396,7 +396,7 @@ summarystats(chain_met)
 
 # Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
 # are the theoretical values).
-# Take notice of the `ess` (effective sample size - ESS) that is between 700-800.
+# Take notice of the `ess` (effective sample size - ESS) is approximate 1,000.
 # So let's calculate the efficiency of our Metropolis algorithm by dividing
 # the ESS by the number of sampling iterations that we've performed:
 
@@ -404,9 +404,9 @@ summarystats(chain_met)
 
 mean(summarystats(chain_met)[:, :ess]) / S
 
-# Our Metropolis algorithm has around 7.5% efficiency. Which, in my honest opinion, *sucks*...(😂)
+# Our Metropolis algorithm has around 10.2% efficiency. Which, in my honest opinion, *sucks*...(😂)
 
-# ##### Metropolis - Visual Intuition
+# ##### Metropolis -- Visual Intuition
 
 # I believe that a good visual intuition, even if you have not understood any mathematical formula, is the key for you to start a
 # fruitful learning journey. So I made some animations!
@@ -539,7 +539,7 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # movements (in the case of $\theta_1$) and **vertical movements** (in the case of $\theta_2$), but never
 # diagonal movements like the ones we saw in the Metropolis algorithm.
 
-# #### Gibbs - Implementation
+# #### Gibbs -- Implementation
 
 # Here are some new things compared to the Metropolis algorithm implementation. First to conditionally
 # sample the parameters $P(\theta_1 \mid \theta_2)$ and $P(\theta_2 \mid \theta_1)$, we need to create
@@ -567,7 +567,7 @@ function gibbs(S::Int64, ρ::Float64;
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
     accepted = 0::Int64
-    x = start_x; y = start_x
+    x = start_x; y = start_y
     β = ρ * σ_y / σ_x
     λ = ρ * σ_x / σ_y
     sqrt1mrho2 = sqrt(1 - ρ^2)
@@ -608,10 +608,10 @@ summarystats(chain_gibbs)
 
 # Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
 # are the theoretical values).
-# Take notice of the `ess` (effective sample size - ESS) that is between 2,100-2,200.
+# Take notice of the `ess` (effective sample size - ESS) that is around 2,100.
 # Since we used `S * 2` as the number of samples, in order for we to compare with Metropolis,
-# we would need to divide the ESS by 2. So our ESS is between 1,000-1,100, which is a nice
-# improvement over Metropolis.
+# we would need to divide the ESS by 2. So our ESS is between 1,000, which is similar
+# to Metropolis' ESS.
 # Now let's calculate the efficiency of our Gibbs algorithm by dividing
 # the ESS by the number of sampling iterations that we've performed also
 # accounting for the `S * 2`:
@@ -619,9 +619,9 @@ summarystats(chain_gibbs)
 (mean(summarystats(chain_gibbs)[:, :ess]) / 2) / S
 
 # Our Gibbs algorithm has around 10.6% efficiency. Which, in my honest opinion, despite the
-# improvement still *sucks*...(😂)
+# small improvement still *sucks*...(😂)
 
-# ##### Gibbs - Visual Intuition
+# ##### Gibbs -- Visual Intuition
 
 # Oh yes, we have animations for Gibbs also!
 
@@ -689,7 +689,114 @@ savefig(joinpath(@OUTPUT, "gibbs_all.svg")); # hide
 # ### What happens when we run Markov chains in parallel?
 
 # Since the Markov chains are **independent**, we can run them in **parallel**. The key to this is
-# ** defining different starting points for each Markov chain ** (if you use a sample of a previous distribution of parameters as a starting point this is not a problem). We will use the same didactic example of a normal bivariate distribution $ X $ and $ Y $ that we used in the previous examples, but now with ** 4 Markov chains with different starting points **.
+# **defining different starting points for each Markov chain** (if you use a sample of a previous distribution
+# of parameters as a starting point this is not a problem). We will use the same toy example of a bivariate normal
+# distribution $X$ and $Y$ that we used in the previous examples, but now with **4 Markov chains in parallel
+# with different starting points**[^markovparallel].
+
+# First, let's defined 4 different pairs of starting points using a nice Cartesian product
+# from Julia's `Base.Iterators`:
+
+starts = Iterators.product((-2.5, 2.5), (2.5, -2.5)) |> collect
+
+# Also, I will restrict this simulation to 100 samples:
+
+const S_parallel = 100;
+
+# Additionally, note that we are using different `seed`s:
+
+X_met_1 = metropolis(S_parallel, width, ρ, seed=124, start_x=first(starts[1]), start_y=last(starts[1]));
+X_met_2 = metropolis(S_parallel, width, ρ, seed=125, start_x=first(starts[2]), start_y=last(starts[2]));
+X_met_3 = metropolis(S_parallel, width, ρ, seed=126, start_x=first(starts[3]), start_y=last(starts[3]));
+X_met_4 = metropolis(S_parallel, width, ρ, seed=127, start_x=first(starts[4]), start_y=last(starts[4]));
+
+# There have been some significant changes in the approval rate for Metropolis proposals. All were around 13% -27%,
+# this is due to the low number of samples (only 100 for each Markov chain), if the samples were larger we would see
+# these values converge to close to 20% according to the previous example of 10,000 samples with a single stream
+# (Roberts et. al, 1997).
+
+# Now let's take a look on how those 4 Metropolis Markov chains sample the parameter space starting from different positions.
+# Each chain will have its own marker and path color, so that we can see their different behavior:
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:grey,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+const logocolors = Colors.JULIA_LOGO_COLORS;
+
+parallel_met = Animation()
+for i in 1:99
+    scatter!(plt, (X_met_1[i, 1], X_met_1[i, 2]),
+             label=false, mc=logocolors.blue, ma=0.3)
+    plot!(X_met_1[i:i + 1, 1], X_met_1[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.blue, label=false)
+    scatter!(plt, (X_met_2[i, 1], X_met_2[i, 2]),
+             label=false, mc=logocolors.red, ma=0.3)
+    plot!(X_met_2[i:i + 1, 1], X_met_2[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.red, label=false)
+    scatter!(plt, (X_met_3[i, 1], X_met_3[i, 2]),
+             label=false, mc=logocolors.green, ma=0.3)
+    plot!(X_met_3[i:i + 1, 1], X_met_3[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.green, label=false)
+    scatter!(plt, (X_met_4[i, 1], X_met_4[i, 2]),
+             label=false, mc=logocolors.purple, ma=0.3)
+    plot!(X_met_4[i:i + 1, 1], X_met_4[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.purple, label=false)
+    frame(parallel_met)
+end
+gif(parallel_met, joinpath(@OUTPUT, "parallel_met.gif"), fps=5); # hide
+
+# \fig{parallel_met}
+# \center{*Animation of 4 Parallel Metropolis Markov Chains*} \\
+
+# Now we'll do the the same for Gibbs, taking care to provide also different `seed`s and starting points:
+
+X_gibbs_1 = gibbs(S_parallel * 2, ρ, seed=124, start_x=first(starts[1]), start_y=last(starts[1]));
+X_gibbs_2 = gibbs(S_parallel * 2, ρ, seed=125, start_x=first(starts[2]), start_y=last(starts[2]));
+X_gibbs_3 = gibbs(S_parallel * 2, ρ, seed=126, start_x=first(starts[3]), start_y=last(starts[3]));
+X_gibbs_4 = gibbs(S_parallel * 2, ρ, seed=127, start_x=first(starts[4]), start_y=last(starts[4]));
+
+# Now let's take a look on how those 4 Gibbs Markov chains sample the parameter space starting from different positions.
+# Each chain will have its own marker and path color, so that we can see their different behavior:
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:grey,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+parallel_gibbs = Animation()
+for i in 1:199
+    scatter!(plt, (X_gibbs_1[i, 1], X_gibbs_1[i, 2]),
+             label=false, mc=logocolors.blue, ma=0.3)
+    plot!(X_gibbs_1[i:i + 1, 1], X_gibbs_1[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.blue, label=false)
+    scatter!(plt, (X_gibbs_2[i, 1], X_gibbs_2[i, 2]),
+             label=false, mc=logocolors.red, ma=0.3)
+    plot!(X_gibbs_2[i:i + 1, 1], X_gibbs_2[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.red, label=false)
+    scatter!(plt, (X_gibbs_3[i, 1], X_gibbs_3[i, 2]),
+             label=false, mc=logocolors.green, ma=0.3)
+    plot!(X_gibbs_3[i:i + 1, 1], X_gibbs_3[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.green, label=false)
+    scatter!(plt, (X_gibbs_4[i, 1], X_gibbs_4[i, 2]),
+             label=false, mc=logocolors.purple, ma=0.3)
+    plot!(X_gibbs_4[i:i + 1, 1], X_gibbs_4[i:i + 1, 2], seriestype=:path,
+          lc=logocolors.purple, label=false)
+    frame(parallel_gibbs)
+end
+gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
+
+# \fig{parallel_gibbs}
+# \center{*Animation of 4 Parallel Gibbs Markov Chains*} \\
+
+# ## Hamiltonian Monte Carlo -- HMC
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
@@ -698,6 +805,7 @@ savefig(joinpath(@OUTPUT, "gibbs_all.svg")); # hide
 # [^mcmcchains]: this is one of the packages of Turing's ecosystem. I recommend you to take a look into [4. **How to use Turing**](/pages/4_Turing/).
 # [^gibbs]: if you want a better explanation of the Gibbs algorithm I suggest to see Casella & George (1992).
 # [^gibbs2]: this will be clear in the animations and images.
+# [^markovparallel]: note that there is some shenanigans here to take care. You would also want to have different seeds for the random number generator in each Markov chain. This is why `metropolis()` and `gibbs()` have a `seed` parameter.
 
 # ## References
 
