@@ -41,7 +41,8 @@
 # which specifies a domain-specific language and backend for Turing (which itself is a PPL). The main feature of `DynamicPPL.jl`
 # is that is is entirely written in Julia and also it is modular.
 
-# [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl) provides a robust, modular and efficient implementation
+# [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl) (Xu, Ge, Tebbutt, Tarek, Trapp & Ghahramani2020) provides a robust,
+# modular and efficient implementation
 # of advanced HMC algorithms. The state-of-the-art HMC algorithm is the **N**o-**U**-**T**urn **S**ampling
 # (NUTS)[^MCMC] (Hoffman & Gelman, 2011) which is available in `AdvancedHMC.jl`.
 
@@ -221,3 +222,6 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 # Hoffman, M. D., & Gelman, A. (2011). The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo. Journal of Machine Learning Research, 15(1), 1593–1623. Retrieved from http://arxiv.org/abs/1111.4246
 #
 # Tarek, M., Xu, K., Trapp, M., Ge, H., & Ghahramani, Z. (2020). DynamicPPL: Stan-like Speed for Dynamic Probabilistic Models. ArXiv:2002.02702 [Cs, Stat]. http://arxiv.org/abs/2002.02702
+#
+# Xu, K., Ge, H., Tebbutt, W., Tarek, M., Trapp, M., & Ghahramani, Z. (2020). AdvancedHMC.jl: A robust, modular and efficient implementation of advanced HMC algorithms. Symposium on Advances in Approximate Bayesian Inference, 1–10. http://proceedings.mlr.press/v118/xu20a.html
+

@@ -534,8 +534,8 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # both $\theta_1$ and $\theta_2$, causing **diagonal** movement in space 2-D sample. In other words,
 # the proposal is done regarding all dimensions of the parameter space.
 
-# In the case of the Gibbs algorithm, in our toy example, this movement occurs only in a single parameter
-#, *i.e* single dimension, as we sample sequentially and conditionally to other parameters. This causes **horizontal**
+# In the case of the Gibbs algorithm, in our toy example, this movement occurs only in a single parameter,
+# *i.e* single dimension, as we sample sequentially and conditionally to other parameters. This causes **horizontal**
 # movements (in the case of $\theta_1$) and **vertical movements** (in the case of $\theta_2$), but never
 # diagonal movements like the ones we saw in the Metropolis algorithm.
 
@@ -554,7 +554,7 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # \sigma_{YX} &= 1 - \rho^2\\
 # \sigma_{XY} &= 1 - \rho^2\\
 # \theta_1 &\sim \text{Normal} \bigg( \mu_X + \lambda \cdot (y^* - \mu_Y), \sigma_{XY} \bigg) \\
-# \theta_2 &\sim \text{Normal} \bigg( \mu_y + \beta \cdot (x^* - \mu_X), \sigma_{YX} \bigg).
+# \theta_2 &\sim \text{Normal} \bigg( \mu_y + \beta \cdot (x^* - \mu_X), \sigma_{YX} \bigg)
 # \end{aligned}
 # $$
 
@@ -697,7 +697,7 @@ savefig(joinpath(@OUTPUT, "gibbs_all.svg")); # hide
 # First, let's defined 4 different pairs of starting points using a nice Cartesian product
 # from Julia's `Base.Iterators`:
 
-starts = Iterators.product((-2.5, 2.5), (2.5, -2.5)) |> collect
+const starts = Iterators.product((-2.5, 2.5), (2.5, -2.5)) |> collect
 
 # Also, I will restrict this simulation to 100 samples:
 

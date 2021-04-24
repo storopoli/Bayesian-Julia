@@ -418,10 +418,10 @@
 
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
-d = LogNormal(0, 2);
-range_d = 0:0.001:4;
-q25 = quantile(d, 0.25);
-q75 = quantile(d, 0.75);
+d = LogNormal(0, 2)
+range_d = 0:0.001:4
+q25 = quantile(d, 0.25)
+q75 = quantile(d, 0.75)
 plot((range_d, pdf.(d, range_d)),
      leg=false,
      xlims=(-0.2, 4.2),
@@ -432,7 +432,7 @@ scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=5)
 plot!(range(q25, stop=q75, length=100),
       x -> pdf(d, x),
       lc=false, fc=:blues,
-      fill=true, fillalpha=0.5)
+      fill=true, fa=0.5)
 savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 
 # \fig{lognormal}
@@ -446,14 +446,14 @@ savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
 # maximum likelihood again lead us to estimated values ​​that are not consistent with the actual probability density
 # of the value of $\theta$.
 
-d1 = Normal(10, 1);
-d2 = Normal(2, 1);
-mix_d = [0.4, 0.6];
-d = MixtureModel([d1, d2], mix_d);
-range_d = -2:0.01:14;
-sim_d = rand(d, 10_000);
-q25 = quantile(sim_d, 0.25);
-q75 = quantile(sim_d, 0.75);
+d1 = Normal(10, 1)
+d2 = Normal(2, 1)
+mix_d = [0.4, 0.6]
+d = MixtureModel([d1, d2], mix_d)
+range_d = -2:0.01:14
+sim_d = rand(d, 10_000)
+q25 = quantile(sim_d, 0.25)
+q75 = quantile(sim_d, 0.75)
 plot((range_d, pdf.(d, range_d)),
      leg=false,
      xlims=(-2, 14),
@@ -465,7 +465,7 @@ scatter!((mode(d2), pdf(d, mode(d2))), mc=:green, ms=5)
 plot!(range(q25, stop=q75, length=100),
       x -> pdf(d, x),
       lc=false, fc=:blues,
-      fill=true, fillalpha=0.5)
+      fill=true, fa=0.5)
 savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
 
 # \fig{mixture}
