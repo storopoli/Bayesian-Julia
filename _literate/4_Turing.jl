@@ -31,7 +31,8 @@
 # * [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl)
 # * [`DistributionsAD.jl`](https://github.com/TuringLang/DistributionsAD.jl)
 
-# The first one is [`Turing.jl`](https://github.com/TuringLang/Turing.jl) itself, the main package that we use to
+# The first one is [`Turing.jl`](https://github.com/TuringLang/Turing.jl) (Ge, Xu & Ghahramani, 2018)
+# itself, the main package that we use to
 # **interface with all the Turing ecosystem** of packages and the backbone of the PPL Turing.
 
 # The second, [`MCMCChains.jl`](https://github.com/TuringLang/MCMCChains.jl), is an interface to **summarizing MCMC
@@ -41,7 +42,7 @@
 # which specifies a domain-specific language and backend for Turing (which itself is a PPL). The main feature of `DynamicPPL.jl`
 # is that is is entirely written in Julia and also it is modular.
 
-# [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl) (Xu, Ge, Tebbutt, Tarek, Trapp & Ghahramani2020) provides a robust,
+# [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl) (Xu, Ge, Tebbutt, Tarek, Trapp & Ghahramani, 2020) provides a robust,
 # modular and efficient implementation
 # of advanced HMC algorithms. The state-of-the-art HMC algorithm is the **N**o-**U**-**T**urn **S**ampling
 # (NUTS)[^MCMC] (Hoffman & Gelman, 2011) which is available in `AdvancedHMC.jl`.
