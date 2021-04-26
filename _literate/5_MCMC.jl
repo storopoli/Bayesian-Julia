@@ -798,6 +798,55 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # ## Hamiltonian Monte Carlo -- HMC
 
+# The problems of low acceptance rates of proposals for Metropolis techniques and the low performance of the Gibbs algorithm
+# in multidimensional problems (in which the posterior's topology is quite complex) led to the emergence of a new MCMC technique
+# using Hamiltonian dynamics (in honor of the Irish physicist [ William Rowan Hamilton](https://en.wikipedia.org/wiki/William_Rowan_Hamilton)
+# (1805-1865) (figure below). The name for this technique is *Hamiltonian Monte Carlo* -- HMC.
+
+# ![William Rowan Hamilton](/pages/images/hamilton.png)
+#
+# \center{*William Rowan Hamilton*} \\
+
+# The HMC is an adaptation of the Metropolis technique and employs a guided scheme for generating new proposals:
+# this improves the proposal's acceptance rate and, consequently, efficiency. More specifically, the HMC uses
+# the posterior log gradient to direct the Markov chain to regions of higher posterior density, where most samples
+# are collected. As a result, a Markov chain with the well-adjusted HMC algorithm will accept proposals at a much higher
+# rate than the traditional Metropolis algorithm (Roberts et. al, 1997).
+
+# HMC was first described in the physics literature (Duane, Kennedy, Pendleton & Roweth, 1987) (which they called the
+# *"Hybrid" Monte Carlo* -- HMC). Soon after, HMC was applied to statistical problems by Neal (1994) (which he called
+# *Hamiltonean Monte Carlo* -- HMC). For an in-depth discussion regarding HMC (which is not the focus of this tutorial),
+# I recommend Neal (2011) and Betancourt (2017).
+
+# HMC uses Hamiltonian dynamics applied to particles exploring the topology of a posterior density. In some simulations
+# Metropolis has an acceptance rate of approximately 23%, while HMC 65% (Gelman et al., 2013b). In addition to better
+# exploring the posterior's topology and tolerating complex topologies, HMC is much more efficient than Metropolis and
+# does not suffer from the Gibbs' parameter correlation problem.
+
+# For each component $\theta_j$, the HMC adds a momentum variable $\phi_j$. The subsequent density $P(\theta \mid y)$
+# is increased by an independent distribution $P(\phi)$ of the momentum, thus defining a joint distribution:
+
+# $$ P(\theta, \phi \mid y) = P(\phi) \cdot P(\theta \mid y) \label{hmcjoint} $$
+
+# HMC uses a proposal distribution that changes depending on the current state in the Markov chain. The HMC discovers
+# the direction in which the posterior distribution increases, called *gradient*, and distorts the distribution of proposals
+# towards the *gradient*. In the Metropolis algorithm, the distribution of the proposals would be a (usually) Normal distribution
+# centered on the current position, so that jumps above or below the current position would have the same probability of being
+# proposed. But the HMC generates proposals quite differently.
+
+# You can imagine that for high-dimensional posterior densities that have *narrow diagonal valleys* and even *curved valleys*,
+# the HMC dynamics will find proposed positions that are much more **promising** than a naive symmetric proposal distribution,
+# and more promising than the Gibbs sampling, which can get stuck in *diagonal walls*.
+
+# The probability of the Markov chain changing state in the HMC algorithm is defined as:
+
+# $$
+# P_{\text{change}} = \min\left({\frac{P(\theta_{\text{proposed}}) \cdot
+# P(\phi_{\text{proposed}})}{P(\theta_{\text{current}})\cdot P(\phi_{\text{current}})}}, 1\right) \label{hmcproposal}
+# $$
+
+# where $\phi$ is the momentum.
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
