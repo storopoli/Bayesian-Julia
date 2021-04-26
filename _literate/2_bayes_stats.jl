@@ -55,7 +55,7 @@
 # > and so on, is of no consequence." (de Finetti, 1974)
 
 # In conclusion: no matter what the probability is, you can use it anyway, even if it is an absolute frequency
-# (ex: probability that I will ride by bike naked is ZERO because the probability that an event that never occurred
+# (ex: probability that I will ride my bike naked is ZERO because the probability that an event that never occurred
 # will occur in the future it is ZERO) or a subjective guess (ex: maybe the probability is not ZERO, but 0.00000000000001;
 # very unlikely, but not impossible).
 
