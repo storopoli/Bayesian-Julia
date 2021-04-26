@@ -60,7 +60,7 @@
 # Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
 # "split-apply-combine" operations in three languages[^updatedversion] :
 #
-# * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.39ms
+# * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.4ms
 # * Python: using `Pandas` and `NumPy` - 1.76ms
 # * R: using `{dplyr}` - 3.22ms
 
@@ -683,7 +683,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 #
 # ## Footnotes
 #
-# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021.
+# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021. `DataFrames.jl` version 1.0.1, `Pandas` version 1.2.4, `NumPy` version 1.20.2 and `{dplyr}` version 1.0.5.
 # [^mvnimplem]: which of course I did not. The `Mvn` class is inspired by [Iason Sarantopoulos' implementation](http://blog.sarantop.com/notes/mvn).
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
