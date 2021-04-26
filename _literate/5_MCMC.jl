@@ -847,6 +847,17 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # where $\phi$ is the momentum.
 
+# ### Momentum Distribution -- $P(\phi)$
+
+# We normally give $\phi$ a normal multivariate distribution with a mean of 0 and a covariance of $\mathbf{M}$, a "mass matrix".
+# To keep things a little bit simpler, we use a diagonal mass matrix $\mathbf{M}$. This makes the components of $\phi$ independent
+# with $\phi_j \sim \text{Normal}(0, M_{jj})$
+
+# ### HMC Algorithm
+
+# The HMC algorithm is very similar to the Metropolis algorithm but with the inclusion of the momentum $\phi$ as a way of
+# quantifying the gradient of the posterior distribution.
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
