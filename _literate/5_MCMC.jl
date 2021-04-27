@@ -892,7 +892,6 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
-    trajectories = Matrix{Float64}(undef, (0, 2))
     accepted = 0::Int64;
     x = start_x; y = start_y
     @inbounds draws[1, :] = [x y]
@@ -907,11 +906,9 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
         ϕ += 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
         for l in 1:L
             x_, y_ = [x_, y_] + (ϵ * M * ϕ)
-            trajectories = vcat(trajectories, [x_ y_])
             ϕ += + 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
         end
-        #make the proposal symmetric
-        ϕ = -ϕ
+        ϕ = -ϕ # make the proposal symmetric
         kinetic = sum(ϕ.^2) / 2
         log_p_ = logpdf(binormal, [x_, y_]) - kinetic
         r = exp(log_p_ - log_p)
@@ -924,14 +921,14 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
         @inbounds draws[s, :] = [x y]
     end
     println("Acceptance rate is: $(accepted / S)")
-    return draws, trajectories
+    return draws
 end
 
 # We are going to use $L = 40$ and (don't ask me how I found out) $\epsilon = 0.0856$:
 
-X_hmc, trajectories = hmc(1_000, width, ρ, ϵ=0.0856, L=40);
+X_hmc = hmc(S, width, ρ, ϵ=0.0856, L=40);
 
-# Our acceptance rate is 21.5%.
+# Our acceptance rate is 20.79%.
 # As before lets' take a quick peek into `X_hmc`, we'll see it's a matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
 
 X_hmc[1:10, :]
@@ -947,14 +944,81 @@ summarystats(chain_hmc)
 
 # Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
 # are the theoretical values).
-# Take notice of the `ess` (effective sample size - ESS) that is around 190, and we used `S = 1_000` as the number of samples.
+# Take notice of the `ess` (effective sample size - ESS) that is around 1,600.
 # Now let's calculate the efficiency of our HMC algorithm by dividing
 # the ESS by the number of sampling iterations:
 
-mean(summarystats(chain_hmc)[:, :ess]) / 1_000
+mean(summarystats(chain_hmc)[:, :ess]) / S
 
-# We see that a simple naïve (and not well-calibrated) HMC has double efficiency from both Gibbs and Metropolis.
-# ≈ 10% versus ≈ 20%. Great! 😀
+# We see that a simple naïve (and not well-calibrated) HMC has 70% more efficiency from both Gibbs and Metropolis.
+# ≈ 10% versus ≈ 17%. Great! 😀
+
+# ##### HMC -- Visual Intuition
+
+# This wouldn't be complete without animations for HMC!
+
+# The animation in figure below shows the first 100 simulations of the HMC algorithm used to generate `X_hmc`.
+# Note that we have a gradient-guided proposal at each iteration, so the animation would resemble more link
+# a very lucky random-walk Metropolis.
+# The blue-filled ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
+
+plt = covellipse(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.3,
+    c=:steelblue,
+    label="90% HPD",
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+hmc_anim = @animate for i in 1:100
+    scatter!(plt, (X_hmc[i, 1], X_hmc[i, 2]),
+             label=false, mc=:red, ma=0.5)
+    plot!(X_hmc[i:i + 1, 1], X_hmc[i:i + 1, 2], seriestype=:path,
+          lc=:green, la=0.5, label=false)
+end
+gif(hmc_anim, joinpath(@OUTPUT, "hmc_anim.gif"), fps=5); # hide
+
+# \fig{hmc_anim}
+# \center{*Animation of the First 100 Samples Generated from the HMC Algorithm*} \\
+
+# As usual, let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
+
+scatter((X_hmc[warmup:warmup + 1_000, 1], X_hmc[warmup:warmup + 1_000, 2]),
+         label=false, mc=:red, ma=0.3,
+         xlims=(-3, 3), ylims=(-3, 3),
+         xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+covellipse!(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:steelblue,
+    label="90% HPD")
+
+
+savefig(joinpath(@OUTPUT, "hmc_first1000.svg")); # hide
+
+# \fig{hmc_first1000}
+# \center{*First 1,000 Samples Generated from the HMC Algorithm after warm-up*} \\
+
+
+# And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
+
+scatter((X_hmc[warmup:end, 1], X_hmc[warmup:end, 2]),
+         label=false, mc=:red, ma=0.3,
+         xlims=(-3, 3), ylims=(-3, 3),
+         xlabel=L"\theta_1", ylabel=L"\theta_2")
+
+covellipse!(μ, Σ,
+    n_std=1.64, # 5% - 95% quantiles
+    xlims=(-3, 3), ylims=(-3, 3),
+    alpha=0.5,
+    c=:steelblue,
+    label="90% HPD")
+savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
+
+# \fig{hmc_all}
+# \center{*All 9,000 Samples Generated from the HMC Algorithm after warm-up*} \\
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
