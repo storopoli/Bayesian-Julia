@@ -142,7 +142,7 @@ Random.seed!(123);
 # \label{mvnormal}
 # $$
 
-# If we designate $\mu_X = \mu_Y = 0$ and $\sigma_X = \sigma_Y = 1$ (mean 0 and standard deviation 1
+# If we assign $\mu_X = \mu_Y = 0$ and $\sigma_X = \sigma_Y = 1$ (mean 0 and standard deviation 1
 # for both $X$ and $Y$), we have the following formulation from \eqref{mvnormal}:
 
 # $$
@@ -163,7 +163,7 @@ Random.seed!(123);
 # \label{stdmvnormal}
 # $$
 
-# All that remains is to designate a value of $\rho$ in \eqref{stdmvnormal} for the correlation between $X$ and $Y$.
+# All that remains is to assign a value for $\rho$ in \eqref{stdmvnormal} for the correlation between $X$ and $Y$.
 # For our example we will use correlation of 0.8 ($\rho = 0.8$):
 
 # $$
@@ -292,8 +292,7 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 # I will use the already known `Distributions.jl` `MvNormal` from the plots above along with the `logpdf()`
 # function to calculate the PDF of the proposed and current $\theta$s. It is easier to work with
-# probability logs than with the absolute values. This is due to computational complexity and
-# also numerical underflow. Mathematically we will compute:
+# probability logs than with the absolute values[^numerical]. Mathematically we will compute:
 
 # $$
 # \begin{aligned}
@@ -856,12 +855,38 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 # ### HMC Algorithm
 
 # The HMC algorithm is very similar to the Metropolis algorithm but with the inclusion of the momentum $\phi$ as a way of
-# quantifying the gradient of the posterior distribution.
+# quantifying the gradient of the posterior distribution:
+
+# 1. Sample $\phi$ from a $\text{Normal}(0, \mathbf{M})$
+# 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
+
+#   1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
+#       $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#
+#   2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
+#       $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
+#
+#   3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
+#       $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#
+# 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
+#   $$ r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})} $$
+#
+# 4. Assign:
+#        $$
+#        \theta^t =
+#        \begin{cases}
+#        \theta^* & \text{with probability } \min (r, 1) \\
+#        \theta^{t-1} & \text{otherwise}
+#        \end{cases}
+#        $$
+
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
 # [^metropolis]: if you want a better explanation of the Metropolis and Metropolis-Hastings algorithms I suggest to see Chib & Greenberg (1995).
+# [^numerical]: Due to easier computational complexity and to avoid [numeric overflow](https://en.wikipedia.org/wiki/Integer_overflow) we generally use sum of logs instead of multiplications, specially when dealing with probabilities, *i.e.* $\mathbb{R} \in [0, 1]$.
 # [^mcmcchains]: this is one of the packages of Turing's ecosystem. I recommend you to take a look into [4. **How to use Turing**](/pages/4_Turing/).
 # [^gibbs]: if you want a better explanation of the Gibbs algorithm I suggest to see Casella & George (1992).
 # [^gibbs2]: this will be clear in the animations and images.
