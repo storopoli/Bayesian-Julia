@@ -200,6 +200,20 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 # On the figure above we can see, for each parameter in the model, on the left the
 # parameter's traceplot and on the right the parameter's density[^visualization].
 
+# ## Prior and Posterior Predictive Checks
+
+# Predictive checks are a great way to **validate a model**.
+# The idea is to **generate data from the model** using **parameters from draws from the prior or posterior**.
+# **Prior predictive check** is when we simulate data using model's parameters values drawn fom the **prior** distribution,
+# and **posterior predictive check** is is when we simulate data using model's parameters values drawn fom the **posterior**
+# distribution.
+
+# This is quite easy in Turing. Our six-sided dice model already has a **posterior distribution** which is the object `chain`.
+# We need to create a **prior distribution** for our model. To accomplish this, instead of supplying a MCMC sampler like
+# `NUTS()`, we supply the "sampler" `Prior()` inside Turing's `sample()` function:
+
+prior_chain = sample(model, Prior(), 2_000);
+
 # ## Conclusion
 
 # This is the basic overview of Turing usage. I hope that I could show you how simple and intuitive is to
@@ -207,7 +221,7 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 # specifying the **data**, **sampler** and **number of interactions**. All **probabilistic parameters** (the ones that you've specified
 # using `~`) will be **inferred** with a full **posterior density**. Finally, you inspect the **parameters' statistics** like
 # **mean** and **standard deviation**, along with **convergence diagnostics** like `r_hat`. Conveniently, you can **plot** stuff
-# easily if you want to.
+# easily if you want to. You can also do **predictive checks** using either the **posterior** or **prior** model's distributions.
 
 # ## Footnotes
 #
