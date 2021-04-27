@@ -880,7 +880,7 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # ### HMC -- Implementation
 
-# Alright let's code HMC for our toy example's bivariate normal distribution.
+# Alright let's code the HMC algorithm for our toy example's bivariate normal distribution:
 
 using ForwardDiff:gradient
 function hmc(S::Int64, width::Float64, ρ::Float64;
@@ -924,6 +924,24 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
     return draws
 end
 
+# In the `hmc()` function above I am using the `gradient()` function from
+# [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl) (Revels, Lubin & Papamarkou, 2016)
+# which is Julia's package for forward mode auto differentiation (autodiff).
+# The `gradient()` function accepts a function as input and an array $\mathbf{X}$. It literally evaluates the function $f$
+# at $\mathbf{X}$ and returns the gradient $\nabla f(\mathbf{X})$.
+# This is one the advantages of Julia: I don't need to implement an autodiff for `logpdf()`s of any distribution, it will
+# be done automatically for any one from `Distributions.jl`. You can also try reverse mode autodiff with
+# [`ReverseDiff.jl`](https://github.com/JuliaDiff/ReverseDiff.jl) if you want to; and it will also very easy to get a gradient.
+# Now, we've got carried away with Julia's amazing autodiff potential... Let me show you an example of a gradient of a log PDF
+# evaluated at some value. I will use our `mvnormal` bivariate normal distribution as an example and evaluate its gradient
+# at $x = 1$ and $y = -1$:
+
+gradient(x -> logpdf(mvnormal, x), [1, -1])
+
+# So the gradient tells me that the partial derivative of $x = 1$ with respect to our `mvnormal` distribution is `-5`
+# and the partial derivative of $y = -1$ with respect to our `mvnormal` distribution is `5`.
+
+# Now let's run our HMC Markov chain.
 # We are going to use $L = 40$ and (don't ask me how I found out) $\epsilon = 0.0856$:
 
 X_hmc = hmc(S, width, ρ, ϵ=0.0856, L=40);
@@ -950,7 +968,7 @@ summarystats(chain_hmc)
 
 mean(summarystats(chain_hmc)[:, :ess]) / S
 
-# We see that a simple naïve (and not well-calibrated) HMC has 70% more efficiency from both Gibbs and Metropolis.
+# We see that a simple naïve (and not well-calibrated[^calibrated]) HMC has 70% more efficiency from both Gibbs and Metropolis.
 # ≈ 10% versus ≈ 17%. Great! 😀
 
 # ##### HMC -- Visual Intuition
@@ -958,8 +976,8 @@ mean(summarystats(chain_hmc)[:, :ess]) / S
 # This wouldn't be complete without animations for HMC!
 
 # The animation in figure below shows the first 100 simulations of the HMC algorithm used to generate `X_hmc`.
-# Note that we have a gradient-guided proposal at each iteration, so the animation would resemble more link
-# a very lucky random-walk Metropolis.
+# Note that we have a gradient-guided proposal at each iteration, so the animation would resemble more like
+# a very lucky random-walk Metropolis [^luckymetropolis].
 # The blue-filled ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
 
 plt = covellipse(μ, Σ,
@@ -1020,6 +1038,8 @@ savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
 # \fig{hmc_all}
 # \center{*All 9,000 Samples Generated from the HMC Algorithm after warm-up*} \\
 
+# ### HMC -- Complex Topologies
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
@@ -1029,6 +1049,8 @@ savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
 # [^gibbs]: if you want a better explanation of the Gibbs algorithm I suggest to see Casella & George (1992).
 # [^gibbs2]: this will be clear in the animations and images.
 # [^markovparallel]: note that there is some shenanigans here to take care. You would also want to have different seeds for the random number generator in each Markov chain. This is why `metropolis()` and `gibbs()` have a `seed` parameter.
+# [^calibrated]: as detailed in the following sections, HMC is quite sensitive to the choice of $L$ and $\epsilon$ and I haven't tried to get the best possible combination of those.
+# [^luckymetropolis]: or a not-drunk random-walk Metropolis 😂.
 
 # ## References
 
@@ -1071,5 +1093,7 @@ savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
 # Neal, Radford M. (2003). Slice Sampling. The Annals of Statistics, 31(3), 705–741. Retrieved from https://www.jstor.org/stable/3448413
 #
 # Neal, Radford M. (2011). MCMC using Hamiltonian dynamics. In S. Brooks, A. Gelman, G. L. Jones, & X.-L. Meng (Eds.), Handbook of markov chain monte carlo.
+#
+# Revels, J., Lubin, M., & Papamarkou, T. (2016). Forward-Mode Automatic Differentiation in Julia. ArXiv:1607.07892 [Cs]. http://arxiv.org/abs/1607.07892
 #
 # Roberts, G. O., Gelman, A., & Gilks, W. R. (1997). Weak convergence and optimal scaling of random walk Metropolis algorithms. Annals of Applied Probability, 7(1), 110–120. https://doi.org/10.1214/aoap/1034625254
