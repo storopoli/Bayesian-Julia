@@ -600,7 +600,7 @@ X_gibbs[1:10, :]
 
 chain_gibbs = Chains(X_gibbs, [:X, :Y]);
 
-# Then we can get summary statistics regarding our Markov chain derived from the Metropolis algorithm:
+# Then we can get summary statistics regarding our Markov chain derived from the Gibbs algorithm:
 
 summarystats(chain_gibbs)
 
@@ -859,12 +859,12 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 # 1. Sample $\phi$ from a $\text{Normal}(0, \mathbf{M})$
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
 #
-#    1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
-#        $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
-#    2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
-#       $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
-#    3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
-#       $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#     1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
+#           $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#     2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
+#           $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
+#     3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
+#           $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
 # 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
 #   $$ r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})} $$
@@ -884,7 +884,7 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 using ForwardDiff:gradient
 function hmc(S::Int64, width::Float64, ρ::Float64;
-             L=40, stepsize=0.8,
+             L=40, ϵ=0.001,
              μ_x::Float64=0.0, μ_y::Float64=0.0,
              σ_x::Float64=1.0, σ_y::Float64=1.0,
              start_x=-2.5, start_y=2.5,
@@ -892,25 +892,29 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
+    trajectories = Matrix{Float64}(undef, (0, 2))
     accepted = 0::Int64;
     x = start_x; y = start_y
     @inbounds draws[1, :] = [x y]
-    ϵ = 0.0001
     M = [1. 0.; 0. 1.]
     ϕ_d = MvNormal([0.0, 0.0], M)
     for s in 2:S
         x_ = rand(rgn, Uniform(x - width, x + width))
         y_ = rand(rgn, Uniform(y - width, y + width))
         ϕ = rand(rgn, ϕ_d)
-        log_p = logpdf(binormal, [x, y]) - logpdf(ϕ_d, ϕ)
-        for l in L
-            ϕ_ += + 0.5 * ϵ .* gradient(x -> logpdf(binormal, x), [x_, y_])
+        kinetic = sum(ϕ.^2) / 2
+        log_p = logpdf(binormal, [x, y]) - kinetic
+        ϕ += 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
+        for l in 1:L
             x_, y_ = [x_, y_] + (ϵ * M * ϕ)
-            if l != L
-                ϕ_ += 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
-            end
+            trajectories = vcat(trajectories, [x_ y_])
+            ϕ += + 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
         end
-        r = exp(logpdf(binormal, [x_, y_]) + logpdf(ϕ_d, ϕ_) - logpdf(binormal, [x, y]) - logpdf(ϕ_d, ϕ))
+        #make the proposal symmetric
+        ϕ = -ϕ
+        kinetic = sum(ϕ.^2) / 2
+        log_p_ = logpdf(binormal, [x_, y_]) - kinetic
+        r = exp(log_p_ - log_p)
 
         if r > rand(rgn, Uniform())
             x = x_
@@ -920,10 +924,37 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
         @inbounds draws[s, :] = [x y]
     end
     println("Acceptance rate is: $(accepted / S)")
-    return draws
+    return draws, trajectories
 end
 
-# We are going to use $L = 40$ and
+# We are going to use $L = 40$ and (don't ask me how I found out) $\epsilon = 0.0856$:
+
+X_hmc, trajectories = hmc(1_000, width, ρ, ϵ=0.0856, L=40);
+
+# Our acceptance rate is 21.5%.
+# As before lets' take a quick peek into `X_hmc`, we'll see it's a matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
+
+X_hmc[1:10, :]
+
+# Again, we construct a `Chains` object by passing a matrix along with the parameters names as
+# symbols inside the `Chains()` constructor:
+
+chain_hmc = Chains(X_hmc, [:X, :Y]);
+
+# Then we can get summary statistics regarding our Markov chain derived from the HMC algorithm:
+
+summarystats(chain_hmc)
+
+# Both of `X` and `Y` have mean close to 0 and standard deviation close to 1 (which
+# are the theoretical values).
+# Take notice of the `ess` (effective sample size - ESS) that is around 190, and we used `S = 1_000` as the number of samples.
+# Now let's calculate the efficiency of our HMC algorithm by dividing
+# the ESS by the number of sampling iterations:
+
+mean(summarystats(chain_hmc)[:, :ess]) / 1_000
+
+# We see that a simple naïve (and not well-calibrated) HMC has double efficiency from both Gibbs and Metropolis.
+# ≈ 10% versus ≈ 20%. Great! 😀
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
