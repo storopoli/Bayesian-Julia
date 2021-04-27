@@ -861,10 +861,8 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 #
 #    1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
 #        $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
-#
 #    2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
 #       $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
-#
 #    3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
 #       $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
@@ -884,7 +882,7 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # Alright let's code HMC for our toy example's bivariate normal distribution.
 
-using LinearAlgebra
+using ForwardDiff:gradient
 function hmc(S::Int64, width::Float64, ρ::Float64;
              L=40, stepsize=0.8,
              μ_x::Float64=0.0, μ_y::Float64=0.0,
@@ -904,14 +902,15 @@ function hmc(S::Int64, width::Float64, ρ::Float64;
         x_ = rand(rgn, Uniform(x - width, x + width))
         y_ = rand(rgn, Uniform(y - width, y + width))
         ϕ = rand(rgn, ϕ_d)
+        log_p = logpdf(binormal, [x, y]) - logpdf(ϕ_d, ϕ)
         for l in L
-            ϕ .+= 0.5 * ϵ .* logpdf(binormal, [x_, y_])
+            ϕ_ += + 0.5 * ϵ .* gradient(x -> logpdf(binormal, x), [x_, y_])
             x_, y_ = [x_, y_] + (ϵ * M * ϕ)
             if l != L
-                ϕ .+= 0.5 * ϵ * logpdf(binormal, [x_, y_])
+                ϕ_ += 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
             end
         end
-        r = exp(logpdf(binormal, [x_, y_]) - logpdf(binormal, [x, y]))
+        r = exp(logpdf(binormal, [x_, y_]) + logpdf(ϕ_d, ϕ_) - logpdf(binormal, [x, y]) - logpdf(ϕ_d, ϕ))
 
         if r > rand(rgn, Uniform())
             x = x_
