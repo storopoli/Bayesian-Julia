@@ -965,9 +965,9 @@ version = "1.0.10"
 
 [[Plots]]
 deps = ["Base64", "Contour", "Dates", "FFMPEG", "FixedPointNumbers", "GR", "GeometryBasics", "JSON", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "PlotThemes", "PlotUtils", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs"]
-git-tree-sha1 = "30004ffb10118498f38eb0f22cffe802b0aae45f"
+git-tree-sha1 = "114c51506911e42afa9fb9ea536670814831b1f6"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.12.0"
+version = "1.13.1"
 
 [[PooledArrays]]
 deps = ["DataAPI", "Future"]
