@@ -565,7 +565,6 @@ function gibbs(S::Int64, ρ::Float64;
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
-    accepted = 0::Int64
     x = start_x; y = start_y
     β = ρ * σ_y / σ_x
     λ = ρ * σ_x / σ_y
@@ -859,14 +858,14 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # 1. Sample $\phi$ from a $\text{Normal}(0, \mathbf{M})$
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
-
-#   1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
-#       $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
-#   2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
+#    1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
+#        $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#
+#    2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
 #       $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
 #
-#   3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
+#    3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
 #       $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
 # 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
@@ -881,6 +880,51 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 #        \end{cases}
 #        $$
 
+# ### HMC -- Implementation
+
+# Alright let's code HMC for our toy example's bivariate normal distribution.
+
+using LinearAlgebra
+function hmc(S::Int64, width::Float64, ρ::Float64;
+             L=40, stepsize=0.8,
+             μ_x::Float64=0.0, μ_y::Float64=0.0,
+             σ_x::Float64=1.0, σ_y::Float64=1.0,
+             start_x=-2.5, start_y=2.5,
+             seed=123)
+    rgn = MersenneTwister(seed)
+    binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
+    draws = Matrix{Float64}(undef, S, 2)
+    accepted = 0::Int64;
+    x = start_x; y = start_y
+    @inbounds draws[1, :] = [x y]
+    ϵ = 0.0001
+    M = [1. 0.; 0. 1.]
+    ϕ_d = MvNormal([0.0, 0.0], M)
+    for s in 2:S
+        x_ = rand(rgn, Uniform(x - width, x + width))
+        y_ = rand(rgn, Uniform(y - width, y + width))
+        ϕ = rand(rgn, ϕ_d)
+        for l in L
+            ϕ .+= 0.5 * ϵ .* logpdf(binormal, [x_, y_])
+            x_, y_ = [x_, y_] + (ϵ * M * ϕ)
+            if l != L
+                ϕ .+= 0.5 * ϵ * logpdf(binormal, [x_, y_])
+            end
+        end
+        r = exp(logpdf(binormal, [x_, y_]) - logpdf(binormal, [x, y]))
+
+        if r > rand(rgn, Uniform())
+            x = x_
+            y = y_
+            accepted += 1
+        end
+        @inbounds draws[s, :] = [x y]
+    end
+    println("Acceptance rate is: $(accepted / S)")
+    return draws
+end
+
+# We are going to use $L = 40$ and
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
