@@ -857,6 +857,7 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 # quantifying the gradient of the posterior distribution:
 
 # 1. Sample $\phi$ from a $\text{Normal}(0, \mathbf{M})$
+#
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
 #      1. Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #      2. Use the momentum vector $\phi$ to update the parameter vector $\theta$: $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
