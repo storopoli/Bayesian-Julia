@@ -1041,6 +1041,50 @@ savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
 
 # ### HMC -- Complex Topologies
 
+# There are cases where HMC will be much better than Metropolis or Gibbs. In particular, these cases focus on complicated
+# and difficult-to-explore posterior topologies. In these contexts, an algorithm that can guide the proposals to regions
+# of higher density (such as the case of the HMC) is able to explore much more efficient (less iterations for convergence)
+# and effective (higher rate of acceptance of the proposals).
+
+# See figure below for an example of a bimodal posterior density with also the marginal histogram of $X$ and $Y$:
+
+# $$
+# X = \text{Normal} \left(
+# \begin{bmatrix}
+# 10 \\
+# 2
+# \end{bmatrix},
+# \begin{bmatrix}
+# 1 & 0 \\
+# 0 & 1
+# \end{bmatrix}
+# \right), \quad
+# Y = \text{Normal} \left(
+# \begin{bmatrix}
+# 0 \\
+# 0
+# \end{bmatrix},
+# \begin{bmatrix}
+# 8.4 & 2.0 \\
+# 2.0 & 1.7
+# \end{bmatrix}
+# \right)
+# $$
+
+d1 = MvNormal([10, 2], [1 0; 0 1])
+d2 = MvNormal([0, 0], [8.4 2.0; 2.0 1.7])
+
+d = MixtureModel([d1, d2], mix_d)
+
+data_mixture = rand(d, 1_000)'
+
+marginalkde(data_mixture[:, 1], data_mixture[:, 2],
+            clip=((-2, 1.6), (-3, 3)))
+savefig(joinpath(@OUTPUT, "bimodal.svg")); # hide
+
+# \fig{bimodal}
+# \center{*Multivariate Bimodal Normal*} \\
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
