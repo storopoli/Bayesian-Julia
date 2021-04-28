@@ -862,27 +862,27 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 #
 #       1.   Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
 #
-#             $\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$
+#             $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
 #       2.   Use the momentum vector $\phi$ to update the parameter vector $\theta$:
 #
-#             $\theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi$
+#             $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
 #
 #       3.   Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
 #
-#             $\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$
+#             $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
 # 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
 #
-#     $r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})}$
+#     $$ r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})} $$
 #
 # 4. Assign:
 #
-#     $\theta^t =
+#     $$\theta^t =
 #     \begin{cases}
 #     \theta^* & \text{with probability } \min (r, 1) \\
 #     \theta^{t-1} & \text{otherwise}
-#     \end{cases}$
+#     \end{cases}$$
 
 # ### HMC -- Implementation
 
@@ -977,7 +977,7 @@ mean(summarystats(chain_hmc)[:, :ess]) / S
 # We see that a simple naïve (and not well-calibrated[^calibrated]) HMC has 70% more efficiency from both Gibbs and Metropolis.
 # ≈ 10% versus ≈ 17%. Great! 😀
 
-# ##### HMC -- Visual Intuition
+# #### HMC -- Visual Intuition
 
 # This wouldn't be complete without animations for HMC!
 
