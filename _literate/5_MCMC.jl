@@ -258,13 +258,13 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 #    -   Assign:
 
-#        $$
+#        $
 #        \theta^t =
 #        \begin{cases}
 #        \theta^* & \text{with probability } \min (r, 1) \\
 #        \theta^{t-1} & \text{otherwise}
 #        \end{cases}
-#        $$
+#        $
 
 # #### Limitations of the Metropolis Algorithm
 
@@ -512,12 +512,12 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 
 # 3. For $t = 1, 2, \dots$:
 
-#     $$\begin{aligned}
+#     $\begin{aligned}
 #     \theta^t_1 &\sim p(\theta_1 \mid \theta^0_2, \dots, \theta^0_n) \\
 #     \theta^t_2 &\sim p(\theta_2 \mid \theta^{t-1}_1, \dots, \theta^0_n) \\
 #     &\vdots \\
 #     \theta^t_n &\sim p(\theta_n \mid \theta^{t-1}_1, \dots, \theta^{t-1}_{n-1})
-#     \end{aligned}$$
+#     \end{aligned}$
 
 # #### Limitations of the Gibbs Algorithm
 
@@ -860,21 +860,21 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 #
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
 #
-#       -   Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
-#       -   Use the momentum vector $\phi$ to update the parameter vector $\theta$: $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
-#       -   Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#       1.   Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$: $\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$
+#       2.   Use the momentum vector $\phi$ to update the parameter vector $\theta$: $\theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi$
+#       3.   Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$: $\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$
 #
 # 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
-#   $$ r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})} $$
+#   $r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})}$
 #
 # 4. Assign:
-#        $$
+#        $
 #        \theta^t =
 #        \begin{cases}
 #        \theta^* & \text{with probability } \min (r, 1) \\
 #        \theta^{t-1} & \text{otherwise}
 #        \end{cases}
-#        $$
+#        $
 
 # ### HMC -- Implementation
 
