@@ -860,9 +860,9 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 #
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
 #
-#    -   Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
-#    -   Use the momentum vector $\phi$ to update the parameter vector $\theta$: $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
-#    -   Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#       -   Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
+#       -   Use the momentum vector $\phi$ to update the parameter vector $\theta$: $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
+#       -   Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$: $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 #
 # 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
 #   $$ r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})} $$
