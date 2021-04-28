@@ -1085,11 +1085,30 @@ d = MixtureModel([d1, d2])
 data_mixture = rand(d, 1_000)'
 
 marginalkde(data_mixture[:, 1], data_mixture[:, 2],
-            clip=((-1.6, 3), (-3, 3)))
+            clip=((-1.6, 3), (-3, 3)),
+            xlabel=L"X", ylabel=L"Y")
 savefig(joinpath(@OUTPUT, "bimodal.svg")); # hide
 
 # \fig{bimodal}
 # \center{*Multivariate Bimodal Normal*} \\
+
+# And to finish an example of Neal's funnel Neal(2003) in the figure below. This is a very difficult posterior to be sampled
+# even for HMC, as it varies in geometry in the dimensions $X$ and $Y$. This means that the HMC sampler has to change the
+# *leapfrog steps* $L$ and the scaling factor $\epsilon$ every time, since at the top of the image (the top of the funnel)
+# a large value of $L$ is needed along with a small $\epsilon$; and at the bottom (at the bottom of the funnel) the opposite:
+# small $L$ and large $\epsilon$.
+
+funnel_y = rand(Normal(0, 3), 10_000)
+funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
+
+scatter((funnel_x, funnel_y),
+        label=false, mc=:steelblue, ma=0.3,
+        xlabel=L"X", ylabel=L"Y",
+        xlims=(-100, 100))
+savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
+
+# \fig{funnel}
+# \center{*Neal's Funnel*} \\
 
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
