@@ -107,7 +107,9 @@ setprogress!(false) # hide
     p ~ Dirichlet(6, 1)
 
     #Each outcome of the six-sided dice has a probability p.
-    y .~ Categorical(p)
+    for i in eachindex(y)
+        y[i] ~ Categorical(p)
+    end
 end;
 
 # Here we are using the [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) which
@@ -128,8 +130,9 @@ sum(mean(Dirichlet(6, 1)))
 
 # Also, since the outcome of a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution) is an integer
 # and `y` is a $N$-dimensional vector of integers we need to apply some sort of broadcasting here. This is
-# done by adding the familiar dot `.` broadcasting operator in Julia: `y .~ Categorical` this means that all elements of `y` are
-# distributed as a Categorical distribution.
+# done by adding a for loop[^efficiency]. We could also use the familiar dot `.` broadcasting operator in Julia:
+# `y .~ Categorical(p)` to signal that all elements of `y` are distributed as a Categorical distribution.
+# But doing that does not allow us to do predictive checks (more on this below). So, instead we use a for loop.
 
 # ### Simulating Data
 
@@ -214,6 +217,28 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 
 prior_chain = sample(model, Prior(), 2_000);
 
+# Now we can perform predictive checks using both the prior (`prior_chain`) or posterior (`chain`) distributions.
+# To draw from the prior and posterior predictive distributions we instantiate a "predictive model", *i.e.* a Turing
+# model but with the observations set to `missing`, and then calling `predict()` on the predictive model and the previously
+# drawn samples. First let's do the *prior* predictive check:
+
+missing_data = Vector{Missing}(missing, 1) # vector of `missing`
+model_predict = dice_throw(missing_data) # instantiate the "predictive model"
+prior_check = predict(model_predict, prior_chain);
+
+# Note that `predict()` returns a `Chains` object from `MCMCChains.jl`:
+
+typeof(prior_check)
+
+# And we can call `summarystats()`:
+
+summarystats(prior_check)
+
+# We can do the same with `chain` for a *posterior* predictive check:
+
+posterior_check = predict(model_predict, chain);
+summarystats(posterior_check)
+
 # ## Conclusion
 
 # This is the basic overview of Turing usage. I hope that I could show you how simple and intuitive is to
@@ -226,6 +251,7 @@ prior_chain = sample(model, Prior(), 2_000);
 # ## Footnotes
 #
 # [^MCMC]: see [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
+# [^efficiency]: actually is even better to use Turing's `filldist()` function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution. I will cover Turing's computational "tricks of the trade" in 11. [**Computational Tricks with Turing**](/pages/11_Turing_tricks/).
 # [^visualization]: we'll cover those plots and diagnostics in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 
 # ## References
