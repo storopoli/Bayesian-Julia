@@ -857,20 +857,26 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 # quantifying the gradient of the posterior distribution:
 
 # 1. Sample $\phi$ from a $\text{Normal}(0, \mathbf{M})$
-#
+
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
 #
 #       1.   Use the gradient of log posterior [^numerical] of $\theta$ to produce a *half-step* of $\phi$:
+
 #             $\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$
+
 #       2.   Use the momentum vector $\phi$ to update the parameter vector $\theta$:
+
 #             $\theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi$
+
 #       3.   Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
+
 #             $\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$
-#
+
 # 3. Assign $\theta^{t-1}$ and $\phi^{t-1}$ as the values of the parameter vector and the momentum vector, respectively, at the beginning of the *leapfrog* process (step 2) and $\theta^*$ and $\phi^*$ as the values after $L$ steps. As an acceptance/rejection rule calculate:
 #   $r = \frac{p(\theta^* \mid y) p(\phi^*)}{p(\theta^{t-1} \mid y) p(\phi^{-1})}$
-#
+
 # 4. Assign:
+
 #        $
 #        \theta^t =
 #        \begin{cases}
@@ -1074,12 +1080,12 @@ savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
 d1 = MvNormal([10, 2], [1 0; 0 1])
 d2 = MvNormal([0, 0], [8.4 2.0; 2.0 1.7])
 
-d = MixtureModel([d1, d2], mix_d)
+d = MixtureModel([d1, d2])
 
 data_mixture = rand(d, 1_000)'
 
 marginalkde(data_mixture[:, 1], data_mixture[:, 2],
-            clip=((-2, 1.6), (-3, 3)))
+            clip=((-1.6, 3), (-3, 3)))
 savefig(joinpath(@OUTPUT, "bimodal.svg")); # hide
 
 # \fig{bimodal}
