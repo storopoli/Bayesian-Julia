@@ -1186,7 +1186,7 @@ bad_chain = sample(model, NUTS(0.3), 500)
 summarystats(bad_chain)
 
 # Here we can see that the `ess` and `rhat` of the `bad_chain` are *really* bad!
-# There will be several divergences that we can access in the column `numerical_error` of a `Chains` object. Here we have 0 divergences.
+# There will be several divergences that we can access in the column `numerical_error` of a `Chains` object. Here we have 64 divergences.
 
 sum(bad_chain[:numerical_error])
 
@@ -1198,7 +1198,7 @@ mean(bad_chain[:acceptance_rate])
 
 mean(chain[:acceptance_rate])
 
-# What a difference huh? 80% versus 0.5%.
+# What a difference huh? 80% versus 1.5%.
 
 # ### MCMC Visualizations
 
