@@ -42,6 +42,9 @@ jobs:
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: __site
+        branch: gh-pages
+        folder: __site
+        # To reduce state.
+        clean: true
+        # To save space; we don't really need older versions.
+        single-commit: true
