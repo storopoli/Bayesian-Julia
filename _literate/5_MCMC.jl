@@ -1130,7 +1130,8 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # ## MCMC Metrics
 
 # All Markov chains have some convergence and diagnostics metrics that you should be aware of. Note that this is still an ongoing
-# are of intense research and new metrics are constantly being proposed (*e.g.* Vehtari, Gelman., Simpson, Carpenter & Bürkner (2021))
+# are of intense research and new metrics are constantly being proposed
+# (*e.g.* Lambert & Vehtari (2020) or Vehtari, Gelman., Simpson, Carpenter & Bürkner (2021))
 # To show MCMC metrics let me recover our six-sided dice example from [4. **How to use Turing**](/pages/4_Turing/):
 
 using Turing
@@ -1174,7 +1175,7 @@ summarystats(chain)
 # Note that all of our model's parameters have achieve a nice `ess` and, more important, `rhat` in the desired range, a solid
 # indicator that the Markov chain is stable and has converged to the estimated parameter values.
 
-# ### What to do if your model doesn't converge?
+# ### What looks like when your model doesn't converge
 
 # Depending on the model and data, it is possible that HMC (even with NUTS) will not achieve convergence.
 # NUTS will not converge if it encounters divergences either due to a very pathological posterior density topology
@@ -1199,6 +1200,52 @@ mean(chain[:acceptance_rate])
 
 # What a difference huh? 80% versus 0.5%.
 
+# ### MCMC Visualizations
+
+# Besides the `rhat` values, we can also visualize the Markov chain with a *traceplot*.
+# The *traceplot* is the overlap of the MCMC chain sampling for each estimated parameter (vertical axis).
+#The idea is that the chains mix and that there is no slope or visual pattern along the iterations (horizontal axis).
+# This demonstrates that the chains have mixed converged to a certain value of the parameter and remained in that region
+# during a good part (or all) of the Markov chain sampling. We can do that with the `MCMCChains.jl`'s function `traceplot()`.
+# Let's look the "good" `chain` first:
+
+traceplot(chain)
+savefig(joinpath(@OUTPUT, "traceplot_chain.svg")); # hide
+
+# \fig{traceplot_chain}
+# \center{*Traceplot for `chain`*} \\
+
+# And now the `bad_chain`:
+
+traceplot(bad_chain)
+savefig(joinpath(@OUTPUT, "traceplot_bad_chain.svg")); # hide
+
+# \fig{traceplot_bad_chain}
+# \center{*Traceplot for `bad_chain`*} \\
+
+# We can see that the `bad_chain` is all over the place and has definitely not converged or became stable.
+
+# ## How to make your Markov chains converge
+
+# **First**: Before making fine adjustments to the number of chains or the number of iterations (among others ...)
+# know that Turing's NUTS sampler is very efficient and effective in exploring the most diverse and complex "crazy"
+# topologies of posteriors' target distributions. The standard arguments `NUTS()` work perfectly for 99% of cases
+# (even in complex models). That said, **most of the time when you have sampling and computational problems in your
+# Bayesian model, the problem is in the model specification and not in the MCMC sampling algorithm**.
+# This is known as *Folk Theorem* (Gelman, 2008). In the words of Andrew Gelman:
+
+# > "When you have computational problems, often there's a problem with your model".
+# > \\ \\
+# > Andrew Gelman (Gelman, 2008)
+
+# If your Bayesian model has problems with convergence there are some steps that can be tried[^QR].
+# Listed here from the simplest to the most complex:
+
+# 1. **Increase the number of iterations and chains**: First option is to increase the number of MCMC iterations and it is also possible to increase the number of paralle chains to be sampled.
+# 2. **Model reparametrization**: the second option is to reparameterize the model. There are two ways to parameterize the model: the first with centered parameterization (CP) and the second with non-centered parameterization (NCP). NCP is most useful in Multilevel Models, therefore we will cover NCP in [10. **Multilevel Models**](/pages/10_multilevel_models/).
+# 3. **Collect more data**: sometimes the model is too complex and we need a larger sample to get stable estimates.
+# 4. **Rethink the model**: convergence failure when we have adequate sampling is usually due to a specification of priors and likelihood function that are not compatible with the data. In this case, it is necessary to rethink the data's generative process in which the model's assumptions are anchored.
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
@@ -1211,6 +1258,7 @@ mean(chain[:acceptance_rate])
 # [^calibrated]: as detailed in the following sections, HMC is quite sensitive to the choice of $L$ and $\epsilon$ and I haven't tried to get the best possible combination of those.
 # [^luckymetropolis]: or a not-drunk random-walk Metropolis 😂.
 # [^nuts]: NUTS is an algorithm that uses the symplectic leapfrog integrator and builds a binary tree composed of leaf nodes that are simulations of Hamiltonian dynamics using $2^j$ *leapfrog steps* in forward or backward directions in time where $j$ is the integer representing the iterations of the construction of the binary tree. Once the simulated particle starts to retrace its trajectory, the tree construction is interrupted and the ideal number of $L$ *leapfrog steps* is defined as $2^j$ in time $j-1$ from the beginning of the retrogression of the trajectory. So the simulated particle never "turns around" so "No U-turn". For more details on the algorithm and how it relates to Hamiltonian dynamics see Hoffman & Gelman (2011).
+# [^QR]: furthermore, if you have high-correlated variables in your model, you can try a QR decomposition of the data matrix $X$. I will cover QR decomposition and other Turing's computational "tricks of the trade" in [11. **Computational Tricks with Turing**](/pages/11_Turing_tricks/).
 
 # ## References
 
@@ -1228,8 +1276,6 @@ mean(chain[:acceptance_rate])
 #
 # Eckhardt, R. (1987). Stan Ulam, John von Neumann, and the Monte Carlo Method. Los Alamos Science, 15(30), 131–136.
 #
-# Gabry, J., Simpson, D., Vehtari, A., Betancourt, M., & Gelman, A. (2019). Visualization in Bayesian workflow. Journal of the Royal Statistical Society: Series A (Statistics in Society), 182(2), 389–402. https://doi.org/10.1111/rssa.12378
-#
 # Gelman, A. (1992). Iterative and Non-Iterative Simulation Algorithms. Computing Science and Statistics (Interface Proceedings), 24, 457–511. PROCEEDINGS PUBLISHED BY VARIOUS PUBLISHERS.
 #
 # Gelman, A. (2008). The folk theorem of statistical computing. Retrieved from https://statmodeling.stat.columbia.edu/2008/05/13/the_folk_theore/
@@ -1245,6 +1291,8 @@ mean(chain[:acceptance_rate])
 # Hastings, W. K. (1970). Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57(1), 97–109. https://doi.org/10.1093/biomet/57.1.97
 #
 # Hoffman, M. D., & Gelman, A. (2011). The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo. Journal of Machine Learning Research, 15(1), 1593–1623. Retrieved from http://arxiv.org/abs/1111.4246
+#
+# Lambert, B., & Vehtari, A. (2020). $R^*$: A robust MCMC convergence diagnostic with uncertainty using decision tree classifiers. ArXiv:2003.07900 [Stat]. http://arxiv.org/abs/2003.07900
 #
 # Metropolis, N., Rosenbluth, A. W., Rosenbluth, M. N., Teller, A. H., & Teller, E. (1953). Equation of State Calculations by Fast Computing Machines. The Journal of Chemical Physics, 21(6), 1087–1092. https://doi.org/10.1063/1.1699114
 #
