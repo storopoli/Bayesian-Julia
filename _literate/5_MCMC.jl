@@ -1204,7 +1204,7 @@ mean(chain[:acceptance_rate])
 
 # Besides the `rhat` values, we can also visualize the Markov chain with a *traceplot*.
 # The *traceplot* is the overlap of the MCMC chain sampling for each estimated parameter (vertical axis).
-#The idea is that the chains mix and that there is no slope or visual pattern along the iterations (horizontal axis).
+# The idea is that the chains mix and that there is no slope or visual pattern along the iterations (horizontal axis).
 # This demonstrates that the chains have mixed converged to a certain value of the parameter and remained in that region
 # during a good part (or all) of the Markov chain sampling. We can do that with the `MCMCChains.jl`'s function `traceplot()`.
 # Let's look the "good" `chain` first:
