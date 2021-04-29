@@ -1163,10 +1163,10 @@ summarystats(chain)
 # We have the following columns that outpus some kind of MCMC summary statistics:
 
 # * `mcse`: **M**onte **C**arlo **S**tandard **E**rror, the uncertainty about a statistic in the sample due to sampling error.
-# * `ess`: **E**ffective **S**ample **S**ize, a rough approximation of the number of effective samples sampled by the MCMC estimated by the value of` rhat`.
+# * `ess`: **E**ffective **S**ample **S**ize, a rough approximation of the number of effective samples sampled by the MCMC estimated by the value of `rhat`.
 # * `rhat`: a metric of convergence and stability of the Markov chain.
 
-# The most important metric to take into account is the 'rhat` which is a metric that measures whether the Markov chains
+# The most important metric to take into account is the `rhat` which is a metric that measures whether the Markov chains
 # are stable and converged to a value during the total progress of the sampling procedure. It is basically the proportion
 # of variation when comparing two halves of the chains after discarding the warmups. A value of 1 implies convergence
 # and stability. By default, `rhat` must be less than 1.01 for the Bayesian estimation to be valid
