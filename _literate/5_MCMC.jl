@@ -860,15 +860,15 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # 2. Simultaneously sample $\theta$ and $\phi$ with $L$ *leapfrog steps* each scaled by a $\epsilon$ factor. In a *leapfrog step*, both $\theta$ and $\phi$ are changed, in relation to each other. Repeat the following steps $L$ times:
 
-#     1. Use the gradient of log posterior of $\theta$ to produce a *half-step* of $\phi$:
+# 2.1. Use the gradient of log posterior of $\theta$ to produce a *half-step* of $\phi$:
 
 #         $$\phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta}$$
 
-#     2. Use the momentum vector $\phi$ to update the parameter vector $\theta$:
+# 2.2 Use the momentum vector $\phi$ to update the parameter vector $\theta$:
 
 #         $$ \theta \leftarrow \theta + \epsilon \mathbf{M}^{-1} \phi $$
 
-#     3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
+# 2.3. Use again the gradient of log posterior of $\theta$ to another *half-step* of $\phi$:
 
 #         $$ \phi \leftarrow \phi + \frac{1}{2} \epsilon \frac{d \log p(\theta \mid y)}{d \theta} $$
 
@@ -1110,6 +1110,95 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # \fig{funnel}
 # \center{*Neal's Funnel*} \\
 
+# ## "I understood nothing..."
+
+# If you haven't understood anything by now, don't despair. Skip all the formulas and get the visual intuition of the algorithms.
+# See the limitations of Metropolis and Gibbs and compare the animations and figures with those of the HMC. The superiority
+# of efficiency (more samples with low autocorrelation - ESS) and effectiveness (more samples close to the most likely areas
+# of the target distribution) is self-explanatory by the images.
+
+# In addition, you will probably **never** have to code your HMC algorithm (Gibbs, Metropolis or any other MCMC) by hand.
+# For that there are packages like Turing's [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl)
+# In addition, `AdvancedHMC` has a modified HMC with a technique called **N**o-**U**-**T**urn **S**ampling (NUTS)[^nuts]
+# (Hoffman & Gelman, 2011) that selects automatically the values ​​of $\epsilon$ (scaling factor) and $L$ (*leapfrog steps*).
+# The performance of the HMC is highly sensitive to these two "hyperparameters" (parameters that must be specified by the user).
+# In particular, if $L$ is too small, the algorithm exhibits undesirable behavior of a random walk, while if $L$ is too large,
+# the algorithm wastes computational efficiency. NUTS uses a recursive algorithm to build a set of likely candidate points that span
+# a wide range of proposal distribution, automatically stopping when it starts to go back and retrace its steps
+# (why it doesn't turn around - *No U-turn*), in addition NUTS also automatically calibrates simultaneously $L$ and $\epsilon$.
+
+# ## MCMC Metrics
+
+# All Markov chains have some convergence and diagnostics metrics that you should be aware of. Note that this is still an ongoing
+# are of intense research and new metrics are constantly being proposed (*e.g.* Vehtari, Gelman., Simpson, Carpenter & Bürkner (2021))
+# To show MCMC metrics let me recover our six-sided dice example from [4. **How to use Turing**](/pages/4_Turing/):
+
+using Turing
+setprogress!(false) # hide
+
+@model dice_throw(y) = begin
+    #Our prior belief about the probability of each result in a six-sided dice.
+    #p is a vector of length 6 each with probability p that sums up to 1.
+    p ~ Dirichlet(6, 1)
+
+    #Each outcome of the six-sided dice has a probability p.
+    for i in eachindex(y)
+        y[i] ~ Categorical(p)
+    end
+end;
+
+# Let's once again generate 1,000 throws of a six-sided dice:
+
+data_dice = rand(DiscreteUniform(1, 6), 1_000);
+
+# Like before we'll sample using `NUTS()` and 2,000 iterations. Note that you can use Metropolis with `MH()`, Gibbs with `Gibbs()`
+# and HMC with `HMC()` if you want to. You can check all Turing's different MCMC samplers in
+# [Turing's documentation](https://turing.ml/dev/docs/using-turing/guide).
+
+model = dice_throw(data_dice)
+chain = sample(model, NUTS(), 2_000);
+summarystats(chain)
+
+# We have the following columns that outpus some kind of MCMC summary statistics:
+
+# * `mcse`: **M**onte **C**arlo **S**tandard **E**rror, the uncertainty about a statistic in the sample due to sampling error.
+# * `ess`: **E**ffective **S**ample **S**ize, a rough approximation of the number of effective samples sampled by the MCMC estimated by the value of` rhat`.
+# * `rhat`: a metric of convergence and stability of the Markov chain.
+
+# The most important metric to take into account is the 'rhat` which is a metric that measures whether the Markov chains
+# are stable and converged to a value during the total progress of the sampling procedure. It is basically the proportion
+# of variation when comparing two halves of the chains after discarding the warmups. A value of 1 implies convergence
+# and stability. By default, `rhat` must be less than 1.01 for the Bayesian estimation to be valid
+# (Brooks & Gelman, 1998; Gelman & Rubin, 1992).
+
+# Note that all of our model's parameters have achieve a nice `ess` and, more important, `rhat` in the desired range, a solid
+# indicator that the Markov chain is stable and has converged to the estimated parameter values.
+
+# ### What to do if your model doesn't converge?
+
+# Depending on the model and data, it is possible that HMC (even with NUTS) will not achieve convergence.
+# NUTS will not converge if it encounters divergences either due to a very pathological posterior density topology
+# or if you supply improper parameters. To exemplify let me run a "bad" chain by passing the `NUTS()` constructor
+# a target acceptance rate of `0.3` with only 500 sampling iterations (including warmup):
+
+bad_chain = sample(model, NUTS(0.3), 500)
+summarystats(bad_chain)
+
+# Here we can see that the `ess` and `rhat` of the `bad_chain` are *really* bad!
+# There will be several divergences that we can access in the column `numerical_error` of a `Chains` object. Here we have 0 divergences.
+
+sum(bad_chain[:numerical_error])
+
+# Also we can see the Markov chain acceptance rate in the column `acceptance_rate`. This is the `bad_chain` acceptance rate:
+
+mean(bad_chain[:acceptance_rate])
+
+# And now the "good" `chain`:
+
+mean(chain[:acceptance_rate])
+
+# What a difference huh? 80% versus 0.5%.
+
 # ## Footnotes
 # [^propto]: the symbol $\propto$ (`\propto`) should be read as "proportional to".
 # [^warmup]: some references call this process *burnin*.
@@ -1121,6 +1210,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # [^markovparallel]: note that there is some shenanigans here to take care. You would also want to have different seeds for the random number generator in each Markov chain. This is why `metropolis()` and `gibbs()` have a `seed` parameter.
 # [^calibrated]: as detailed in the following sections, HMC is quite sensitive to the choice of $L$ and $\epsilon$ and I haven't tried to get the best possible combination of those.
 # [^luckymetropolis]: or a not-drunk random-walk Metropolis 😂.
+# [^nuts]: NUTS is an algorithm that uses the symplectic leapfrog integrator and builds a binary tree composed of leaf nodes that are simulations of Hamiltonian dynamics using $2^j$ *leapfrog steps* in forward or backward directions in time where $j$ is the integer representing the iterations of the construction of the binary tree. Once the simulated particle starts to retrace its trajectory, the tree construction is interrupted and the ideal number of $L$ *leapfrog steps* is defined as $2^j$ in time $j-1$ from the beginning of the retrogression of the trajectory. So the simulated particle never "turns around" so "No U-turn". For more details on the algorithm and how it relates to Hamiltonian dynamics see Hoffman & Gelman (2011).
 
 # ## References
 
@@ -1167,3 +1257,5 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # Revels, J., Lubin, M., & Papamarkou, T. (2016). Forward-Mode Automatic Differentiation in Julia. ArXiv:1607.07892 [Cs]. http://arxiv.org/abs/1607.07892
 #
 # Roberts, G. O., Gelman, A., & Gilks, W. R. (1997). Weak convergence and optimal scaling of random walk Metropolis algorithms. Annals of Applied Probability, 7(1), 110–120. https://doi.org/10.1214/aoap/1034625254
+#
+# Vehtari, A., Gelman, A., Simpson, D., Carpenter, B., & Bürkner, P.-C. (2021). Rank-Normalization, Folding, and Localization: An Improved Rˆ for Assessing Convergence of MCMC. Bayesian Analysis, 1(1), 1–28. https://doi.org/10.1214/20-BA1221
