@@ -35,6 +35,10 @@ jobs:
             using Franklin;
             Pkg.activate("."); Pkg.instantiate();
             optimize()'
+      env:
+          # Fixes 'GKS: can't connect to GKS socket application' errors
+          # and quality of output plots in GR back end.
+          GKSwstype: nul
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
