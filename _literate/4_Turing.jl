@@ -211,6 +211,14 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 # and **posterior predictive check** is is when we simulate data using model's parameters values drawn fom the **posterior**
 # distribution.
 
+# The workflow we do when specifying and sampling Bayesian models is not linear or acyclic (Gelman et al., 2020). This means
+# that we need to iterate several times between the different stages in order to find a model that captures
+# best the data generating process with the desired assumptions. The figure below demonstrates the workflow [^workflow].
+
+# ![Bayesian Workflow](/pages/images/bayesian_workflow.png)
+#
+# \center{*Bayesian Workflow. Adapted from Gelman et al. (2020)*} \\
+
 # This is quite easy in Turing. Our six-sided dice model already has a **posterior distribution** which is the object `chain`.
 # We need to create a **prior distribution** for our model. To accomplish this, instead of supplying a MCMC sampler like
 # `NUTS()`, we supply the "sampler" `Prior()` inside Turing's `sample()` function:
@@ -253,10 +261,13 @@ summarystats(posterior_check)
 # [^MCMC]: see [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 # [^efficiency]: actually is even better to use Turing's `filldist()` function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution. I will cover Turing's computational "tricks of the trade" in [11. **Computational Tricks with Turing**](/pages/11_Turing_tricks/).
 # [^visualization]: we'll cover those plots and diagnostics in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
+# [^workflow]: note that this workflow is a extremely simplified adaptation from the original workflow on which it was based. I suggest the reader to consult the original workflow of Gelman et al. (2020).
 
 # ## References
 
 # Ge, H., Xu, K., & Ghahramani, Z. (2018). Turing: A Language for Flexible Probabilistic Inference. International Conference on Artificial Intelligence and Statistics, 1682–1690. http://proceedings.mlr.press/v84/ge18b.html
+#
+# Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., … Modr’ak, M. (2020, November 3). Bayesian Workflow. Retrieved February 4, 2021, from http://arxiv.org/abs/2011.01808
 #
 # Hardesty (2015).  "Probabilistic programming does in 50 lines of code what used to take thousands". phys.org. April 13, 2015. Retrieved April 13, 2015. https://phys.org/news/2015-04-probabilistic-lines-code-thousands.html
 #
