@@ -43,9 +43,9 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        branch: gh-pages
-        folder: __site
+        BRANCH: gh-pages
+        FOLDER: __site
         # To reduce state.
-        clean: true
+        CLEAN: true
         # To save space; we don't really need older versions.
-        single-commit: true
+        SINGLE_COMMIT: true
