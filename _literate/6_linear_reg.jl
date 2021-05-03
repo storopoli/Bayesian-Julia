@@ -64,7 +64,7 @@
 # * Prior Distribution of $\sigma$ -- Knowledge we possess regarding the model's error. Important that the error can only be positive. In addition, it is intuitive to place a distribution that gives greater weight to values close to zero, but that also allows values that are far from zero, so a distribution with a long tail is welcome. Candidate distributions are $\text{Exponential}$ which is only supported on positive real numbers (so it solves the question of negative errors) or $\text{Cauchy}^+$ truncated to only positive numbers (remembering that the distribution Cauchy is Student's $t$ with degrees of freedom $\nu = 1$).
 
 # Our goal is to instantiate a linear regression with the observed data ($\mathbf{y}$ and $\mathbf{X}$) and find the posterior
-# distribution of our model's parameters of interest ($\alpha$ e $\boldsymbol{\beta}$). This means to find the full posterior
+# distribution of our model's parameters of interest ($\alpha$ and $\boldsymbol{\beta}$). This means to find the full posterior
 # distribution of:
 
 # $$ P(\boldsymbol{\theta} \mid \mathbf{y}) = P(\alpha, \boldsymbol{\beta}, \sigma \mid \mathbf{y}) $$
@@ -82,13 +82,13 @@ using Statistics: mean, std
 
 	#likelihood
 	y ~ MvNormal(α .+ X * β, σ)
-end
+end;
 
 # Here I am specifying very weakly informative priors:
 
-# * $\alpha = \text{Normal}(\bar{\mathbf{y}}, 2.5 \cdot \sigma_{\mathbf{y}})$ -- This means a normal distribution centered on `y`'s mean with a standard deviation 2.5 times the standard deviation of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
-# * $\boldsymbol{\beta} = \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
-# * $\sigma = \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
+# * $\alpha \sim \text{Normal}(\bar{\mathbf{y}}, 2.5 \cdot \sigma_{\mathbf{y}})$ -- This means a normal distribution centered on `y`'s mean with a standard deviation 2.5 times the standard deviation of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
+# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# * $\sigma \sim \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
 
 # ## Example - Children's IQ Score
 
@@ -108,9 +108,9 @@ kidiq = CSV.read(HTTP.get(url).body, DataFrame)
 describe(kidiq)
 
 # As you can see from the `describe()` output, the mean children's IQ is around 87 while the mother's is 100. Also the mother's
-# range from 17 to 29 years with mean of around 23 years old.
+# range from 17 to 29 years with mean of around 23 years old. Finally, note that 79% of mothers have a high school diploma.
 
-# Now let's us instantiate our model:
+# Now let's us instantiate our model with the data:
 
 X = Matrix(select(kidiq, Not(:kid_score)))
 y = kidiq[:, :kid_score]
