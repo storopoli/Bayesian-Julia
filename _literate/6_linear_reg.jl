@@ -52,9 +52,9 @@
 # \end{aligned}
 # $$
 
-# Here we see that the likelihood function $\P(y \mid \theta)$ is a normal distribution in which $y$
+# Here we see that the likelihood function $P(\mathbf{y} \mid \boldsymbol{\theta})$ is a normal distribution in which $\mathbf{y}$
 # depends on the parameters of the model $\alpha$ and $\boldsymbol{\beta}$, in addition to having an
-# error $\sigma$. We condition $y$ onto the observed data $\mathbf{X}$ by inserting
+# error $\sigma$. We condition $\mathbf{y}$ onto the observed data $\mathbf{X}$ by inserting
 # $\alpha + \mathbf{X} \cdot \boldsymbol{\beta}$ as the linear predictor of the model (the mean $\mu$ parameter of the
 # model's Normal likelihood function, and $\sigma$ is the variance parameter). What remains is to specify which are the
 # priors of the model parameters:
@@ -67,7 +67,7 @@
 # distribution of our model's parameters of interest ($\alpha$ e $\boldsymbol{\beta}$). This means to find the full posterior
 # distribution of:
 
-# $$ P(\boldsymbol{\beta} \mid \mathbf{y}) = P(\alpha, \boldsymbol{\beta}, \sigma \mid \mathbf{y}) $$
+# $$ P(\boldsymbol{\theta} \mid \mathbf{y}) = P(\alpha, \boldsymbol{\beta}, \sigma \mid \mathbf{y}) $$
 
 # This is easily accomplished with Turing:
 
@@ -86,8 +86,8 @@ end
 
 # Here I am specifying very weakly informative priors:
 
-# * $\alpha = \text{Normal}(\bar{\mathbf{y}}, 2.5 \codt \sigma_\alpha\mathbf{y})$ -- This means a normal distribution centered on `y`'s mean with a standard deviation 2.5 times the standard deviation of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (\-infty, +\infty)$.
-# * $\boldsymbol{\beta} = \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (\-infty, +\infty)$. Also the `filldist()` is nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# * $\alpha = \text{Normal}(\bar{\mathbf{y}}, 2.5 \cdot \sigma_{\mathbf{y}})$ -- This means a normal distribution centered on `y`'s mean with a standard deviation 2.5 times the standard deviation of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
+# * $\boldsymbol{\beta} = \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 # * $\sigma = \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
 
 # ## Example - Children's IQ Score
