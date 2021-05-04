@@ -125,9 +125,11 @@ This content is licensed under [Creative Commons Attribution-ShareAlike 4.0 Inte
 ## Environment
 
 ```julia:versioninfo
-using InteractiveUtils; versioninfo()
+using InteractiveUtils
+versioninfo()
 ```
 
-```julia:pkg-status
-using Pkg; Pkg.status()
+```julia:pkgstatus
+using Pkg
+Pkg.status()
 ```
