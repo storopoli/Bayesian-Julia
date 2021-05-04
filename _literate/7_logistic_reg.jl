@@ -191,7 +191,7 @@ model = logreg(X, y);
 chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain)
 
-# We had no problem with the Markov chains as all the 'rhat` are well below `1.01` (or above `0.99`).
+# We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
 # Note that the coefficients are in log-odds scale. They are the natural log of the odds[^logit], and odds
 # defined as:
 
@@ -212,9 +212,10 @@ using Chain
 
 @chain quantile(chain) begin
 	DataFrame
-    select(
+    select(_,
         :parameters,
-        ["2.5%", "25.0%", "50.0%", "75.0%", "97.5%"] .=> ByRow(exp))
+        names(_, r"%") .=> ByRow(exp),
+        renamecols=false)
 end
 
 # Our interpretation of odds is the same as in betting games. Anything below 1 signals a unlikely probability that $y$ will be $1$.
@@ -228,9 +229,10 @@ end
 
 @chain quantile(chain) begin
 	DataFrame
-    select(
+    select(_,
         :parameters,
-        ["2.5%", "25.0%", "50.0%", "75.0%", "97.5%"] .=> ByRow(logodds2prob))
+        names(_, r"%") .=> ByRow(logodds2prob),
+        renamecols=false)
 end
 
 # There you go, much better now. Let's analyze our results. The intercept `α` is the basal `switch` probability which has
