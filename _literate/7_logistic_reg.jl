@@ -1,11 +1,11 @@
 # # Bayesian Logistic Regression
 
 # Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The first is
-# logistic regression (also called binomial regression).
+# **logistic regression** (also called binomial regression).
 
 # A logistic regression behaves exactly like a linear model: it makes a prediction simply by computing a weighted
 # sum of the independent variables, plus an intercept. However, instead of returning a continuous value, such as
-# linear regression, it returns the logistic function of that value:
+# linear regression, it returns the **logistic function** of that value:
 
 # $$ \text{Logistic}(x) = \frac{1}{1 + e^{(-x)}} $$
 
@@ -20,6 +20,10 @@ end
 
 plot(logistic, -10, 10, label=false,
      xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
+savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
+
+# \fig{logistic}
+# \center{*Logistic Function*} \\
 
 # As we can see, the logistic function is basically a mapping of any real number to a
 # real number in the range between 0 and 1:
@@ -45,7 +49,7 @@ plot(logistic, -10, 10, label=false,
 
 # * $\hat{p} = \text{Logistic}(\text{Linear}) = \frac{1}{1 + e^{-\operatorname{Linear}}}$ - predicted probability of the observation being the value 1
 
-# * $\hat{\mathbf{y}}=\left\{\begin{array}{ll} 0 & \text { if } \hat{p} < 0.5 \\ 1 & \text { if } \hat{p} \geq 0.5 \end{array}\right.$ -- predicted discreve value of $\mathbf{y}$
+# * $\hat{\mathbf{y}}=\left\{\begin{array}{ll} 0 & \text { if } \hat{p} < 0.5 \\ 1 & \text { if } \hat{p} \geq 0.5 \end{array}\right.$ - predicted discreve value of $\mathbf{y}$
 
 # **Example**:
 
@@ -53,11 +57,14 @@ plot(logistic, -10, 10, label=false,
 
 # ## Bayesian Logistic Regression
 
-# We can model logistic regression in two ways. The first option with a Bernoulli likelihood function and the second option with a binomial likelihood function.
+# We can model logistic regression in two ways. The first option with a **Bernoulli likelihood** function and the second option with
+# a **binomial likelihood** function.
 
-# With the Bernoulli likelihood we model a binary dependent variable $y$ which is the result of a Bernoulli trial with a certain probability $p$.
+# With the **Bernoulli likelihood** we model a binary dependent variable $y$ which is the result of a Bernoulli trial with
+# a certain probability $p$.
 
-# In binomial likelihood, we model a continuous dependent variable $y$ which is the number of successes of $n$ independent Bernoulli trials.
+# In **binomial likelihood**, we model a continuous dependent variable $y$ which is the number of successes of $n$
+# independent Bernoulli trials.
 
 # ### Using Bernoulli Likelihood
 
@@ -112,10 +119,10 @@ plot(logistic, -10, 10, label=false,
 # $$ P(\boldsymbol{\theta} \mid \mathbf{y}) = P(\alpha, \boldsymbol{\beta} \mid \mathbf{y}) $$
 
 # Note that contrary to the linear regression, which used a Gaussian/normal likelihood function, we don't have an error
-# parameter $\sigma$ in our logistic regression. This is due to neither the Bernoulli nor binomial distribution having
+# parameter $\sigma$ in our logistic regression. This is due to neither the Bernoulli nor binomial distributions having
 # a "scale" parameter such as the $\sigma$ parameter in the Gaussian/normal distribution.
 
-# Also note that the Bernoulli is a special case of the binomial distribution where $n = 1$:
+# Also note that the Bernoulli distribution is a special case of the binomial distribution where $n = 1$:
 
 # $$ \text{Bernoulli}(p) = \text{Binomial}(1, p) $$
 
@@ -192,7 +199,7 @@ chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
-# Note that the coefficients are in log-odds scale. They are the natural log of the odds[^logit], and odds
+# Note that the coefficients are in log-odds scale. They are the natural log of the odds[^logit], and odds is
 # defined as:
 
 # $$ \text{odds} = \frac{p}{1-p} $$
@@ -204,7 +211,7 @@ summarystats(chain)
 # So in order to get odds from a log-odds we must undo the log operation with a exponentiation.
 # This translates to:
 
-# $$ \text{odds} = \exp \log \text{odds} $$
+# $$ \text{odds} = \exp ( \log ( \text{odds} )) $$
 
 # We can do this with a transformation in a `DataFrame` constructed from a `Chains` object:
 
@@ -241,11 +248,12 @@ end
 # that captures the 0 in the linear regression coefficients. So this rules out `β[3]` which is the third column of `X`
 # -- `assoc`. The other remaining 95% credible intervals can be interpreted as follows:
 
-# * `β[1]` -- first column of `X`, `arsenic`, has 95% credible interval 0.60 to 063. This means that each increase in one unit of `arsenic` is related to a increase of 10% to 13% propension of `switch` being 1.
+# * `β[1]` -- first column of `X`, `arsenic`, has 95% credible interval 0.596 to 0.634. This means that each increase in one unit of `arsenic` is related to a increase of 9.6% to 13.4% propension of `switch` being 1.
 # * `β[2]` -- second column of `X`, `dist`, has a 95% credible interval from 0.497 to 0.498. So we expect that each increase in one meter of `dist` is related to a decrease of 0.1% propension of `switch` being 0.
-# * `β[4]` -- fourth column of `X`, `educ`, has a 95% credible interval from 0.506 to 0.516. Each increase in one year of `educ` is related to a increase of 0.6% to 1.6% propension of `switch` being 1.
+# * `β[4]` -- fourth column of `X`, `educ`, has a 95% credible interval from 0.506 to 0.515. Each increase in one year of `educ` is related to a increase of 0.6% to 1.5% propension of `switch` being 1.
 
-# That's how you interpret 95% credible intervals from a `quantile()` output of a `Chains` object converted to probability.
+# That's how you interpret 95% credible intervals from a `quantile()` output of a logistic regression `Chains`
+# object converted from log-odds to probability.
 
 # ## Footnotes
 

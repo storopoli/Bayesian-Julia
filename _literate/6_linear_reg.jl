@@ -134,7 +134,7 @@ quantile(chain)
 # * `β[2]` -- second column of `X`, `mom_iq`, has a 95% credible interval from 0.46 to 0.69. So we expect that every increase in the mother's IQ i associated with a 0.46 to 0.69 increase in the child's IQ.
 # * `β[3]` -- third column of `X`, `mom_age`, has also 95% credible interval that is all over the place, including zero. Like `mom_hs`, its effect on child's IQ is inconclusive.
 
-# That's how you interpret 95% credible intervals from a `quantile()` output of a `Chains` object.
+# That's how you interpret 95% credible intervals from a `quantile()` output of a linear regression `Chains` object.
 
 # ## References
 
