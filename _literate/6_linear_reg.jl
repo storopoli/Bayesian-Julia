@@ -122,7 +122,19 @@ model = linreg(X, y);
 chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain)
 
-# ## Footnotes
+# We had no problem with the Markov chains as all the 'rhat` are well below `1.01` (or above `0.99`).
+# Our model has an error of around 18. So it estimates IQ±9. The intercept `α` is the basal child's IQ.
+# So each child has 21±9 IQ before we add the coefficients multiplied by the child's independent variables.
+# And from our coefficients $\boldsymbol{\beta}}$, we can see that the `quantile()` tells us the uncertainty around their
+# estimates:
+
+quantile(chain)
+
+# * `β[1]` -- first column of `X`, `mom_hs`, has 95% credible interval that is all over the place, including zero. So its effect on child's IQ is inconclusive.
+# * `β[2]` -- second column of `X`, `mom_iq`, has a 95% credible interval from 0.46 to 0.69. So we expect that every increase in the mother's IQ i associated with a 0.46 to 0.69 increase in the child's IQ.
+# * `β[3]` -- third column of `X`, `mom_age`, has also 95% credible interval that is all over the place, including zero. Like `mom_hs`, its effect on child's IQ is inconclusive.
+
+# That's how you interpret 95% credible intervals from a `quantile()` output of a `Chains` object.
 
 # ## References
 
