@@ -131,5 +131,5 @@ versioninfo()
 
 ```julia:pkgstatus
 using Pkg
-Pkg.status()
+print(Pkg.status())
 ```
