@@ -130,5 +130,8 @@ versioninfo()
 ```
 
 ```julia:pkgstatus
-]st
+using Pkg
+Pkg.status()
 ```
+\textoutput{pkgstatus}
+\show{pkgstatus}
