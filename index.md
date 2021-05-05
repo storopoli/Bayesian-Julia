@@ -131,7 +131,6 @@ versioninfo()
 
 ```julia:pkgstatus
 using Pkg
+Pkg.DEFAULT_IO[] = stdout # hide
 Pkg.status()
 ```
-\textoutput{pkgstatus}
-\show{pkgstatus}
