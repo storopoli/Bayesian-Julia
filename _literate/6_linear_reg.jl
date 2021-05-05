@@ -73,6 +73,7 @@
 
 using Turing
 using Statistics: mean, std
+setprogress!(false) # hide
 
 @model linreg(X, y; predictors=size(X, 2)) = begin
 	#priors

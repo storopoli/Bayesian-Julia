@@ -748,9 +748,9 @@ version = "0.4.6"
 
 [[LoopVectorization]]
 deps = ["ArrayInterface", "CheapThreads", "DocStringExtensions", "IfElse", "LinearAlgebra", "OffsetArrays", "Requires", "SLEEFPirates", "Static", "StrideArraysCore", "ThreadingUtilities", "UnPack", "VectorizationBase"]
-git-tree-sha1 = "427ec6a601c32d704bb664b32bf695519ef66043"
+git-tree-sha1 = "ba73235909fc01338c9af9f33d5b54821dcd3ec0"
 uuid = "bdcacae8-1622-11e9-2a5c-532679323890"
-version = "0.12.15"
+version = "0.12.16"
 
 [[MCMCChains]]
 deps = ["AbstractFFTs", "AbstractMCMC", "AxisArrays", "Compat", "Dates", "Distributions", "Formatting", "IteratorInterfaceExtensions", "LinearAlgebra", "MLJModelInterface", "NaturalSort", "PrettyTables", "Random", "RecipesBase", "Serialization", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns", "TableTraits", "Tables"]
@@ -787,9 +787,9 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [[MatrixFactorizations]]
 deps = ["ArrayLayouts", "LinearAlgebra", "Printf", "Random"]
-git-tree-sha1 = "4154951579535cfba4d716b96dedd9d0beaefcb9"
+git-tree-sha1 = "304dec6e95a14d2284759645078f7e4f0189ea39"
 uuid = "a3b82374-2e81-5b9e-98ce-41277c0e4c87"
-version = "0.8.2"
+version = "0.8.3"
 
 [[MbedTLS]]
 deps = ["Dates", "MbedTLS_jll", "Random", "Sockets"]
@@ -1078,15 +1078,15 @@ uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SLEEFPirates]]
 deps = ["IfElse", "Libdl", "VectorizationBase"]
-git-tree-sha1 = "3e682ce17a16c9dfb9d2fde0ceb2347e23faafba"
+git-tree-sha1 = "0ae4bf692e53ac4319e02ef54377d6e85a02cf33"
 uuid = "476501e8-09a2-5ece-8869-fb82de89a1fa"
-version = "0.6.15"
+version = "0.6.16"
 
 [[SciMLBase]]
 deps = ["ArrayInterface", "CommonSolve", "ConstructionBase", "Distributed", "DocStringExtensions", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Statistics", "Tables", "TreeViews"]
-git-tree-sha1 = "60470c3fadb1a1ac20e487b37baafe664124bd03"
+git-tree-sha1 = "e4b1b53b46ffd9b100770e310df0f8222ff177ac"
 uuid = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
-version = "1.13.0"
+version = "1.13.1"
 
 [[ScientificTypes]]
 git-tree-sha1 = "b4e89a674804025c4a5843e35e562910485690c2"

@@ -130,6 +130,7 @@ savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 
 using Turing
 using LazyArrays
+setprogress!(false) # hide
 
 @model logreg(X,  y; predictors=size(X, 2)) = begin
 	#priors
