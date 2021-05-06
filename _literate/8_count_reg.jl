@@ -82,7 +82,7 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 # * $\mathbf{X}$ -- data matrix.
 
 # As we can see, the linear predictor $\alpha + \mathbf{X} \cdot \boldsymbol{\beta}$ is the logarithm of the value of
-# $y$. So we need to exponentiate the values of the linear predictor:
+# $y$. So we need to apply the exponential function the values of the linear predictor:
 
 # $$
 # \begin{aligned}
@@ -99,7 +99,8 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 # $$
 # \begin{aligned}
 # \mathbf{y} &\sim \text{Negative Binomial}\left( e^{(\alpha + \mathbf{X} \cdot \boldsymbol{\beta})}, \phi \right) \\
-# \phi &\sim \text{Gamma}(0.01, 0.01) \\
+# \phi &= \frac{1}{\phi^-} \\
+# \phi^- &\sim \text{Gamma}(0.01, 0.01) \\
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
 # \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}})
 # \end{aligned}
@@ -109,18 +110,21 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 # * $\mathbf{y}$ -- discrete and positive dependent variable.
 # * $e$ -- exponential.
-# * $\phi$ -- reciprocal dispersion.
+# * $\phi$ -- dispersion.
+# * $\phi^-$ -- reciprocal dispersion.
 # * $\alpha$ -- intercept.
 # * $\boldsymbol{\beta}$ -- coefficient vector.
 # * $\mathbf{X}$ -- data matrix.
 
 # Note that when we compare with the Poisson model, we have a new parameter $\phi$ that parameterizes the negative binomial
 # likelihood. This parameter is the probability of successes $p$ of the negative binomial distribution and we generally use
-# a Gamma distribution as prior so that $\phi$ fulfills the function of a "reciprocal dispersion" parameter. Most of the time
-# we use a weakly informative prior of the parameters shape $\alpha = 0.01$ and scale $\theta = 0.01$ (Gelman et al., 2013; 2020).
+# a Gamma distribution as prior so that the inverse of $\phi$ which is $\phi^-$ fulfills the function of a "reciprocal dispersion"
+# parameter. Most of the time we use a weakly informative prior of the parameters shape $\alpha = 0.01$ and scale $\theta = 0.01$
+# (Gelman et al., 2013; 2020). But you can also use $\phi^- \sim \text{Exponential}(1)$ as prior (McElreath, 2020).
+
 # Here is what a $\text{Gamma}(0.01, 0.01)$ looks like:
 
-using StatsPlots
+using StatsPlots, Distributions
 plot(Gamma(0.01, 0.01),
         lw=2,
         xlabel=L"\phi",
@@ -156,10 +160,9 @@ setprogress!(false) # hide
 	#priors
 	α ~ Normal(0, 2.5)
 	β ~ filldist(TDist(3), predictors)
-    ϕ ~ gamma(0.01, 0.01);
 
 	#likelihood
-	y ~ arraydist(LazyArray(@~ NegativeBinomial.(exp.(α .+ X * β), ϕ)))
+	y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -171,13 +174,15 @@ end;
 # distributions. And the LazyArrays' `LazyArray()` constructor wrap a lazy object that wraps a computation producing an array
 # to an array. Last, but not least, the macro `@~` creates a broadcast and is a nice short hand for the familiar dot `.`
 # broadcasting operator in Julia. This is an efficient way to tell Turing that our `y` vector is distributed lazily as a
-# `NegativeBinomial` broadcasted to a broadcasted `exp` over`α` added to the product of the data matrix `X` and `β` coefficient
-# vector along with `ϕ`.
+# `LogPoisson` broadcasted to `α` added to the product of the data matrix `X` and `β` coefficient vector. `LogPoisson` is
+# Turing's efficient distribution that already apply exponentiation to all the linear predictors.
 
-# If you want to use the Poisson likelihood in your model you change the following line:
+# If you want to use the negative binomial likelihood in your model you change or add the following lines:
 
 # ```julia
-# y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
+# ϕ⁻ ~ Gamma(0.01, 0.01) # or Exponential(1)
+# ϕ = 1 / ϕ⁻
+# y ~ arraydist(LazyArray(@~ NegativeBinomial.(exp.(α .+ X * β), ϕ)))
 # ```
 
 # ## Example - Roaches Extermination
@@ -217,6 +222,30 @@ model = negbinreg(X, y);
 chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain)
 
+# We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
+# Note that the coefficients are in log scale. So we need to apply the exponential function to them.
+# We can do this with a transformation in a `DataFrame` constructed from a `Chains` object:
+
+using Chain
+
+@chain quantile(chain) begin
+	DataFrame
+    select(_,
+        :parameters,
+        names(_, r"%") .=> ByRow(exp),
+        renamecols=false)
+end
+
+# Let's analyze our results. The intercept `α` is the basal number of roaches caught `y` and has
+# a median value of 19.3 roaches caught. The remaining 95% credible intervals for the `β`s can be interpreted as follows:
+
+# * `β[1]` -- first column of `X`, `roach1`, has 95% credible interval 1.01 to 1.01. This means that each increase in one unit of `roach1` is related to an increase of 1.01 more roaches caught.
+# * `β[2]` -- second column of `X`, `treatment`, has 95% credible interval 0.57 to 0.63. This means that if an apartment was treated with the pest management system then we expect an increase of around 0.6 roaches caught.
+# * `β[3]` -- third column of `X`, `senior`, has a 95% credible interval from 0.64 to 0.73. This means that if an apartment building has only elderly residents then we expect an increase of around 0.7 roaches caught.
+# * `β[4]` -- fourth column of `X`, `exposure2`, has a 95% credible interval from 1.10 to 1.26. Each increase in one day for the exposure of traps in an apartment we expect an increase of between 1.10 to 1.26 roaches caught.
+
+# That's how you interpret 95% credible intervals from a `quantile()` output of a regression with count data `Chains`
+# object converted from a log scale.
 
 # ## References
 
@@ -225,3 +254,5 @@ summarystats(chain)
 # Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). Bayesian Data Analysis. Chapman and Hall/CRC.
 #
 # Gelman, A., Hill, J., & Vehtari, A. (2020). Regression and other stories. Cambridge University Press.
+#
+# McElreath, R. (2020). *Statistical rethinking: A Bayesian course with examples in R and Stan*. CRC press.
