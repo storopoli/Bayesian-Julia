@@ -73,6 +73,8 @@
 
 using Turing
 using Statistics: mean, std
+using Random:seed!
+seed!(123)
 setprogress!(false) # hide
 
 @model linreg(X, y; predictors=size(X, 2)) = begin
@@ -125,7 +127,7 @@ summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
 # Our model has an error of around 18. So it estimates IQ±9. The intercept `α` is the basal child's IQ.
-# So each child has 21±9 IQ before we add the coefficients multiplied by the child's independent variables.
+# So each child has 22±9 IQ before we add the coefficients multiplied by the child's independent variables.
 # And from our coefficients $\boldsymbol{\beta}}$, we can see that the `quantile()` tells us the uncertainty around their
 # estimates:
 

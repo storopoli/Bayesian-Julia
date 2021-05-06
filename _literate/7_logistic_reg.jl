@@ -131,6 +131,8 @@ savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 
 using Turing
 using LazyArrays
+using Random:seed!
+seed!(123)
 setprogress!(false) # hide
 
 @model logreg(X,  y; predictors=size(X, 2)) = begin
@@ -250,7 +252,7 @@ end
 # that captures the 0 in the linear regression coefficients. So this rules out `β[3]` which is the third column of `X`
 # -- `assoc`. The other remaining 95% credible intervals can be interpreted as follows:
 
-# * `β[1]` -- first column of `X`, `arsenic`, has 95% credible interval 0.596 to 0.634. This means that each increase in one unit of `arsenic` is related to an increase of 9.6% to 13.4% propension of `switch` being 1.
+# * `β[1]` -- first column of `X`, `arsenic`, has 95% credible interval 0.595 to 0.634. This means that each increase in one unit of `arsenic` is related to an increase of 9.6% to 13.4% propension of `switch` being 1.
 # * `β[2]` -- second column of `X`, `dist`, has a 95% credible interval from 0.497 to 0.498. So we expect that each increase in one meter of `dist` is related to a decrease of 0.1% propension of `switch` being 0.
 # * `β[4]` -- fourth column of `X`, `educ`, has a 95% credible interval from 0.506 to 0.515. Each increase in one year of `educ` is related to an increase of 0.6% to 1.5% propension of `switch` being 1.
 

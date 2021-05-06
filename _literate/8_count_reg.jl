@@ -126,7 +126,7 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 using StatsPlots, Distributions
 plot(Gamma(0.01, 0.01),
-        lw=2,
+        lw=2, label=false,
         xlabel=L"\phi",
         ylabel="Density",
         xlims=(0, 0.01))
@@ -154,6 +154,8 @@ savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
 
 using Turing
 using LazyArrays
+using Random:seed!
+seed!(123)
 setprogress!(false) # hide
 
 @model negbinreg(X,  y; predictors=size(X, 2)) = begin
@@ -237,12 +239,12 @@ using Chain
 end
 
 # Let's analyze our results. The intercept `α` is the basal number of roaches caught `y` and has
-# a median value of 19.3 roaches caught. The remaining 95% credible intervals for the `β`s can be interpreted as follows:
+# a median value of 19.4 roaches caught. The remaining 95% credible intervals for the `β`s can be interpreted as follows:
 
 # * `β[1]` -- first column of `X`, `roach1`, has 95% credible interval 1.01 to 1.01. This means that each increase in one unit of `roach1` is related to an increase of 1.01 more roaches caught.
 # * `β[2]` -- second column of `X`, `treatment`, has 95% credible interval 0.57 to 0.63. This means that if an apartment was treated with the pest management system then we expect an increase of around 0.6 roaches caught.
 # * `β[3]` -- third column of `X`, `senior`, has a 95% credible interval from 0.64 to 0.73. This means that if an apartment building has only elderly residents then we expect an increase of around 0.7 roaches caught.
-# * `β[4]` -- fourth column of `X`, `exposure2`, has a 95% credible interval from 1.10 to 1.26. Each increase in one day for the exposure of traps in an apartment we expect an increase of between 1.10 to 1.26 roaches caught.
+# * `β[4]` -- fourth column of `X`, `exposure2`, has a 95% credible interval from 1.09 to 1.26. Each increase in one day for the exposure of traps in an apartment we expect an increase of between 1.09 to 1.26 roaches caught.
 
 # That's how you interpret 95% credible intervals from a `quantile()` output of a regression with count data `Chains`
 # object converted from a log scale.
