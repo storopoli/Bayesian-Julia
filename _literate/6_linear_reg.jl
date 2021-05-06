@@ -126,7 +126,7 @@ chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
-# Our model has an error of around 18. So it estimates IQ±9. The intercept `α` is the basal child's IQ.
+# Our model has an error `σ` of around 18. So it estimates IQ±9. The intercept `α` is the basal child's IQ.
 # So each child has 22±9 IQ before we add the coefficients multiplied by the child's independent variables.
 # And from our coefficients $\boldsymbol{\beta}}$, we can see that the `quantile()` tells us the uncertainty around their
 # estimates:

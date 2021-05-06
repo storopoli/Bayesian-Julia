@@ -138,8 +138,8 @@ end;
 
 # Here I am specifying very weakly informative priors:
 
-# * $\alpha \sim \text{Student-}t(\operatorname{median}(\mathbf{y}), 2.5 \cdot \operatorname{MAD}(\mathbf{y}), \nu)$ -- This means a Student-$t$ distribution centered on `y`'s median with variance 2.5 times the mean absolute deviation (MAD) of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the Student-$t$ distribution has support over all the real number line $\in (-\infty, +\infty)$. The `LocationScale()` Turing's function adds location and scale parameters to distributions that doesn't have. This is the case with the `TDist()` distribution which only takes the `ν` degrees of of freedom as parameter.
-# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,\nu_{\boldsymbol{\beta}})$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu_\boldsymbol{\beta}$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# * $\alpha \sim \text{Student-}t(\operatorname{median}(\mathbf{y}), 2.5 \cdot \operatorname{MAD}(\mathbf{y}), \nu_{\alpha})$ -- This means a Student-$t$ distribution centered on `y`'s median with variance 2.5 times the mean absolute deviation (MAD) of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the Student-$t$ distribution has support over all the real number line $\in (-\infty, +\infty)$. The `LocationScale()` Turing's function adds location and scale parameters to distributions that doesn't have it. This is the case with the `TDist()` distribution which only takes the `ν` degrees of of freedom as parameter.
+# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,\nu_{\boldsymbol{\beta}})$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu_{\boldsymbol{\beta}}$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 # * $\sigma \sim \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
 
 # Finally, the likelihood function is familiar dot `.` broadcasting operator in Julia. By specifying that `y` vector is
@@ -201,18 +201,17 @@ chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
-# Our model has an error of around 7. So it estimates occupation's prestige ±7. The intercept `α` is the basal occupation's
+# Also note that all degrees of freedom parameters, the `ν` stuff, have been estimated with mean around 3 to 5,
+# which indeed signals that our model needed fat tails to make a robust inference.
+# Our model has an error `σ` of around 7. So it estimates occupation's prestige ±7. The intercept `α` is the basal occupation's
 # prestige value. So each occupation has -7±7 prestige before we add the coefficients multiplied by the occupations' independent variables.
-# And from our coefficients $\boldsymbol{\beta}}$, we can see that the `quantile()` tells us the uncertainty around their
+# And from our coefficients $\boldsymbol{\beta}$, we can see that the `quantile()` tells us the uncertainty around their
 # estimates:
 
 quantile(chain)
 
 # * `β[1]` -- first column of `X`, `income`, has 95% credible interval from 0.55 to 0.96. This means that an increase of U\$ 1,000 in occupations' annual income is associated with an increase in roughly 0.5 to 1.0 in occupation's prestige.
 # * `β[2]` -- second column of `X`, `education`, has a 95% credible interval from 0.28 to 0.61. So we expect that an increase of 1% in occupations' percentage of respondents who had a high school diploma increases occupations' prestige roughly 0.3 to 0.6.
-
-# Also note that all degrees of freedom parameters, the `ν` stuff, have been estimated around 3 to 5 (mean in `summarystats`),
-# which indeed signals that our model needed fat tails to make a robust inference.
 
 # That's how you interpret 95% credible intervals from a `quantile()` output of a robust regression `Chains` object.
 
