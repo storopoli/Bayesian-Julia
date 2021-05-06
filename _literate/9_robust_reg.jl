@@ -133,7 +133,7 @@ setprogress!(false) # hide
     ν ~ LogNormal(2, 1)
 
     #likelihood
-    y .~ LocationScale.(α .+ X * β, σ, TDist(ν))
+    y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -142,10 +142,11 @@ end;
 # * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,\nu_{\boldsymbol{\beta}})$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu_{\boldsymbol{\beta}}$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 # * $\sigma \sim \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
 
-# Finally, the likelihood function is familiar dot `.` broadcasting operator in Julia. By specifying that `y` vector is
-# "broadcasted distributed" `.~` as a `LocationScale` broadcasted to mean (location parameter) `α` added to the product
-# of the data matrix `X` and `β` coefficient vector along with a variance (scale parameter) `σ`. To conclude, we place
-# inside the `LocationScale` a broadcasted `TDist` with `ν` degrees of freedom parameter.
+# Turing's `arraydist()` function wraps an array of distributions returning a new distribution sampling from the individual
+# distributions. It creates a broadcast and is a nice short hand for the familiar dot `.` broadcasting operator in Julia.
+# By specifying that `y` vector is "broadcasted distributed" as a `LocationScale` broadcasted to mean (location parameter)
+# `α` added to the product of the data matrix `X` and `β` coefficient vector along with a variance (scale parameter) `σ`.
+# To conclude, we place inside the `LocationScale` a broadcasted `TDist` with `ν` degrees of freedom parameter.
 
 # ## Example - Duncan's Prestige
 
