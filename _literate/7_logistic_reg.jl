@@ -4,8 +4,9 @@
 # **logistic regression** (also called binomial regression).
 
 # A logistic regression behaves exactly like a linear model: it makes a prediction simply by computing a weighted
-# sum of the independent variables, plus an intercept. However, instead of returning a continuous value, such as
-# linear regression, it returns the **logistic function** of that value:
+# sum of the independent variables $\mathbf{X}$ by the estimated coefficients $\boldsymbol{\beta}$, plus an intercept
+# $\alpha$. However, instead of returning a continuous value $y$, such as linear regression, it returns the **logistic
+# function** of $y$:
 
 # $$ \text{Logistic}(x) = \frac{1}{1 + e^{(-x)}} $$
 
@@ -44,11 +45,11 @@ savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 # * $\theta$ - model parameters
 #   * $\theta_0$ - intercept
 #   * $\theta_1, \theta_2, \dots$ - independent variables $x_1, x_2, \dots$ coefficients
-
 # * $n$ - total number of independent variables
 
-# * $\hat{p} = \text{Logistic}(\text{Linear}) = \frac{1}{1 + e^{-\operatorname{Linear}}}$ - predicted probability of the observation being the value 1
+# Logistic regression would add the logistic function to the linear term:
 
+# * $\hat{p} = \text{Logistic}(\text{Linear}) = \frac{1}{1 + e^{-\operatorname{Linear}}}$ - predicted probability of the observation being the value 1
 # * $\hat{\mathbf{y}}=\left\{\begin{array}{ll} 0 & \text { if } \hat{p} < 0.5 \\ 1 & \text { if } \hat{p} \geq 0.5 \end{array}\right.$ - predicted discreve value of $\mathbf{y}$
 
 # **Example**:
@@ -63,7 +64,7 @@ savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 # With the **Bernoulli likelihood** we model a binary dependent variable $y$ which is the result of a Bernoulli trial with
 # a certain probability $p$.
 
-# In **binomial likelihood**, we model a continuous dependent variable $y$ which is the number of successes of $n$
+# In a **binomial likelihood**, we model a continuous dependent variable $y$ which is the number of successes of $n$
 # independent Bernoulli trials.
 
 # ### Using Bernoulli Likelihood
