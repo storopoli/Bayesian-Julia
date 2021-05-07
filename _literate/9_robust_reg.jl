@@ -213,7 +213,7 @@ summarystats(chain)
 quantile(chain)
 
 # * `β[1]` -- first column of `X`, `income`, has 95% credible interval from 0.55 to 0.96. This means that an increase of U\$ 1,000 in occupations' annual income is associated with an increase in roughly 0.5 to 1.0 in occupation's prestige.
-# * `β[2]` -- second column of `X`, `education`, has a 95% credible interval from 0.28 to 0.61. So we expect that an increase of 1% in occupations' percentage of respondents who had a high school diploma increases occupations' prestige roughly 0.3 to 0.6.
+# * `β[2]` -- second column of `X`, `education`, has a 95% credible interval from 0.29 to 0.61. So we expect that an increase of 1% in occupations' percentage of respondents who had a high school diploma increases occupations' prestige roughly 0.3 to 0.6.
 
 # That's how you interpret 95% credible intervals from a `quantile()` output of a robust regression `Chains` object.
 
