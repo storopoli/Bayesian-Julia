@@ -121,6 +121,7 @@ using Statistics: mean, std
 using StatsBase:mad
 using Random:seed!
 seed!(123)
+seed!(12) # hide
 setprogress!(false) # hide
 
 @model robustreg(X, y; predictors=size(X, 2)) = begin

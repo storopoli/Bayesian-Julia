@@ -230,9 +230,9 @@ version = "0.1.2"
 
 [[ConstructionBase]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "48920211c95a6da1914a06c44ec94be70e84ffff"
+git-tree-sha1 = "fc883d49584ca15528a9ef430d8b3dbac265b718"
 uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-version = "1.1.0"
+version = "1.2.0"
 
 [[Contour]]
 deps = ["StaticArrays"]
@@ -748,9 +748,9 @@ version = "0.4.6"
 
 [[LoopVectorization]]
 deps = ["ArrayInterface", "CheapThreads", "DocStringExtensions", "IfElse", "LinearAlgebra", "OffsetArrays", "Requires", "SLEEFPirates", "Static", "StrideArraysCore", "ThreadingUtilities", "UnPack", "VectorizationBase"]
-git-tree-sha1 = "c383e617a4f40535a32d5aa4d77e70b759ee0840"
+git-tree-sha1 = "2ad016117de05750443ed219dada9df3f9b9fa8f"
 uuid = "bdcacae8-1622-11e9-2a5c-532679323890"
-version = "0.12.17"
+version = "0.12.18"
 
 [[MCMCChains]]
 deps = ["AbstractFFTs", "AbstractMCMC", "AxisArrays", "Compat", "Dates", "Distributions", "Formatting", "IteratorInterfaceExtensions", "LinearAlgebra", "MLJModelInterface", "NaturalSort", "PrettyTables", "Random", "RecipesBase", "Serialization", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns", "TableTraits", "Tables"]
@@ -1196,9 +1196,9 @@ version = "0.14.20"
 
 [[StrideArraysCore]]
 deps = ["ArrayInterface", "Requires", "ThreadingUtilities", "VectorizationBase"]
-git-tree-sha1 = "62a9b1e31f0741a642455f42ddaa9582101b3e71"
+git-tree-sha1 = "f93118d367c8dec873c26a32ad2dea84989edd7d"
 uuid = "7792a7ef-975c-4747-a70f-980b88e8d1da"
-version = "0.1.6"
+version = "0.1.7"
 
 [[StructArrays]]
 deps = ["Adapt", "DataAPI", "Tables"]
