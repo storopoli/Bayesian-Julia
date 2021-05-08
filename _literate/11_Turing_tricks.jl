@@ -1,5 +1,42 @@
 # # Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)
 
+# There are some computational tricks that we can employ with Turing.
+# I will cover here two computational tricks:
+
+# 1. **QR Decomposition**
+# 2. **Non-Centered Parametrization**
+
+# ## QR Decomposition
+
+# Back in "Linear Algebra 101" we've learned that any matrix (even retangular ones) can be factored
+# into the product of two matrices:
+
+# * $\mathbf{Q}$: an orthogonal matrix (its columns are orthogonal unit vectors meaning $\mathbf{Q}^T = \mathbf{Q}^{-1})$.
+# * $\mathbf{R}$: an upper triangular matrix.
+
+# This is commonly known as the [**QR Decomposition**](https://en.wikipedia.org/wiki/QR_decomposition):
+
+# $$ \mathbf{A} = \mathbf{Q} \cdot \mathbf{R} $$
+
+# Let me show you an example with a random matrix $\mathbf{A} \in \mathbb{R}^{3 \times 2}$:
+
+A = rand(3, 2)
+
+# Now let's factor `A` using `LinearAlgebra`'s `qr()` function:
+
+using LinearAlgebra:qr, I
+Q, R = qr(A)
+
+# Notice that `qr()` produced a tuple containing two matrices `Q` and `R`. `Q` is a 3x3 orthogonal matrix.
+# And `R` is an upper triangular matrix.
+# So that $\mathbf{Q}^T = \mathbf{Q}^{-1}$ (the transpose is equal the inverse):
+
+Matrix(Q') ≈ Matrix(Q^-1)
+
+# Also note that $\mathbf{Q}^T \cdot \mathbf{Q}^{-1} = \mathbf{I}$ (identity matrix):
+
+Q' * Q ≈ I(3)
+
 # Let's go back to the example in 6_linear_reg.jl
 
 using Turing
