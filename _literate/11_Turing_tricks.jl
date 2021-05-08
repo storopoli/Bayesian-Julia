@@ -28,7 +28,7 @@ using LinearAlgebra:qr, I
 Q, R = qr(A)
 
 # Notice that `qr()` produced a tuple containing two matrices `Q` and `R`. `Q` is a 3x3 orthogonal matrix.
-# And `R` is an upper triangular matrix.
+# And `R` is a 2x2 upper triangular matrix.
 # So that $\mathbf{Q}^T = \mathbf{Q}^{-1}$ (the transpose is equal the inverse):
 
 Matrix(Q') ≈ Matrix(Q^-1)
@@ -37,10 +37,21 @@ Matrix(Q') ≈ Matrix(Q^-1)
 
 Q' * Q ≈ I(3)
 
-# Let's go back to the example in 6_linear_reg.jl
+# Let's go back to the example in [6. **Bayesian Linear Regression**](/pages/6_linear_reg/)
 
 using Turing
 
+# ```julia
+# Summary Statistics
+#   parameters      mean       std   naive_se      mcse         ess      rhat   ess_per_sec
+#       Symbol   Float64   Float64    Float64   Float64     Float64   Float64       Float64
+#
+#            α   21.5724    8.7260     0.0976    0.1646   2947.6610    1.0041      212.8275
+#         β[1]    2.0223    1.8276     0.0204    0.0291   3760.2863    1.0006      271.5008
+#         β[2]    0.5802    0.0589     0.0007    0.0009   4363.1476    1.0019      315.0287
+#         β[3]    0.2469    0.3081     0.0034    0.0051   3393.1174    1.0016      244.9904
+#            σ   17.8753    0.6013     0.0067    0.0080   5809.2999    1.0004      419.4440
+# ```
 
 # Benchmarking
 

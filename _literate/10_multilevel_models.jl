@@ -82,7 +82,7 @@
 # But now we have **new parameters**. The first are the **group intercepts** prior $\alpha_j$ that denotes that every group
 # $1, 2, \dots, J$ has its own intercept sampled from a normal distribution centered on 0 with a standard deviation $\sigma_\alpha$.
 # This group intercept is added to the linear predictor inside the Gaussian/normal likelihood function. The **group intercepts' standard
-# deviation** $tau$ have a hyperprior (being a prior of a prior) which is sampled from a positive-constrained Cauchy distribution (a special
+# deviation** $\tau$ have a hyperprior (being a prior of a prior) which is sampled from a positive-constrained Cauchy distribution (a special
 # case of the Student-$t$ distribution with degrees of freedom $\nu = 1$) with mean 0 and standard deviation $\sigma_\alpha$.
 # This makes the group-level intercept's dispersions being sampled from the same parameter $\tau$ which allows the model
 # to use information from one group intercept to infer robust information regarding another group's intercept dispersion and so on.
@@ -210,7 +210,7 @@ url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/dataset
 cheese = CSV.read(HTTP.get(url).body, DataFrame)
 describe(cheese)
 
-# As you can see from the `describe()` output, the mean cheese ratings is around 70 raging from 33 to 91.
+# As you can see from the `describe()` output, the mean cheese ratings is around 70 ranging from 33 to 91.
 
 # In order to prepare the data for Turing, I will convert the `String`s in variables `cheese` and `background`
 # to `Int`s. Regarding `cheese`, I will create 4 dummy variables one for each cheese type; and `background` will be
@@ -236,9 +236,9 @@ first(cheese, 5)
 # named `idx` to represent the different observations' group memberships. This will
 # be used by Turing when we index a parameter with the `idx`, *e.g.* `αⱼ[idx]`.
 
-X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)))
-y = cheese[:, :y]
-idx = cheese[:, :background_int]
+X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)));
+y = cheese[:, :y];
+idx = cheese[:, :background_int];
 
 # The first model is the `varying_intercept`:
 
