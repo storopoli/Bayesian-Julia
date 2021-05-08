@@ -40,6 +40,189 @@
 #
 # \center{*Exchangeability -- Images from [Michael Betancourt](https://betanalpha.github.io/)*} \\
 
+# ## Hyperpriors
+
+# As the priors of the parameters are sampled from another prior of the hyperparameter (upper-level's parameter),
+# which are called **hyperpriors**. This makes one group's estimates help the model to better estimate the other groups
+# by providing more **robust and stable estimates**.
+
+# We call the global parameters as **population effects** (or population-level effects, also sometimes called fixed effects)
+# and the parameters of each group as **group effects** (or group-level effects, also sometimes called random effects).
+# That is why multilevel models are also known as mixed models in which we have both fixed effects and random effects.
+
+# ## Three Approaches to Multilevel Models
+
+# Multilevel models generally fall into three approaches:
+
+# 1. **Random-intercept model**: each group receives a **different intercept** in addition to the global intercept.
+# 2. **Random-slope model**: each group receives **different coefficients** for each (or a subset of) independent variable(s) in addition to the global coefficients.
+# 3. **Random-intercept-slope model**: each group receives **both a different intercept and different coefficients** for each independent variable in addition to the global intercept and global coefficients.
+
+# ### Random-Intercept Model
+
+# The first approach is the **random-intercept model** in which we specify a different intercept for each group,
+# in addition to the global intercept. These group-level intercepts are sampled from a hyperprior.
+
+# To illustrate a multilevel model, I will use the linear regression example with a Gaussian/normal likelihood function.
+# Mathematically a Bayesian multilevel random-slope linear regression model is:
+
+# $$
+# \begin{aligned}
+# \mathbf{y} &\sim \text{Normal}\left( \alpha + \alpha_j + \mathbf{X} \cdot \boldsymbol{\beta}, \sigma \right) \\
+# \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
+# \alpha_j &\sim \text{Normal}(0, \tau) \\
+# \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}}) \\
+# \tau &\sim \text{Cauchy}^+(0, \sigma_{\alpha})\\
+# \sigma &\sim \text{Exponential}(\lambda_\sigma)
+# \end{aligned}
+# $$
+
+# The priors on the global intercept $\alpha$, global coefficients $\boldsymbol{\beta}$ and error $\sigma$, along with
+# the Gaussian/normal likelihood on $\mathbf{y}$ are the same as in the linear regression model.
+# But now we have **new parameters**. The first are the **group intercepts** prior $\alpha_j$ that denotes that every group
+# $1, 2, \dots, J$ has its own intercept sampled from a normal distribution centered on 0 with a standard deviation $\sigma_\alpha$.
+# This group intercept is added to the linear predictor inside the Gaussian/normal likelihood function. The **group intercepts' standard
+# deviation** $tau$ have a hyperprior (being a prior of a prior) which is sampled from a positive-constrained Cauchy distribution (a special
+# case of the Student-$t$ distribution with degrees of freedom $\nu = 1$) with mean 0 and standard deviation $\sigma_\alpha$.
+# This makes the group-level intercept's dispersions being sampled from the same parameter $\tau$ which allows the model
+# to use information from one group intercept to infer robust information regarding another group's intercept dispersion and so on.
+
+# This is easily accomplished with Turing:
+
+using Turing
+using Statistics: mean, std
+using Random:seed!
+seed!(123)
+setprogress!(false) # hide
+
+@model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+    #priors
+    α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
+    β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
+    σ ~ Exponential(1 / std(y))             # residual SD
+    #prior for variance of random intercepts
+    #usually requires thoughtful specification
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    αⱼ ~ filldist(Normal(0, τ), n_gr)       # group-level intercepts
+
+    #likelihood
+    ŷ = α .+ X * β .+ αⱼ[idx]
+    y ~ MvNormal(ŷ, σ)
+end;
+
+# ### Random-Slope Model
+
+# The second approach is the **random-slope model** in which we specify a different slope for each group,
+# in addition to the global slope. These group-level slopes are sampled from a hyperprior.
+
+# To illustrate a multilevel model, I will use the linear regression example with a Gaussian/normal likelihood function.
+# Mathematically a Bayesian multilevel random-slope linear regression model is:
+
+# $$
+# \begin{aligned}
+# \mathbf{y} &\sim \text{Normal}\left( \alpha + \mathbf{X} \cdot \boldsymbol{\beta} + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
+# \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
+# \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}}) \\
+# \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau) \\
+# \tau &\sim \text{Cauchy}^+(0, \sigma_{\boldsymbol{\beta}})\\
+# \sigma &\sim \text{Exponential}(\lambda_\sigma)
+# \end{aligned}
+# $$
+
+# Here we have a similar situation from before with the same hyperprior, but now it is a hyperprior for the the group coefficients'
+# standard deviation prior: $\boldsymbol{\beta}_j$.
+# This makes the group-level coefficients's dispersions being sampled from the same parameter $\tau$ which allows the model
+# to use information from one group coefficients to infer robust information regarding another group's coefficients dispersion and so on.
+
+# In Turing we can accomplish this as:
+
+@model varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+    #priors
+    α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
+    β ~ filldist(Normal(0, 2), predictors)          # population-level coefficients
+    σ ~ Exponential(1 / std(y))                     # residual SD
+    #prior for variance of random intercepts
+    #usually requires thoughtful specification
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
+
+    #likelihood
+    ŷ = α .+ X * β .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    y ~ MvNormal(ŷ, σ)
+end;
+
+@model varying_intercepts_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+    #priors
+    α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
+    β ~ filldist(Normal(0, 2), predictors)          # population-level coefficients
+    σ ~ Exponential(1 / std(y))                     # residual SD
+    #prior for variance of random intercepts
+    #usually requires thoughtful specification
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    αⱼ ~ filldist(Normal(0, τ), n_gr)               # group-level intercepts
+    βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
+
+    #likelihood
+    ŷ = α .+ αⱼ[idx] .+ X * β .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    y ~ MvNormal(ŷ, σ)
+end;
+
+# ## Example - Children's IQ Score
+
+# For our example, I will use a famous dataset called `cheese` (Boatwright, McCulloch & Rossi, 1999), which is data from a
+# survey of adult American women and their respective children. Dated from 2007, it has 434 observations and 4 variables:
+
+# * `kid_score`: child's IQ
+# * `mom_hs`: binary/dummy (0 or 1) if the child's mother has a high school diploma
+# * `mom_iq`: mother's IQ
+# * `mom_age`: mother's age
+
+# Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
+
+using DataFrames, CSV, HTTP
+
+url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/cheese.csv"
+cheese = CSV.read(HTTP.get(url).body, DataFrame)
+describe(cheese)
+
+# As you can see from the `describe()` output, the mean children's IQ is around 87 while the mother's is 100. Also the mother's
+# range from 17 to 29 years with mean of around 23 years old. Finally, note that 79% of mothers have a high school diploma.
+
+# I will convert the `String`s in variables `cheese` and `background` to `Int`s. Regarding `cheese`, I will
+# create 4 dummy variables one for each cheese type; and `background` will be converted to integer data taking
+# two values: one for each background type.
+
+for c in unique(cheese[:, :cheese])
+    cheese[:, "cheese_$c"] = ifelse.(cheese[:, :cheese] .== c, 1, 0)
+end
+
+cheese[:, :background_int] = map(cheese[:, :background]) do b
+    b == "rural" ? 1 :
+    b == "urban" ? 2 : missing
+end
+
+first(cheese, 5)
+
+# Now let's us instantiate our model with the data. Here, I will `cheese_A` as the basal dummy variable that will be 0 in all others:
+
+X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)))
+y = cheese[:, :y]
+idx = cheese[:, :background_int]
+
+model_intercept = varying_intercept(X, idx, y)
+
+chain_intercept = sample(model_intercept, NUTS(), MCMCThreads(), 2_000, 4)
+summarystats(chain_intercept)  |> DataFrame  |> println
+
+model_slope = varying_slope(X, idx, y)
+
+chain_slope = sample(model_slope, NUTS(), MCMCThreads(), 2_000, 4)
+summarystats(chain_slope)  |> DataFrame  |> println
+
+model_intercept_slope = varying_intercepts_slope(X, idx, y)
+
+chain_intercept_slope = sample(model_intercept_slope, NUTS(), MCMCThreads(), 2_000, 4)
+summarystats(chain_intercept_slope)  |> DataFrame  |> println
 
 # ## References
 #
