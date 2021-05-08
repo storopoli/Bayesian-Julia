@@ -55,8 +55,8 @@
 # Multilevel models generally fall into three approaches:
 
 # 1. **Random-intercept model**: each group receives a **different intercept** in addition to the global intercept.
-# 2. **Random-slope model**: each group receives **different coefficients** for each (or a subset of) independent variable(s) in addition to the global coefficients.
-# 3. **Random-intercept-slope model**: each group receives **both a different intercept and different coefficients** for each independent variable in addition to the global intercept and global coefficients.
+# 2. **Random-slope model**: each group receives **different coefficients** for each (or a subset of) independent variable(s) in addition to a global intercept.
+# 3. **Random-intercept-slope model**: each group receives **both a different intercept and different coefficients** for each independent variable in addition to a global intercept.
 
 # ### Random-Intercept Model
 
@@ -113,16 +113,15 @@ end;
 # ### Random-Slope Model
 
 # The second approach is the **random-slope model** in which we specify a different slope for each group,
-# in addition to the global slope. These group-level slopes are sampled from a hyperprior.
+# in addition to the global intercept. These group-level slopes are sampled from a hyperprior.
 
 # To illustrate a multilevel model, I will use the linear regression example with a Gaussian/normal likelihood function.
 # Mathematically a Bayesian multilevel random-slope linear regression model is:
 
 # $$
 # \begin{aligned}
-# \mathbf{y} &\sim \text{Normal}\left( \alpha + \mathbf{X} \cdot \boldsymbol{\beta} + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
+# \mathbf{y} &\sim \text{Normal}\left( \alpha + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
-# \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}}) \\
 # \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau) \\
 # \tau &\sim \text{Cauchy}^+(0, \sigma_{\boldsymbol{\beta}})\\
 # \sigma &\sim \text{Exponential}(\lambda_\sigma)
@@ -139,7 +138,6 @@ end;
 @model varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
-    β ~ filldist(Normal(0, 2), predictors)          # population-level coefficients
     σ ~ Exponential(1 / std(y))                     # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
@@ -147,14 +145,13 @@ end;
     βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
 
     #likelihood
-    ŷ = α .+ X * β .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    ŷ = α .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
     y ~ MvNormal(ŷ, σ)
 end;
 
 @model varying_intercepts_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
-    β ~ filldist(Normal(0, 2), predictors)          # population-level coefficients
     σ ~ Exponential(1 / std(y))                     # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
@@ -163,11 +160,11 @@ end;
     βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
 
     #likelihood
-    ŷ = α .+ αⱼ[idx] .+ X * β .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    ŷ = α .+ αⱼ[idx] .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
     y ~ MvNormal(ŷ, σ)
 end;
 
-# ## Example - Children's IQ Score
+# ## Example - Cheese Ratings
 
 # For our example, I will use a famous dataset called `cheese` (Boatwright, McCulloch & Rossi, 1999), which is data from a
 # survey of adult American women and their respective children. Dated from 2007, it has 434 observations and 4 variables:
