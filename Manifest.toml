@@ -151,9 +151,9 @@ version = "0.4.6"
 
 [[ChainRules]]
 deps = ["ChainRulesCore", "Compat", "LinearAlgebra", "Random", "Reexport", "Requires", "Statistics"]
-git-tree-sha1 = "1f410fba5c04d03ab712f348f1542e6059376547"
+git-tree-sha1 = "729a17113c67d941a54169da6a81c5ec890f5834"
 uuid = "082447d4-558c-5d27-93f4-14fc19e9eca2"
-version = "0.7.61"
+version = "0.7.63"
 
 [[ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra", "SparseArrays"]
@@ -230,9 +230,9 @@ version = "0.1.2"
 
 [[ConstructionBase]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "fc883d49584ca15528a9ef430d8b3dbac265b718"
+git-tree-sha1 = "1dc43957fb9a1574fa1b7a449e101bd1fd3a9fb7"
 uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-version = "1.2.0"
+version = "1.2.1"
 
 [[Contour]]
 deps = ["StaticArrays"]
@@ -252,9 +252,9 @@ version = "1.6.0"
 
 [[DataFrames]]
 deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "ce0245eff066b386144e39c022052c3994fb4fce"
+git-tree-sha1 = "66ee4fe515a9294a8836ef18eea7239c6ac3db5e"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.1.0"
+version = "1.1.1"
 
 [[DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -1084,9 +1084,9 @@ version = "0.6.16"
 
 [[SciMLBase]]
 deps = ["ArrayInterface", "CommonSolve", "ConstructionBase", "Distributed", "DocStringExtensions", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "RecipesBase", "RecursiveArrayTools", "StaticArrays", "Statistics", "Tables", "TreeViews"]
-git-tree-sha1 = "e4b1b53b46ffd9b100770e310df0f8222ff177ac"
+git-tree-sha1 = "6d159dc51ca4197855a16c1e50bdfb4decd2cc75"
 uuid = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
-version = "1.13.1"
+version = "1.13.2"
 
 [[ScientificTypes]]
 git-tree-sha1 = "b4e89a674804025c4a5843e35e562910485690c2"
