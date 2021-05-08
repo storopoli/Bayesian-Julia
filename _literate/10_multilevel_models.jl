@@ -139,7 +139,7 @@ end;
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
     σ ~ Exponential(1 / std(y))                     # residual SD
-    #prior for variance of random intercepts
+    #prior for variance of random slopes
     #usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)
     βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
@@ -149,15 +149,42 @@ end;
     y ~ MvNormal(ŷ, σ)
 end;
 
-@model varying_intercepts_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+# ### Random-Intercept-Slope Model
+
+# The third approach is the **random-slope model** in which we specify a different intercept
+# and  slope for each group, in addition to the global intercept.
+# These group-level intercepts and slopes are sampled from hyperpriors.
+
+# To illustrate a multilevel model, I will use the linear regression example with a Gaussian/normal likelihood function.
+# Mathematically a Bayesian multilevel random-intercept-slope linear regression model is:
+
+# $$
+# \begin{aligned}
+# \mathbf{y} &\sim \text{Normal}\left( \alpha + \alpha_j + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
+# \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
+# \alpha_j &\sim \text{Normal}(0, \tau_{\alpha}) \\
+# \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau_{\boldsymbol{\beta}}) \\
+# \tau_{\alpha} &\sim \text{Cauchy}^+(0, \sigma_{\alpha})\\
+# \tau_{\boldsymbol{\beta}} &\sim \text{Cauchy}^+(0, \sigma_{\boldsymbol{\beta}})\\
+# \sigma &\sim \text{Exponential}(\lambda_\sigma)
+# \end{aligned}
+# $$
+
+# Here we have a similar situation from before with the same hyperpriors, but now we fused both random-intercept
+# and random-slope together.
+
+# In Turing we can accomplish this as:
+
+@model varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
     σ ~ Exponential(1 / std(y))                     # residual SD
-    #prior for variance of random intercepts
+    #prior for variance of random intercepts and slopes
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)
-    αⱼ ~ filldist(Normal(0, τ), n_gr)               # group-level intercepts
-    βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
+    τₐ ~ truncated(Cauchy(0, 2), 0, Inf)
+    τᵦ ~ truncated(Cauchy(0, 2), 0, Inf)
+    αⱼ ~ filldist(Normal(0, τₐ), n_gr)               # group-level intercepts
+    βⱼ ~ filldist(Normal(0, τᵦ), predictors, n_gr)   # group-level slopes
 
     #likelihood
     ŷ = α .+ αⱼ[idx] .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
@@ -166,13 +193,14 @@ end;
 
 # ## Example - Cheese Ratings
 
-# For our example, I will use a famous dataset called `cheese` (Boatwright, McCulloch & Rossi, 1999), which is data from a
-# survey of adult American women and their respective children. Dated from 2007, it has 434 observations and 4 variables:
+# For our example, I will use a famous dataset called `cheese` (Boatwright, McCulloch & Rossi, 1999), which is data from
+# cheese ratings. A group of 10 rural and 10 urban raters rated 4 types of different cheeses (A, B, C and D) in two samples.
+# So we have $4 \cdot 20 \cdot2 = 160$ observations and 4 variables:
 
-# * `kid_score`: child's IQ
-# * `mom_hs`: binary/dummy (0 or 1) if the child's mother has a high school diploma
-# * `mom_iq`: mother's IQ
-# * `mom_age`: mother's age
+# * `cheese`: type of cheese from `A` to `D`
+# * `rater`: id of the rater from `1` to `10`
+# * `background`: type of rater, either `rural` or `urban`
+# * `y`: rating of the cheese
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
 
@@ -182,12 +210,13 @@ url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/dataset
 cheese = CSV.read(HTTP.get(url).body, DataFrame)
 describe(cheese)
 
-# As you can see from the `describe()` output, the mean children's IQ is around 87 while the mother's is 100. Also the mother's
-# range from 17 to 29 years with mean of around 23 years old. Finally, note that 79% of mothers have a high school diploma.
+# As you can see from the `describe()` output, the mean cheese ratings is around 70 raging from 33 to 91.
 
-# I will convert the `String`s in variables `cheese` and `background` to `Int`s. Regarding `cheese`, I will
-# create 4 dummy variables one for each cheese type; and `background` will be converted to integer data taking
-# two values: one for each background type.
+# In order to prepare the data for Turing, I will convert the `String`s in variables `cheese` and `background`
+# to `Int`s. Regarding `cheese`, I will create 4 dummy variables one for each cheese type; and `background` will be
+# converted to integer data taking two values: one for each background type. My intent is to model `background`
+# as a group both for intercept and coefficients.
+# Take a look at how the data will look like for the first 5 observations:
 
 for c in unique(cheese[:, :cheese])
     cheese[:, "cheese_$c"] = ifelse.(cheese[:, :cheese] .== c, 1, 0)
@@ -200,35 +229,52 @@ end
 
 first(cheese, 5)
 
-# Now let's us instantiate our model with the data. Here, I will `cheese_A` as the basal dummy variable that will be 0 in all others:
+# Now let's us instantiate our model with the data.
+# Here, I will `cheese_A` as the basal dummy variable so that its value will be 0 in all
+# others `cheese` dummy variables. This needs to be done for inference stability and
+# collinearity issues regarding the data matrix `X`. I also specify a vector of `Int`s
+# named `idx` to represent the different observations' group memberships. This will
+# be used by Turing when we index a parameter with the `idx`, *e.g.* `αⱼ[idx]`.
 
 X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)))
 y = cheese[:, :y]
 idx = cheese[:, :background_int]
 
-model_intercept = varying_intercept(X, idx, y)
+# The first model is the `varying_intercept`:
 
+model_intercept = varying_intercept(X, idx, y)
 chain_intercept = sample(model_intercept, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain_intercept)  |> DataFrame  |> println
 
-model_slope = varying_slope(X, idx, y)
+# Here we can see that the model has a population-level intercept `α` along with population-level coefficients `β`s for each `cheese`
+# dummy variable. But notice that we have also group-level intercepts for each of the groups `αⱼ`s.
+# Specifically, `αⱼ[1]` are the rural raters and `αⱼ[2]` are the urban raters.
 
+# Now let's go to the second model, `varying_slope`:
+
+model_slope = varying_slope(X, idx, y)
 chain_slope = sample(model_slope, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain_slope)  |> DataFrame  |> println
 
-model_intercept_slope = varying_intercepts_slope(X, idx, y)
+# Here we can see that the model has still a population-level intercept `α`. But now our population-level
+# coefficients `β`s are replaced by group-level coefficients `βⱼ`s. Specifically `βⱼ`'s first index denotes
+# the 3 dummy `cheese` variables' and the second index are the group membership. So, for example `βⱼ[1,1]`
+# is the coefficient for `cheese_B` and rural raters (group 1).
 
+# Now let's go to the third model, `varying_intercept_slope`:
+
+model_intercept_slope = varying_intercept_slope(X, idx, y)
 chain_intercept_slope = sample(model_intercept_slope, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain_intercept_slope)  |> DataFrame  |> println
+
+# Now we have fused the previous model in one. We still have a population-level intercept `α`. But now
+# we have in the same model group-level intercepts for each of the groups `αⱼ`s and group-level
+# coefficients `βⱼ`s. The parameters are interpreted exactly as the previous cases.
 
 # ## References
 #
 # Boatwright, P., McCulloch, R., & Rossi, P. (1999). Account-level modeling for trade promotion: An application of a constrained parameter hierarchical model. Journal of the American Statistical Association, 94(448), 1063–1073.
 #
 # de Finetti, B. (1974). Theory of Probability (Volume 1). New York: John Wiley & Sons.
-#
-# Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). Bayesian Data Analysis. Chapman and Hall/CRC.
-#
-# Lewandowski, D., Kurowicka, D., & Joe, H. (2009). Generating random correlation matrices based on vines and extended onion method. Journal of Multivariate Analysis, 100(9), 1989–2001.
 #
 # Nau, R. F. (2001). De Finetti was Right: Probability Does Not Exist. Theory and Decision, 51(2), 89–124. https://doi.org/10.1023/A:1015525808214
