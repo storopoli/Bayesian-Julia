@@ -68,7 +68,7 @@ y = kidiq[:, :kid_score]
 model = linreg(X, y)
 chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 
-# See the wall duration in Turing's `chain`: for me it took 13.46s.
+# See the wall duration in Turing's `chain`: for me it took around 24 seconds.
 
 # Now let's us incorporate QR decomposition in the linear regression model.
 # Here, I will use the "thin" instead of the "fat" QR, which scales the $\mathbf{Q}$ and $\mathbf{R}$
@@ -110,7 +110,7 @@ R_ast = R / sqrt(size(X, 1) - 1);
 model_qr = linreg(Q_ast, y)
 chain_qr = sample(model_qr, NUTS(1_000, 0.65), MCMCThreads(), 2_000, 4)
 
-# See the wall duration in Turing's `chain_qr`: for me it took 6.58s. Much faster than
+# See the wall duration in Turing's `chain_qr`: for me it took around 5 seconds. Much faster than
 # the regular `linreg`.
 # Now we have to reconstruct our $\boldsymbol{\beta}$s:
 
@@ -141,7 +141,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # the $\epsilon$ factor. But, the opposite is in the lower part of the funnel: way more steps $L$ and be
 # more conservative with the $\epsilon$ factor.
 
-# To see the devil's funnel (how it is known in some Bayesian circles), let's code it in Turing and them sample:
+# To see the devil's funnel (how it is known in some Bayesian circles) in action, let's code it in Turing and them sample:
 
 @model funnel() = begin
     y ~ Normal(0, 3)
