@@ -43,7 +43,7 @@
 
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
-plot(DiscreteUniform(1, 6),
+bar(DiscreteUniform(1, 6),
         label="6-sided Dice",
         ms=5,
         xlabel=L"\theta",
@@ -68,19 +68,18 @@ savefig(joinpath(@OUTPUT, "discrete_uniform.svg")); # hide
 
 # Example: Whether the patient survived or died or whether the customer completes their purchase or not.
 
-plot(Bernoulli(0.5),
+bar(Bernoulli(0.5),
         label=L"p=0.5",
-        ms=5,
+        alpha=0.3,
         xlabel=L"\theta",
         ylabel="Mass",
         ylim=(0, 1)
     )
-plot!(Bernoulli(0.2), label=L"p=0.2", ms=5)
-plot!(Bernoulli(0.7), label=L"p=0.7", ms=5)
+bar!(Bernoulli(0.2), label=L"p=0.2", alpha=0.3)
 savefig(joinpath(@OUTPUT, "bernoulli.svg")); # hide
 
 # \fig{bernoulli}
-# \center{*Bernoulli with $p = \{ 0.5, 0.2, 0.7 \}$*} \\
+# \center{*Bernoulli with $p = \{ 0.5, 0.2 \}$*} \\
 
 # ### Binomial
 
@@ -95,18 +94,17 @@ savefig(joinpath(@OUTPUT, "bernoulli.svg")); # hide
 
 # Example: number of heads in 5 coin flips.
 
-plot(Binomial(5, 0.5),
+bar(Binomial(5, 0.5),
         label=L"p=0.5",
-        ms=5,
+        alpha=0.3,
         xlabel=L"\theta",
         ylabel="Mass"
     )
-plot!(Binomial(5, 0.2), label=L"p=0.2", ms=5)
-plot!(Binomial(5, 0.1), label=L"p=0.1", ms=5)
+bar!(Binomial(5, 0.2), label=L"p=0.2", alpha=0.3)
 savefig(joinpath(@OUTPUT, "binomial.svg")); # hide
 
 # \fig{binomial}
-# \center{*Binomial with $n=5$ and $p = \{ 0.5, 0.2, 0.7 \}$*} \\
+# \center{*Binomial with $n=5$ and $p = \{ 0.5, 0.2 \}$*} \\
 
 # ### Poisson
 
@@ -120,18 +118,17 @@ savefig(joinpath(@OUTPUT, "binomial.svg")); # hide
 
 # Example: Number of emails you receive daily. Number of holes you find on the street.
 
-plot(Poisson(1),
+bar(Poisson(1),
         label=L"\lambda=1",
-        ms=5,
+        alpha=0.3,
         xlabel=L"\theta",
         ylabel="Mass"
     )
-plot!(Poisson(4), label=L"\lambda=4", ms=5)
-plot!(Poisson(10), label=L"\lambda=10", ms=5)
+bar!(Poisson(4), label=L"\lambda=4", alpha=0.3)
 savefig(joinpath(@OUTPUT, "poisson.svg")); # hide
 
 # \fig{poisson}
-# \center{*Poisson with $\lambda = \{ 1, 4, 10 \}$*} \\
+# \center{*Poisson with $\lambda = \{ 1, 4 \}$*} \\
 
 # ### Negative Binomial
 
@@ -150,18 +147,17 @@ savefig(joinpath(@OUTPUT, "poisson.svg")); # hide
 
 # Example: Annual count of tropical cyclones.
 
-plot(NegativeBinomial(1, 0.5),
+bar(NegativeBinomial(1, 0.5),
         label=L"k=1",
-        ms=5,
+        alpha=0.3,
         xlabel=L"\theta",
         ylabel="Mass"
     )
-plot!(NegativeBinomial(2, 0.5), label=L"k=2", ms=5)
-plot!(NegativeBinomial(5, 0.6), label=L"k=5", ms=5)
+bar!(NegativeBinomial(2, 0.5), label=L"k=2", alpha=0.3)
 savefig(joinpath(@OUTPUT, "negbinomial.svg")); # hide
 
 # \fig{negbinomial}
-# \center{*Negative Binomial with $p=0.5$ and $r = \{ 1, 2, 5 \}$*} \\
+# \center{*Negative Binomial with $p=0.5$ and $r = \{ 1, 2 \}$*} \\
 
 # ## Continuous
 
@@ -293,6 +289,33 @@ savefig(joinpath(@OUTPUT, "tdist.svg")); # hide
 
 # \fig{tdist}
 # \center{*Student-$t$ with $\nu = \{ 2, 8, 30 \}$*} \\
+
+# ### Beta Distribution
+
+# The beta distributions is a natural choice to model anything that is constrained to take values between 0 and 1.
+# So it is a good candidate for probabilities and proportions.
+
+# The beta distribution has two parameters and its notation is $\text{Beta} (a, b)$:
+
+# * Shape parameter ($a$ or sometimes $\alpha$): controls how much the shape is shifted towards 1
+# * Shape parameter ($b$ or sometimes $\beta$): controls how much the shape is shifted towards 0
+
+# Example: A basketball player has made already scored 5 free throws while missing 3 in a total of 8 attempts
+# -- $\text{Beta}(3, 5)$.
+
+plot(Beta(1, 1),
+        label=L"a=b=1",
+        lw=5,
+        xlabel=L"\theta",
+        ylabel="Density",
+        xlims=(0, 1)
+    )
+plot!(Beta(3, 2), label=L"a=3, b=2", lw=5)
+plot!(Beta(2, 3), label=L"a=2, b=3", lw=5)
+savefig(joinpath(@OUTPUT, "beta.svg")); # hide
+
+# \fig{beta}
+# \center{*Beta with different values of $a$ and $b$*} \\
 
 # ## Distribution Zoo
 
