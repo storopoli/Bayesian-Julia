@@ -37,50 +37,217 @@ Matrix(Q') ≈ Matrix(Q^-1)
 
 Q' * Q ≈ I(3)
 
-# Let's go back to the example in [6. **Bayesian Linear Regression**](/pages/6_linear_reg/)
+# This is nice. But what can we do with QR decomposition? It can speed up Turing's sampling by
+# a huge factor while also decorrelating the columns of $\mathbf{X}$, *i.e.* the independent variables.
+# The orthogonal nature of QR decomposition alters the posterior's topology and makes it easier
+# for HMC or other MCMC samplers to explore it. Let's see how fast we can get with QR decomposition.
+# First, let's go back to the `kidiq` example in [6. **Bayesian Linear Regression**](/pages/6_linear_reg/):
 
 using Turing
+using Statistics: mean, std
+using Random:seed!
+seed!(123)
+setprogress!(false) # hide
 
-# ```julia
-# Summary Statistics
-#   parameters      mean       std   naive_se      mcse         ess      rhat   ess_per_sec
-#       Symbol   Float64   Float64    Float64   Float64     Float64   Float64       Float64
-#
-#            α   21.5724    8.7260     0.0976    0.1646   2947.6610    1.0041      212.8275
-#         β[1]    2.0223    1.8276     0.0204    0.0291   3760.2863    1.0006      271.5008
-#         β[2]    0.5802    0.0589     0.0007    0.0009   4363.1476    1.0019      315.0287
-#         β[3]    0.2469    0.3081     0.0034    0.0051   3393.1174    1.0016      244.9904
-#            σ   17.8753    0.6013     0.0067    0.0080   5809.2999    1.0004      419.4440
-# ```
+@model linreg(X, y; predictors=size(X, 2)) = begin
+	#priors
+	α ~ Normal(mean(y), 2.5 * std(y))
+	β ~ filldist(TDist(3), predictors)
+	σ ~ Exponential(1)
 
-# Benchmarking
+	#likelihood
+	y ~ MvNormal(α .+ X * β, σ)
+end;
 
-using BenchmarkTools, Random
+using DataFrames, CSV, HTTP
 
-Random.seed!(123)
+url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/kidiq.csv"
+kidiq = CSV.read(HTTP.get(url).body, DataFrame)
+X = Matrix(select(kidiq, Not(:kid_score)))
+y = kidiq[:, :kid_score]
+model = linreg(X, y)
+chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 
-data = rand(Normal());
+# See the wall duration in Turing's `chain`: for me it took 13.46s.
 
-# ```julia
-# @btime sample(linear_reg($data), NUTS(), 2_000)
-# ```
+# Now let's us incorporate QR decomposition in the linear regression model.
+# Here, I will use the "thin" instead of the "fat" QR, which scales the $\mathbf{Q}$ and $\mathbf{R}$
+# matrices by a factor of $\sqrt{n-1}$ where $n$ is the number of rows of $\mathbf{X}$.
+# In practice it is better implement the thin QR decomposition, which is to be preferred to the fat QR decomposition.
+# It is numerically more stable. Mathematically, the thin QR decomposition is:
 
+# $$
+# \begin{aligned}
+# x &= \mathbf{Q}^* \mathbf{R}^* \\
+# \mathbf{Q}^* &= \mathbf{Q} \cdot \sqrt{n - 1} \\
+# \mathbf{R}^* &= \frac{1}{\sqrt{n - 1}} \cdot \mathbf{R}\\
+# \boldsymbol{\mu}
+# &= \alpha + \mathbf{X} \cdot \boldsymbol{\beta} + \sigma
+# \\
+# &= \alpha + \mathbf{Q}^* \cdot \mathbf{R}^* \cdot \boldsymbol{\beta} + \sigma
+# \\
+# &= \alpha + \mathbf{Q}^* \cdot (\mathbf{R}^* \cdot \boldsymbol{\beta}) + \sigma
+# \\
+# &= \alpha + \mathbf{Q}^* \cdot \widetilde{\boldsymbol{\beta}} + \sigma
+# \\
+# \end{aligned}
+# $$
 
-# Takes XXX in my machine
+# Then we can recover original $\boldsymbol{\beta}$ with:
 
-# Using `FillArrays.jl`
+# $$ \boldsymbol{\beta} = \mathbf{R}^{*-1} \cdot \widetilde{\boldsymbol{\beta}} $$
 
-# ```julia
-# x ~ MvNormal(Fill(m, length(x)), 0.2)
-# ```
+# In Turing, a model with QR decomposition would be the same `linreg` but with a
+# different `X` matrix supplied, since it is a data transformation. First, we
+# decompose your model data `X` into `Q` and `R`:
 
-# Now the efficient stuff
+Q, R = qr(X)
+Q_ast = Matrix(Q) * sqrt(size(X, 1) - 1)
+R_ast = R / sqrt(size(X, 1) - 1);
 
-using LazyArrays
-lazyarray(f, x) = LazyArray(Base.broadcasted(f, x))
+# Then, we instantiate a model with `Q` instead of `X` and sample as you would:
 
-# Model
+model_qr = linreg(Q_ast, y)
+chain_qr = sample(model_qr, NUTS(1_000, 0.65), MCMCThreads(), 2_000, 4)
 
+# See the wall duration in Turing's `chain_qr`: for me it took 6.58s. Much faster than
+# the regular `linreg`.
+# Now we have to reconstruct our $\boldsymbol{\beta}$s:
 
-# Benchmarking
+betas = mapslices(x -> R_ast^-1 * x, chain_qr[:, namesingroup(chain_qr, :β),:].value.data, dims=[2])
+chain_qr_reconstructed = hcat(Chains(betas, ["real_β[$i]" for i in 1:size(Q_ast, 2)]), chain_qr)
 
+# ## Non-Centered Parametrization
+
+# Now let's us explore **Non-Centered Parametrization** (NCP). This is useful when the posterior's
+# topology is very difficult to explore as has regions where HMC sampler has to
+# change the step size $L$ and the $\epsilon$ factor. This is  I've showed one of the most infamous
+# case in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/): Neal's Funnel (Neal, 2003):
+
+using StatsPlots, Distributions, LaTeXStrings
+funnel_y = rand(Normal(0, 3), 10_000)
+funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
+
+scatter((funnel_x, funnel_y),
+        label=false, mc=:steelblue, ma=0.3,
+        xlabel=L"X", ylabel=L"Y",
+        xlims=(-100, 100))
+savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
+
+# \fig{funnel}
+# \center{*Neal's Funnel*} \\
+
+# Here we see that in upper part of the funnel HMC has to take few steps $L$ and be more liberal with
+# the $\epsilon$ factor. But, the opposite is in the lower part of the funnel: way more steps $L$ and be
+# more conservative with the $\epsilon$ factor.
+
+# To see the devil's funnel (how it is known in some Bayesian circles), let's code it in Turing and them sample:
+
+@model funnel() = begin
+    y ~ Normal(0, 3)
+    x ~ Normal(0, exp(y / 2))
+end
+
+chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 2_000, 4)
+
+# Wow, take a look at those `rhat` values... That sucks: all are above `1.01` even with 4 parallel chains with 2,000
+# iterations!
+
+# How do we deal with that? We **reparametrize**! Note that we can add two normal distributions in the following manner:
+
+# $$ \text{Normal}(\mu, \sigma) = \text{Standard Normal} \cdot \sigma + \mu $$
+
+# where the standard normal is the normal with mean $\mu = 0$ and standard deviation $\sigma = 1$.
+# This is why is called Non-Centered Parametrization because we "decouple" the parameters and
+# reconstruct them before.
+
+@model ncp_funnel() = begin
+    x̃ ~ Normal()
+    ỹ ~ Normal()
+    y = 3.0 * ỹ         # implies y ~ Normal(0, 3)
+    x = exp(y / 2) * x̃  # implies x ~ Normal(0, exp(y / 2))
+end
+
+chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
+
+# Much better now: all `rhat` are well below `1.01` (or above `0.99`).
+
+# How we would implement this a real-world model in Turing? Let's go back to the `cheese` random-intercept model
+# in [10. **Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/). Here was the
+# approach that we took, also known as Centered Parametrization (CP):
+
+@model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+    #priors
+    α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
+    β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
+    σ ~ Exponential(1 / std(y))             # residual SD
+    #prior for variance of random intercepts
+    #usually requires thoughtful specification
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    αⱼ ~ filldist(Normal(0, τ), n_gr)       # CP group-level intercepts
+
+    #likelihood
+    ŷ = α .+ X * β .+ αⱼ[idx]
+    y ~ MvNormal(ŷ, σ)
+end;
+
+# To perform a Non-Centered Parametrization (NCP) in this model we do as following:
+
+@model varying_intercept_ncp(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+    #priors
+    α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
+    β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
+    σ ~ Exponential(1 / std(y))             # residual SD
+
+	#prior for variance of random intercepts
+    #usually requires thoughtful specification
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    zⱼ ~ filldist(Normal(0, 1), n_gr)      # NCP group-level intercepts
+
+    #likelihood
+    ŷ = α .+ X * β .+ zⱼ[idx] .* τ
+    y ~ MvNormal(ŷ, σ)
+end;
+
+# Here we are using a NCP with the `zⱼ`s following a standard normal and we reconstruct the
+# group-level intercepts by multiplying the `zⱼ`s by `τ`. Since the original `αⱼ`s had a prior
+# centered on 0 with standard deviation `τ`, we only have to use the multiplication by `τ`
+# to get back the `αⱼ`s.
+
+# Now let's see how NCP compares to the CP. First, let's redo our CP hierarchical model:
+
+url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/cheese.csv"
+cheese = CSV.read(HTTP.get(url).body, DataFrame)
+
+for c in unique(cheese[:, :cheese])
+    cheese[:, "cheese_$c"] = ifelse.(cheese[:, :cheese] .== c, 1, 0)
+end
+
+cheese[:, :background_int] = map(cheese[:, :background]) do b
+    b == "rural" ? 1 :
+    b == "urban" ? 2 : missing
+end
+
+X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)));
+y = cheese[:, :y];
+idx = cheese[:, :background_int];
+
+model_cp = varying_intercept(X, idx, y)
+chain_cp = sample(model_cp, NUTS(), MCMCThreads(), 2_000, 4)
+
+# Now let's do the NCP hierarchical model:
+
+model_ncp = varying_intercept_ncp(X, idx, y)
+chain_ncp = sample(model_ncp, NUTS(), MCMCThreads(), 2_000, 4)
+
+# Notice that some models are better off with a standard Centered Parametrization (as is our `cheese` case here).
+# While others are better off with a Non-Centered Parametrization. But now you know how to apply both parametrizations
+# in Turing. Before we conclude, we need to recover our original `αⱼ`s. We can do this by multiplying `zⱼ[idx] .* τ`:
+
+τ = summarystats(chain_ncp)[:τ, :mean]
+αⱼ = mapslices(x -> x * τ, chain_ncp[:,namesingroup(chain_ncp, :zⱼ),:].value.data, dims=[2])
+chain_ncp_reconstructed = hcat(Chains(αⱼ, ["αⱼ[$i]" for i in 1:length(unique(idx))]), chain_ncp)
+
+# ## References
+
+# Neal, Radford M. (2003). Slice Sampling. The Annals of Statistics, 31(3), 705–741. Retrieved from https://www.jstor.org/stable/3448413

@@ -1,4 +1,4 @@
-Bayesian Statistics with Julia and Turing (Under Construction!)
+Bayesian Statistics with Julia and Turing
 ================
 
 [![CC BY-SA

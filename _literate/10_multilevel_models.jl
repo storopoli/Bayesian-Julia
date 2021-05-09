@@ -177,8 +177,8 @@ end;
 
 @model varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
     #priors
-    α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
-    σ ~ Exponential(1 / std(y))                     # residual SD
+    α ~ Normal(mean(y), 2.5 * std(y))                # population-level intercept
+    σ ~ Exponential(1 / std(y))                      # residual SD
     #prior for variance of random intercepts and slopes
     #usually requires thoughtful specification
     τₐ ~ truncated(Cauchy(0, 2), 0, Inf)
@@ -272,7 +272,7 @@ summarystats(chain_intercept_slope)  |> DataFrame  |> println
 # coefficients `βⱼ`s. The parameters are interpreted exactly as the previous cases.
 
 # ## References
-#
+
 # Boatwright, P., McCulloch, R., & Rossi, P. (1999). Account-level modeling for trade promotion: An application of a constrained parameter hierarchical model. Journal of the American Statistical Association, 94(448), 1063–1073.
 #
 # de Finetti, B. (1974). Theory of Probability (Volume 1). New York: John Wiley & Sons.
