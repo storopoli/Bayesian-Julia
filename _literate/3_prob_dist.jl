@@ -9,7 +9,7 @@
 # to each other. In this tutorial we will give a brief overview of the main probabilistic distributions, their mathematical
 # notation and their main uses in Bayesian statistics.
 
-# A probability distribution is probability distribution is the mathematical function that gives the probabilities of occurrence
+# A probability distribution is the mathematical function that gives the probabilities of occurrence
 # of different possible outcomes for an experiment. It is a mathematical description of a random phenomenon in terms of its
 # sample space and the probabilities of events (subsets of the sample space).
 
