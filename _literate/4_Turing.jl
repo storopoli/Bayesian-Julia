@@ -117,8 +117,8 @@ end;
 # The Dirichlet distribution is often used as the conjugate prior for Categorical or Multinomial distributions. Since our dice
 # is modelled as a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution)
 # with six possible results $y \in \{ 1, 2, 3, 4, 5, 6 \}$ with some probability vector
-# $\mathbf{p} = (p_1, \dots, p_6)$. Since all mutually exclusive outcomes must sum up to um to be a valid probability, we impose the constraint that
-# all $p$s must sum up to um -- $\sum^n_{i=1} p_i = 1$. We could have used a  vector o six Beta random variables but it would be hard and
+# $\mathbf{p} = (p_1, \dots, p_6)$. Since all mutually exclusive outcomes must sum up to 1 to be a valid probability, we impose the constraint that
+# all $p$s must sum up to 1 -- $\sum^n_{i=1} p_i = 1$. We could have used a vector of six Beta random variables but it would be hard and
 # inefficient to enforce this constraint. Instead, I've opted for a Dirichlet with a weekly informative prior towards a
 # "fair" dice which is encoded as a `Dirichlet(6,1)`. This is translated as a 6-dimensional vector of elements that sum to one:
 
