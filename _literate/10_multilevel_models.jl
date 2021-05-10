@@ -72,7 +72,7 @@
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
 # \alpha_j &\sim \text{Normal}(0, \tau) \\
 # \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}}) \\
-# \tau &\sim \text{Cauchy}^+(0, \sigma_{\alpha})\\
+# \tau &\sim \text{Cauchy}^+(0, \psi_{\alpha})\\
 # \sigma &\sim \text{Exponential}(\lambda_\sigma)
 # \end{aligned}
 # $$
@@ -80,7 +80,7 @@
 # The priors on the global intercept $\alpha$, global coefficients $\boldsymbol{\beta}$ and error $\sigma$, along with
 # the Gaussian/normal likelihood on $\mathbf{y}$ are the same as in the linear regression model.
 # But now we have **new parameters**. The first are the **group intercepts** prior $\alpha_j$ that denotes that every group
-# $1, 2, \dots, J$ has its own intercept sampled from a normal distribution centered on 0 with a standard deviation $\sigma_\alpha$.
+# $1, 2, \dots, J$ has its own intercept sampled from a normal distribution centered on 0 with a standard deviation $\psi_\alpha$.
 # This group intercept is added to the linear predictor inside the Gaussian/normal likelihood function. The **group intercepts' standard
 # deviation** $\tau$ have a hyperprior (being a prior of a prior) which is sampled from a positive-constrained Cauchy distribution (a special
 # case of the Student-$t$ distribution with degrees of freedom $\nu = 1$) with mean 0 and standard deviation $\sigma_\alpha$.
@@ -96,16 +96,16 @@ seed!(123)
 setprogress!(false) # hide
 
 @model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    #priors
+    # priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
     σ ~ Exponential(1 / std(y))             # residual SD
-    #prior for variance of random intercepts
-    #usually requires thoughtful specification
+    # prior for variance of random intercepts
+    # usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # group-level intercepts
 
-    #likelihood
+    # likelihood
     ŷ = α .+ X * β .+ αⱼ[idx]
     y ~ MvNormal(ŷ, σ)
 end;
@@ -123,7 +123,7 @@ end;
 # \mathbf{y} &\sim \text{Normal}\left( \alpha + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
 # \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau) \\
-# \tau &\sim \text{Cauchy}^+(0, \sigma_{\boldsymbol{\beta}})\\
+# \tau &\sim \text{Cauchy}^+(0, \psi_{\boldsymbol{\beta}})\\
 # \sigma &\sim \text{Exponential}(\lambda_\sigma)
 # \end{aligned}
 # $$
@@ -136,15 +136,15 @@ end;
 # In Turing we can accomplish this as:
 
 @model varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    #priors
+    # priors
     α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
     σ ~ Exponential(1 / std(y))                     # residual SD
-    #prior for variance of random slopes
-    #usually requires thoughtful specification
+    # prior for variance of random slopes
+    # usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)
     βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
 
-    #likelihood
+    # likelihood
     ŷ = α .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
     y ~ MvNormal(ŷ, σ)
 end;
@@ -164,8 +164,8 @@ end;
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
 # \alpha_j &\sim \text{Normal}(0, \tau_{\alpha}) \\
 # \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau_{\boldsymbol{\beta}}) \\
-# \tau_{\alpha} &\sim \text{Cauchy}^+(0, \sigma_{\alpha})\\
-# \tau_{\boldsymbol{\beta}} &\sim \text{Cauchy}^+(0, \sigma_{\boldsymbol{\beta}})\\
+# \tau_{\alpha} &\sim \text{Cauchy}^+(0, \psi_{\alpha})\\
+# \tau_{\boldsymbol{\beta}} &\sim \text{Cauchy}^+(0, \psi_{\boldsymbol{\beta}})\\
 # \sigma &\sim \text{Exponential}(\lambda_\sigma)
 # \end{aligned}
 # $$
@@ -176,17 +176,17 @@ end;
 # In Turing we can accomplish this as:
 
 @model varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    #priors
+    # priors
     α ~ Normal(mean(y), 2.5 * std(y))                # population-level intercept
     σ ~ Exponential(1 / std(y))                      # residual SD
-    #prior for variance of random intercepts and slopes
-    #usually requires thoughtful specification
+    # prior for variance of random intercepts and slopes
+    # usually requires thoughtful specification
     τₐ ~ truncated(Cauchy(0, 2), 0, Inf)
     τᵦ ~ truncated(Cauchy(0, 2), 0, Inf)
     αⱼ ~ filldist(Normal(0, τₐ), n_gr)               # group-level intercepts
     βⱼ ~ filldist(Normal(0, τᵦ), predictors, n_gr)   # group-level slopes
 
-    #likelihood
+    # likelihood
     ŷ = α .+ αⱼ[idx] .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
     y ~ MvNormal(ŷ, σ)
 end;
