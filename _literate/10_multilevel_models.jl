@@ -96,18 +96,18 @@ seed!(123)
 setprogress!(false) # hide
 
 @model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    # priors
+    #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
     σ ~ Exponential(1 / std(y))             # residual SD
-    # prior for variance of random intercepts
-    # usually requires thoughtful specification
+    #prior for variance of random intercepts
+    #usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # group-level intercepts
 
-    # likelihood
-    ŷ = α .+ X * β .+ αⱼ[idx]
-    y ~ MvNormal(ŷ, σ)
+    #likelihood
+    ŷ = α .+ X * β .+ αⱼ[idx]
+    y ~ MvNormal(ŷ, σ)
 end;
 
 # ### Random-Slope Model
@@ -136,17 +136,17 @@ end;
 # In Turing we can accomplish this as:
 
 @model varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    # priors
+    #priors
     α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
     σ ~ Exponential(1 / std(y))                     # residual SD
-    # prior for variance of random slopes
-    # usually requires thoughtful specification
+    #prior for variance of random slopes
+    #usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)
     βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
 
-    # likelihood
-    ŷ = α .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
-    y ~ MvNormal(ŷ, σ)
+    #likelihood
+    ŷ = α .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    y ~ MvNormal(ŷ, σ)
 end;
 
 # ### Random-Intercept-Slope Model
@@ -176,19 +176,19 @@ end;
 # In Turing we can accomplish this as:
 
 @model varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    # priors
+    #priors
     α ~ Normal(mean(y), 2.5 * std(y))                # population-level intercept
     σ ~ Exponential(1 / std(y))                      # residual SD
-    # prior for variance of random intercepts and slopes
-    # usually requires thoughtful specification
+    #prior for variance of random intercepts and slopes
+    #usually requires thoughtful specification
     τₐ ~ truncated(Cauchy(0, 2), 0, Inf)
     τᵦ ~ truncated(Cauchy(0, 2), 0, Inf)
     αⱼ ~ filldist(Normal(0, τₐ), n_gr)               # group-level intercepts
     βⱼ ~ filldist(Normal(0, τᵦ), predictors, n_gr)   # group-level slopes
 
-    # likelihood
-    ŷ = α .+ αⱼ[idx] .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
-    y ~ MvNormal(ŷ, σ)
+    #likelihood
+    ŷ = α .+ αⱼ[idx] .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    y ~ MvNormal(ŷ, σ)
 end;
 
 # ## Example - Cheese Ratings
