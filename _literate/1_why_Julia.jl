@@ -41,7 +41,7 @@
 
 # ## Speed
 
-# Yes, Julia as **fast**. **Very fast!** It was made for speed from the drawing board. It bypass any sort of intermediate representation and translate
+# Yes, Julia is **fast**. **Very fast!** It was made for speed from the drawing board. It bypass any sort of intermediate representation and translate
 # code into machine native code using LLVM compiler. Comparing this with R, that uses either FORTRAN or C, or Python, that uses CPython;
 # and you'll clearly see that Julia has a major speed advantage over other languages that are common in data science and statistics.
 # Julia exposes the machine code to LLVM's compiler which in turn can optimize code as it wishes, like a good compiler such as LLVM excels in.
