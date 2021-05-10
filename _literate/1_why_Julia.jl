@@ -63,6 +63,7 @@
 # * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.4ms
 # * Python: using `Pandas` and `NumPy` - 1.76ms
 # * R: using `{dplyr}` - 3.22ms
+# * R: using `{data.table}` - x.xxms
 
 # Here is Julia:
 
@@ -99,7 +100,7 @@
 # %timeit df.groupby('x').agg({'y': 'mean', 'z': 'median'})
 # ```
 
-# Here is R:
+# Here is R {dplyr}:
 
 # ```r
 # library(dplyr)
@@ -118,6 +119,23 @@
 #             median(y),
 #             mean(z)
 #         )
+# )
+# ```
+
+# Here is R {data.table}:
+
+# ```r
+# library(data.table)
+# 
+# n <- 10e3
+# dt <- data.table(
+#     x = sample(c("A", "B", "C", "D"), n, replace = TRUE),
+#     y = runif(n),
+#     z = rnorm(n)
+# )
+# 
+# bench::mark(
+#     dt[, .(median(y), mean(z)), by=.(x)]
 # )
 # ```
 
