@@ -102,7 +102,7 @@ setprogress!(false) # hide
     σ ~ Exponential(1 / std(y))             # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)     # group-level SDs intercepts
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # group-level intercepts
 
     #likelihood
@@ -120,10 +120,10 @@ end;
 
 # $$
 # \begin{aligned}
-# \mathbf{y} &\sim \text{Normal}\left( \alpha + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
+# \mathbf{y} &\sim \text{Normal}\left( \alpha + \mathbf{X} \cdot \boldsymbol{\beta}_j \cdot \boldsymbol{\tau}, \sigma \right) \\
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
-# \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau) \\
-# \tau &\sim \text{Cauchy}^+(0, \psi_{\boldsymbol{\beta}})\\
+# \boldsymbol{\beta}_j &\sim \text{Normal}(0, 1) \\
+# \boldsymbol{\tau} &\sim \text{Cauchy}^+(0, \psi_{\boldsymbol{\beta}})\\
 # \sigma &\sim \text{Exponential}(\lambda_\sigma)
 # \end{aligned}
 # $$
@@ -136,16 +136,16 @@ end;
 # In Turing we can accomplish this as:
 
 @model varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    #priors
-    α ~ Normal(mean(y), 2.5 * std(y))               # population-level intercept
-    σ ~ Exponential(1 / std(y))                     # residual SD
+    # priors
+    α ~ Normal(mean(y), 2.5 * std(y))                   # population-level intercept
+    σ ~ Exponential(1 / std(y))                         # residual SD
     #prior for variance of random slopes
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)
-    βⱼ ~ filldist(Normal(0, τ), predictors, n_gr)   # group-level slopes
+    τ ~ filldist(truncated(Cauchy(0, 2), 0, Inf), n_gr) # group-level slopes SDs
+    βⱼ ~ filldist(Normal(0, 1), predictors, n_gr)       # group-level standard normal slopes
 
     #likelihood
-    ŷ = α .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    ŷ = α .+ X * βⱼ * τ
     y ~ MvNormal(ŷ, σ)
 end;
 
@@ -160,12 +160,12 @@ end;
 
 # $$
 # \begin{aligned}
-# \mathbf{y} &\sim \text{Normal}\left( \alpha + \alpha_j + \mathbf{X} \cdot \boldsymbol{\beta}_j, \sigma \right) \\
+# \mathbf{y} &\sim \text{Normal}\left( \alpha + \alpha_j + \mathbf{X} \cdot \boldsymbol{\beta}_j \cdot \boldsymbol{\tau}_{\boldsymbol{\beta}}, \sigma \right) \\
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
 # \alpha_j &\sim \text{Normal}(0, \tau_{\alpha}) \\
-# \boldsymbol{\beta}_j &\sim \text{Normal}(0, \tau_{\boldsymbol{\beta}}) \\
+# \boldsymbol{\beta}_j &\sim \text{Normal}(0, 1) \\
 # \tau_{\alpha} &\sim \text{Cauchy}^+(0, \psi_{\alpha})\\
-# \tau_{\boldsymbol{\beta}} &\sim \text{Cauchy}^+(0, \psi_{\boldsymbol{\beta}})\\
+# \boldsymbol{\tau}_{\boldsymbol{\beta}} &\sim \text{Cauchy}^+(0, \psi_{\boldsymbol{\beta}})\\
 # \sigma &\sim \text{Exponential}(\lambda_\sigma)
 # \end{aligned}
 # $$
@@ -177,17 +177,17 @@ end;
 
 @model varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
     #priors
-    α ~ Normal(mean(y), 2.5 * std(y))                # population-level intercept
-    σ ~ Exponential(1 / std(y))                      # residual SD
+    α ~ Normal(mean(y), 2.5 * std(y))                    # population-level intercept
+    σ ~ Exponential(1 / std(y))                          # residual SD
     #prior for variance of random intercepts and slopes
     #usually requires thoughtful specification
-    τₐ ~ truncated(Cauchy(0, 2), 0, Inf)
-    τᵦ ~ truncated(Cauchy(0, 2), 0, Inf)
-    αⱼ ~ filldist(Normal(0, τₐ), n_gr)               # group-level intercepts
-    βⱼ ~ filldist(Normal(0, τᵦ), predictors, n_gr)   # group-level slopes
+    τₐ ~ truncated(Cauchy(0, 2), 0, Inf)                 # group-level SDs intercepts
+    τᵦ ~ filldist(truncated(Cauchy(0, 2), 0, Inf), n_gr) # group-level slopes SDs
+    αⱼ ~ filldist(Normal(0, τₐ), n_gr)                   # group-level intercepts
+    βⱼ ~ filldist(Normal(0, 1), predictors, n_gr)        # group-level standard normal slopes
 
     #likelihood
-    ŷ = α .+ αⱼ[idx] .+ X * βⱼ[:, 1] .+ X * βⱼ[:, 2]
+    ŷ = α .+ αⱼ[idx] .+ X * βⱼ * τᵦ
     y ~ MvNormal(ŷ, σ)
 end;
 
@@ -230,13 +230,11 @@ end
 first(cheese, 5)
 
 # Now let's us instantiate our model with the data.
-# Here, I will `cheese_A` as the basal dummy variable so that its value will be 0 in all
-# others `cheese` dummy variables. This needs to be done for inference stability and
-# collinearity issues regarding the data matrix `X`. I also specify a vector of `Int`s
-# named `idx` to represent the different observations' group memberships. This will
-# be used by Turing when we index a parameter with the `idx`, *e.g.* `αⱼ[idx]`.
+# Here, I will ` specify a vector of `Int`s named `idx` to represent the different observations'
+# group memberships. This will be used by Turing when we index a parameter with the `idx`,
+# *e.g.* `αⱼ[idx]`.
 
-X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)));
+X = Matrix(select(cheese, Between(:cheese_A, :cheese_D)));
 y = cheese[:, :y];
 idx = cheese[:, :background_int];
 
@@ -257,9 +255,9 @@ chain_slope = sample(model_slope, NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain_slope)  |> DataFrame  |> println
 
 # Here we can see that the model has still a population-level intercept `α`. But now our population-level
-# coefficients `β`s are replaced by group-level coefficients `βⱼ`s. Specifically `βⱼ`'s first index denotes
-# the 3 dummy `cheese` variables' and the second index are the group membership. So, for example `βⱼ[1,1]`
-# is the coefficient for `cheese_B` and rural raters (group 1).
+# coefficients `β`s are replaced by group-level coefficients `βⱼ`s along with their standard deviation `τᵦ`s.
+# Specifically `βⱼ`'s first index denotes the 4 dummy `cheese` variables' and the second index are the group
+# membership. So, for example `βⱼ[1,1]` is the coefficient for `cheese_A` and rural raters (group 1).
 
 # Now let's go to the third model, `varying_intercept_slope`:
 
@@ -268,8 +266,9 @@ chain_intercept_slope = sample(model_intercept_slope, NUTS(), MCMCThreads(), 2_0
 summarystats(chain_intercept_slope)  |> DataFrame  |> println
 
 # Now we have fused the previous model in one. We still have a population-level intercept `α`. But now
-# we have in the same model group-level intercepts for each of the groups `αⱼ`s and group-level
-# coefficients `βⱼ`s. The parameters are interpreted exactly as the previous cases.
+# we have in the same model group-level intercepts for each of the groups `αⱼ`s and group-level along with their standard
+# deviation `τₐ`. We also have the coefficients `βⱼ`s with their standard deviation `τᵦ`s.
+# The parameters are interpreted exactly as the previous cases.
 
 # ## References
 

@@ -183,7 +183,7 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
     σ ~ Exponential(1 / std(y))             # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)     # group-level SDs intercepts
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # CP group-level intercepts
 
     #likelihood
@@ -201,7 +201,7 @@ end;
 
 	#prior for variance of random intercepts
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)
+    τ ~ truncated(Cauchy(0, 2), 0, Inf)    # group-level SDs intercepts
     zⱼ ~ filldist(Normal(0, 1), n_gr)      # NCP group-level intercepts
 
     #likelihood
@@ -228,7 +228,7 @@ cheese[:, :background_int] = map(cheese[:, :background]) do b
     b == "urban" ? 2 : missing
 end
 
-X = Matrix(select(cheese, Between(:cheese_B, :cheese_D)));
+X = Matrix(select(cheese, Between(:cheese_A, :cheese_D)));
 y = cheese[:, :y];
 idx = cheese[:, :background_int];
 
