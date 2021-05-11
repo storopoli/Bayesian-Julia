@@ -50,12 +50,12 @@ seed!(123)
 setprogress!(false) # hide
 
 @model linreg(X, y; predictors=size(X, 2)) = begin
-	# priors
+	#priors
 	α ~ Normal(mean(y), 2.5 * std(y))
 	β ~ filldist(TDist(3), predictors)
 	σ ~ Exponential(1)
 
-	# likelihood
+	#likelihood
 	y ~ MvNormal(α .+ X * β, σ)
 end;
 
@@ -148,7 +148,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
     x ~ Normal(0, exp(y / 2))
 end
 
-chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 2_000, 4)
+    chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 2_000, 4)
 
 # Wow, take a look at those `rhat` values... That sucks: all are above `1.01` even with 4 parallel chains with 2,000
 # iterations!
@@ -177,16 +177,16 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
 # approach that we took, also known as Centered Parametrization (CP):
 
 @model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    # priors
+    #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
     σ ~ Exponential(1 / std(y))             # residual SD
-    # prior for variance of random intercepts
-    # usually requires thoughtful specification
+    #prior for variance of random intercepts
+    #usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)     # group-level SDs intercepts
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # CP group-level intercepts
 
-    # likelihood
+    #likelihood
     ŷ = α .+ X * β .+ αⱼ[idx]
     y ~ MvNormal(ŷ, σ)
 end;
@@ -194,17 +194,17 @@ end;
 # To perform a Non-Centered Parametrization (NCP) in this model we do as following:
 
 @model varying_intercept_ncp(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
-    # priors
+    #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
     σ ~ Exponential(1 / std(y))             # residual SD
 
-	# prior for variance of random intercepts
-    # usually requires thoughtful specification
+	#prior for variance of random intercepts
+    #usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2), 0, Inf)    # group-level SDs intercepts
     zⱼ ~ filldist(Normal(0, 1), n_gr)      # NCP group-level intercepts
 
-    # likelihood
+    #likelihood
     ŷ = α .+ X * β .+ zⱼ[idx] .* τ
     y ~ MvNormal(ŷ, σ)
 end;
