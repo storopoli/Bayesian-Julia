@@ -63,7 +63,6 @@
 # * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.4ms
 # * Python: using `Pandas` and `NumPy` - 1.76ms
 # * R: using `{dplyr}` - 3.22ms
-# * R: using `{data.table}` - x.xxms
 
 # Here is Julia:
 
@@ -100,7 +99,7 @@
 # %timeit df.groupby('x').agg({'y': 'mean', 'z': 'median'})
 # ```
 
-# Here is R {dplyr}:
+# Here is R:
 
 # ```r
 # library(dplyr)
@@ -119,23 +118,6 @@
 #             median(y),
 #             mean(z)
 #         )
-# )
-# ```
-
-# Here is R {data.table}:
-
-# ```r
-# library(data.table)
-# 
-# n <- 10e3
-# dt <- data.table(
-#     x = sample(c("A", "B", "C", "D"), n, replace = TRUE),
-#     y = runif(n),
-#     z = rnorm(n)
-# )
-# 
-# bench::mark(
-#     dt[, .(median(y), mean(z)), by=.(x)]
 # )
 # ```
 
@@ -701,7 +683,7 @@ inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
 #
 # ## Footnotes
 #
-# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021. `DataFrames.jl` version 1.0.1, `Pandas` version 1.2.4, `NumPy` version 1.20.2, `{dplyr}` version 1.0.5 and `{data.table}` version 1.14.0. Further benchmarking information is available for example here: [Tabular data benchmarking](https://h2oai.github.io/db-benchmark/)
+# [^updatedversion]: please note that I've used updated versions for all languages and packages as of April, 2021. `DataFrames.jl` version 1.0.1, `Pandas` version 1.2.4, `NumPy` version 1.20.2, `{dplyr}` version 1.0.5. We did not cover R's `{data.table}` here. Further benchmarking information is available for example here: [Tabular data benchmarking](https://h2oai.github.io/db-benchmark/)
 # [^mvnimplem]: which of course I did not. The `Mvn` class is inspired by [Iason Sarantopoulos' implementation](http://blog.sarantop.com/notes/mvn).
 # [^mathbinormal]: you can find all the math [here](http://www.athenasc.com/Bivariate-Normal.pdf).
 # [^onehotpost]: the post in Russian, I've "Google Translated" it to English.
