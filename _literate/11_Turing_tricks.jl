@@ -1,4 +1,4 @@
-# # Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)
+# # Computational Tricks with Turing \\ (Non-Centered Parametrization and QR Decomposition)
 
 # There are some computational tricks that we can employ with Turing.
 # I will cover here two computational tricks:
