@@ -230,7 +230,7 @@ end
 first(cheese, 5)
 
 # Now let's us instantiate our model with the data.
-# Here, I will ` specify a vector of `Int`s named `idx` to represent the different observations'
+# Here, I will specify a vector of `Int`s named `idx` to represent the different observations'
 # group memberships. This will be used by Turing when we index a parameter with the `idx`,
 # *e.g.* `αⱼ[idx]`.
 
