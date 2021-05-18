@@ -96,7 +96,7 @@
 #                    'y': np.random.randn(n),
 #                    'z': np.random.rand(n)})
 #
-# %timeit df.groupby('x').agg({'y': 'mean', 'z': 'median'})
+# %timeit df.groupby('x').agg({'y': 'median', 'z': 'mean'})
 # ```
 
 # Here is R:
@@ -321,7 +321,7 @@
 
 # **SPOILER ALERT**: Julia will beat this C++ Eigen implementation by being almost 100x faster. So I will try to *help* C++ beat Julia (😂)
 # by making a bivariate normal class `BiNormal` in order to avoid the expensive operation of inverting a covariance matrix and computing
-# determinantes in every logpdf proposal evaluation.
+# determinants in every logpdf proposal evaluation.
 # Also since we are not doing linear algebra computations I've removed Eigen and used C++ STL's `<vector>`:
 
 # ```cpp
