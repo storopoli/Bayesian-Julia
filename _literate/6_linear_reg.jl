@@ -30,7 +30,7 @@
 # Let's talk about a class of model known as linear regression. The idea here is to model a continuous dependent variable
 # with a linear combination of independent variables.
 
-# $$ \mathbf{y} = \alpha + \boldsymbol{\beta} \mathbf{X} + \epsilon \label{linear reg} $$
+# $$ \mathbf{y} = \alpha +  \mathbf{X} \boldsymbol{\beta} + \epsilon \label{linear reg} $$
 
 # where:
 
