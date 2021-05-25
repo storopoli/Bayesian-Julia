@@ -71,14 +71,14 @@
 
 # Regarding notation, we define $A$ as an event and $P(A)$ as the probability of event $A$, thus:
 
-# $$\{P(A) \in \mathbb{R} : 0 \geq P(A) \geq 1 \}.$$
+# $$\{P(A) \in \mathbb{R} : 0 \leq P(A) \leq 1 \}.$$
 
 # This means the "probability of the event to occur is the set of all real numbers between 0 and 1; including 0 and 1".
 # In addition, we have three axioms[^axioms], originated from Kolmogorov(1933) (figure below):
 
 # 1. **Non-negativity**: For all $A$, $P(A) \geq 0$. Every probability is positive (greater than or equal to zero), regardless of the event.
 # 2. **Additivity**: For two mutually exclusive $A$ and $B$ (cannot occur at the same time[^mutually2]): $P(A) = 1 - P(B)$ and $P(B) = 1 - P(A)$.
-# 3. **Normalization**: The probability of all possible events $A_1, A_2, \ dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
+# 3. **Normalization**: The probability of all possible events $A_1, A_2, \dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
 #
@@ -306,7 +306,7 @@
 
 # > $p$-value is the probability of obtaining test results at least as extreme as the results actually observed, under the assumption that the null hypothesis is correct.
 
-# Unfortunately with frequentist statistics you have to choose one of two qualities for explanations: intuitive or accurate^[gelman].
+# Unfortunately with frequentist statistics you have to choose one of two qualities for explanations: intuitive or accurate[^gelman].
 
 # If you write this definition in any test, book or scientific paper, you are 100% accurate and correct in defining what a $p$-value is.
 # Now, understanding this definition is complicated. For that, let's break this definition down into parts for a better understanding:
