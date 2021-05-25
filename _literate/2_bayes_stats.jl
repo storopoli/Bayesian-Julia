@@ -71,7 +71,7 @@
 
 # Regarding notation, we define $A$ as an event and $P(A)$ as the probability of event $A$, thus:
 
-# $$\{P(A) \in \mathbb{R} : 0 \geq P(A) \geq 1 \}.$$
+# $$\{P(A) \in \mathbb{R} : 0 \leq P(A) \leq 1 \}.$$
 
 # This means the "probability of the event to occur is the set of all real numbers between 0 and 1; including 0 and 1".
 # In addition, we have three axioms[^axioms], originated from Kolmogorov(1933) (figure below):
