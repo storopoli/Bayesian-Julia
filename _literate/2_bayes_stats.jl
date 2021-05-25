@@ -306,7 +306,7 @@
 
 # > $p$-value is the probability of obtaining test results at least as extreme as the results actually observed, under the assumption that the null hypothesis is correct.
 
-# Unfortunately with frequentist statistics you have to choose one of two qualities for explanations: intuitive or accurate^[gelman].
+# Unfortunately with frequentist statistics you have to choose one of two qualities for explanations: intuitive or accurate[^gelman].
 
 # If you write this definition in any test, book or scientific paper, you are 100% accurate and correct in defining what a $p$-value is.
 # Now, understanding this definition is complicated. For that, let's break this definition down into parts for a better understanding:
