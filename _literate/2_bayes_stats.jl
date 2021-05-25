@@ -78,7 +78,7 @@
 
 # 1. **Non-negativity**: For all $A$, $P(A) \geq 0$. Every probability is positive (greater than or equal to zero), regardless of the event.
 # 2. **Additivity**: For two mutually exclusive $A$ and $B$ (cannot occur at the same time[^mutually2]): $P(A) = 1 - P(B)$ and $P(B) = 1 - P(A)$.
-# 3. **Normalization**: The probability of all possible events $A_1, A_2, \ dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
+# 3. **Normalization**: The probability of all possible events $A_1, A_2, \dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
 #
