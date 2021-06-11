@@ -33,7 +33,7 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 # Linear regression follows the following mathematical formulation:
 
-# $$ \text{Linear} = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \dots + \theta_n x_n $$
+# $$ \text{Linear} = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \ldots + \theta_n x_n $$
 
 # * $\theta$ - model parameters
 #   * $\theta_0$ - intercept
@@ -46,7 +46,7 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 # which is the same as:
 
-# $$ y = e^{(\theta_0 + \theta_1 x_1 + \theta_2 x_2 + \dots + \theta_n x_n)} $$
+# $$ y = e^{(\theta_0 + \theta_1 x_1 + \theta_2 x_2 + \ldots + \theta_n x_n)} $$
 
 # ## Bayesian Regression with Count Data
 
