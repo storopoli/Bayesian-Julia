@@ -23,13 +23,14 @@
 
 # Before we dive into how to specify models in Turing. Let's discuss Turing's **ecosystem**.
 # We have several Julia packages under the Turing's GitHub organization [TuringLang](https://github.com/TuringLang),
-# but I will focus on 5 of those:
+# but I will focus on 6 of those:
 
 # * [`Turing.jl`](https://github.com/TuringLang/Turing.jl)
 # * [`MCMCChains.jl`](https://github.com/TuringLang/MCMCChains.jl)
 # * [`DynamicPPL.jl`](https://github.com/TuringLang/DynamicPPL.jl)
 # * [`AdvancedHMC.jl`](https://github.com/TuringLang/AdvancedHMC.jl)
 # * [`DistributionsAD.jl`](https://github.com/TuringLang/DistributionsAD.jl)
+# * [`Bijectors.jl`](https://github.com/TuringLang/Bijectors.jl)
 
 # The first one is [`Turing.jl`](https://github.com/TuringLang/Turing.jl) (Ge, Xu & Ghahramani, 2018)
 # itself, the main package that we use to
@@ -47,13 +48,17 @@
 # of advanced HMC algorithms. The state-of-the-art HMC algorithm is the **N**o-**U**-**T**urn **S**ampling
 # (NUTS)[^MCMC] (Hoffman & Gelman, 2011) which is available in `AdvancedHMC.jl`.
 
-# Finally, [`DistributionsAD.jl`](https://github.com/TuringLang/DistributionsAD.jl) defines the necessary functions to enable
+# The fourth package, [`DistributionsAD.jl`](https://github.com/TuringLang/DistributionsAD.jl) defines the necessary functions to enable
 # automatic differentiation (AD) of the `logpdf` function from [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl)
 # using the packages [`Tracker.jl`](https://github.com/FluxML/Tracker.jl), [`Zygote.jl`](https://github.com/FluxML/Zygote.jl),
 # [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl) and [`ReverseDiff.jl`](https://github.com/JuliaDiff/ReverseDiff.jl).
 # The main goal of `DistributionsAD.jl` is to make the output of `logpdf` differentiable with respect to all continuous parameters
 # of a distribution as well as the random variable in the case of continuous distributions. This is the package that guarantees the
 # "automatical inference" part of the definition of a PPL.
+
+# Finally, [`Bijectors.jl`](https://github.com/TuringLang/Bijectors.jl) implements a set of functions for transforming constrained
+# random variables (e.g. simplexes, intervals) to Euclidean space. Note that `Bijectors.jl` is still a work-in-progress and
+# in the future we'll have better implementation for more constraints, *e.g.* positive ordered vectors or random variables.
 
 # Most of the time we will not be dealing with neither of these packages directly, since `Turing.jl` will take care of the interfacing
 # for us. So let's talk about `Turing.jl`.
@@ -227,7 +232,7 @@ prior_chain = sample(model, Prior(), 2_000);
 
 # Now we can perform predictive checks using both the prior (`prior_chain`) or posterior (`chain`) distributions.
 # To draw from the prior and posterior predictive distributions we instantiate a "predictive model", *i.e.* a Turing
-# model but with the observations set to `missing`, and then calling `predict()` on the predictive model and the previously
+# model but with the observations set to `missing`[^missing], and then calling `predict()` on the predictive model and the previously
 # drawn samples. First let's do the *prior* predictive check:
 
 missing_data = Vector{Missing}(missing, 1) # vector of `missing`
@@ -262,6 +267,7 @@ summarystats(posterior_check)
 # [^efficiency]: actually is even better to use Turing's `filldist()` function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution. I will cover Turing's computational "tricks of the trade" in [11. **Computational Tricks with Turing**](/pages/11_Turing_tricks/).
 # [^visualization]: we'll cover those plots and diagnostics in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 # [^workflow]: note that this workflow is a extremely simplified adaptation from the original workflow on which it was based. I suggest the reader to consult the original workflow of Gelman et al. (2020).
+# [^missing]: in a real-world scenario, you'll probably want to use more than just **one** observation as a predictive check, so you should use something like `Vector{Missing}(missing, length(y))` or `fill(missing, length(y)`.
 
 # ## References
 
