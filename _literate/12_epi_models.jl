@@ -88,10 +88,10 @@ savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 # 1. Use [`DifferentialEquations.jl`](https://diffeq.sciml.ai/)
 # 2. Create a ODE function
 # 3. Choose:
-#    * Initial Conditions -- $u_0$
-#    * Parameters -- $p$
-#    * Time Span -- $t$
-#    * *Optional* -- [Solver](https://diffeq.sciml.ai/stable/solvers/ode_solve/) or leave blank for auto
+#     * Initial Conditions -- $u_0$
+#     * Parameters -- $p$
+#     * Time Span -- $t$
+#     * *Optional* -- [Solver](https://diffeq.sciml.ai/stable/solvers/ode_solve/) or leave blank for auto
 
 # PS: If you like SIR models checkout [`epirecipes/sir-julia`](https://github.com/epirecipes/sir-julia)
 
