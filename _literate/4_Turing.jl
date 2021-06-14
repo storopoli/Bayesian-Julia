@@ -58,7 +58,7 @@
 
 # Finally, [`Bijectors.jl`](https://github.com/TuringLang/Bijectors.jl) implements a set of functions for transforming constrained
 # random variables (e.g. simplexes, intervals) to Euclidean space. Note that `Bijectors.jl` is still a work-in-progress and
-# in the future we'll have better implementation for more constraints, *e.g.* positive ordered vectors or random variables.
+# in the future we'll have better implementation for more constraints, *e.g.* positive ordered vectors of random variables.
 
 # Most of the time we will not be dealing with neither of these packages directly, since `Turing.jl` will take care of the interfacing
 # for us. So let's talk about `Turing.jl`.
@@ -181,6 +181,15 @@ summaries
 
 sum(summaries[:, :mean])
 
+# In the future if you have some crazy huge models and you just want a **subset** of parameters from my chains?
+# Just do `group(chain, :parameter)` or index with `chain[:, 1:6, :]`:
+
+summarystats(chain[:, 1:3, :])
+
+# or `chain[[:parameters,...]]`:
+
+summarystats(chain[[:var"p[1]", :var"p[2]"]])
+
 # And, finally let's compute the expectation of the estimated six-sided dice, $E(\tilde{X})$, using the standard expectation
 # definition of expectation for a discrete random variable:
 
@@ -282,4 +291,3 @@ summarystats(posterior_check)
 # Tarek, M., Xu, K., Trapp, M., Ge, H., & Ghahramani, Z. (2020). DynamicPPL: Stan-like Speed for Dynamic Probabilistic Models. ArXiv:2002.02702 [Cs, Stat]. http://arxiv.org/abs/2002.02702
 #
 # Xu, K., Ge, H., Tebbutt, W., Tarek, M., Trapp, M., & Ghahramani, Z. (2020). AdvancedHMC.jl: A robust, modular and efficient implementation of advanced HMC algorithms. Symposium on Advances in Approximate Bayesian Inference, 1–10. http://proceedings.mlr.press/v118/xu20a.html
-
