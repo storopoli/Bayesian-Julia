@@ -84,6 +84,7 @@ To configure a local environment:
 9. [**Robust Bayesian Regression**](https://storopoli.io/Bayesian-Julia/pages/9_robust_reg/)
 10. [**Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/)
 11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.io/Bayesian-Julia/pages/11_Turing_tricks/)
+12. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.io/Bayesian-Julia/pages/12_epi_models/)
 
 ## What about other Turing tutorials?
 
