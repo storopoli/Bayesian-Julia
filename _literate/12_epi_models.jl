@@ -3,7 +3,7 @@
 # Ok, now this is something that really makes me very excited with Julia's
 # ecossystem. If you want to use an **O**rdinary **D**ifferential **E**quation solver
 # in your Turing model, you don't need to code it from scratch. You've just
-# **borrow a pre-made one from [`DifferentialEquations.jl`](https://diffeq.sciml.ai/dev/)**.
+# **borrow a pre-made one** from [`DifferentialEquations.jl`](https://diffeq.sciml.ai/dev/).
 # This is what makes Julia so great. We can use functions and types
 # defined in other packages into another package and it will probably work either
 # straight out of the bat or without much effort!
@@ -61,23 +61,25 @@ savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 #
 # \center{*Susceptible-Infected-Recovered (SIR) model*} \\
 
-# $$\begin{aligned}
-#  \frac{dS}{dt} &= -\beta  S \frac{I}{N}\\
-#  \frac{dI}{dt} &= \beta  S  \frac{I}{N} - \gamma  I \\
-#  \frac{dR}{dt} &= \gamma I
-# \end{aligned}$$
+# $$
+# \begin{aligned}
+# \frac{dS}{dt} &= -\beta  S \frac{I}{N}\\
+# \frac{dI}{dt} &= \beta  S  \frac{I}{N} - \gamma  I \\
+# \frac{dR}{dt} &= \gamma I
+# \end{aligned}
+# $$
 
-# where
+# where:
 
-# *  $S(t)$ is the number of people susceptible to becoming infected (no immunity),
+# * $S(t)$ is the number of people susceptible to becoming infected (no immunity),
 
-# *  $I(t)$ is the number of people currently infected (and infectious),
+# * $I(t)$ is the number of people currently infected (and infectious),
 
-# *  $R(t)$ is the number of recovered people (we assume they remain immune indefinitely),
+# * $R(t)$ is the number of recovered people (we assume they remain immune indefinitely),
 
-# *  $\beta$ is the constant rate of infectious contact between people,
+# * $\beta$ is the constant rate of infectious contact between people,
 
-# *  $\gamma$ the constant recovery rate of infected individuals.
+# * $\gamma$ the constant recovery rate of infected individuals.
 
 # ## How to code and ODE in Julia?
 
