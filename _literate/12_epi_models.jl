@@ -136,7 +136,6 @@ savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 # Now this is the fun part. It's easy: just stick it inside!
 
 using Turing
-using LazyArrays
 using Random:seed!
 seed!(123)
 setprogress!(false) # hide
@@ -166,17 +165,18 @@ setprogress!(false) # hide
   solᵢ = Array(sol)[2, :] # New Infected
 
   #likelihood
-  solᵢ = max.(1e-4, solᵢ) # numerical issues arose
-  infected ~ arraydist(LazyArray(@~ NegativeBinomial.(solᵢ, ϕ)))
+  for i in 1:l
+    solᵢ[i] = max(1e-4, solᵢ[i]) # numerical issues arose
+    infected[i] ~ NegativeBinomial(solᵢ[i], ϕ)
+  end
 end;
 
 # Now run the model and inspect our parameters estimates.
-# We will be using the default `NUTS()` sampler with `2_000` samples, with
-# 4 Markov chains using multiple threads `MCMCThreads()`:
+# We will be using the default `NUTS()` sampler with `2_000` samples:
 
 infected = br[:, :new_confirmed]
 r₀ = first(br[:, :new_deaths])
-chain_sir = sample(bayes_sir(infected, i₀, r₀, N), NUTS(), MCMCThreads(), 2_000, 4)
+chain_sir = sample(bayes_sir(infected, i₀, r₀, N), NUTS(), 2_000)
 summarystats(chain_sir[[:β, :γ]])
 
 # Hope you had learned some new bayesian computational skills and also took notice
