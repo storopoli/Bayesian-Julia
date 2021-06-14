@@ -116,13 +116,13 @@ end;
 # This is what the infection would look with some fixed `β` and `γ`
 # in a timespan of 100 days starting from day one with 1,167 infected (Brazil in April 2020):
 
-i₀ = first(br[:, :new_confirmed]);
-N = maximum(br[:, :estimated_population_2019]);
+i₀ = first(br[:, :new_confirmed])
+N = maximum(br[:, :estimated_population_2019])
 
 u = [N - i₀, i₀, 0.0]
 p = [0.5, 0.05]
 prob = ODEProblem(sir_ode!, u, (1.0, 100.0), p)
-sol_ode = solve(prob);
+sol_ode = solve(prob)
 plot(sol_ode, label=[L"S" L"I" L"R" ], lw=3, ylabel="N", title="SIR Model for 100 days -- " * "\\beta = $(p[1]), \\gamma = $(p[2])")
 savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 
@@ -134,6 +134,8 @@ savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 # Now this is the fun part. It's easy: just stick it inside!
 
 using Turing
+using LazyArrays
+using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
@@ -157,22 +159,23 @@ setprogress!(false) # hide
           tspan,
           p)
   sol = solve(prob,
-              Tsit5(),
+              Tsit5(), # similar to RK45 in Stan but 10% faster
               saveat=1.0)
   solᵢ = Array(sol)[2, :] # New Infected
 
   #likelihood
-  for i in 1:l
-    solᵢ[i] = max(1e-5, solᵢ[i]) # numerical issues arose
-    infected[i] ~ NegativeBinomial(solᵢ[i], ϕ)
+  solᵢ = max.(1e-4, solᵢ) # numerical issues arose
+  infected ~ arraydist(LazyArray(@~ NegativeBinomial.(solᵢ, ϕ)))
   end
 end;
 
-# Now run the model and inspect our parameters estimates:
+# Now run the model and inspect our parameters estimates.
+# We will be using the default `NUTS()` sampler with `2_000` samples, with
+# 4 Markov chains using multiple threads `MCMCThreads()`:
 
 infected = br[:, :new_confirmed];
-r₀ = first(br[:, :last_available_deaths]);
-chain_sir = sample(bayes_sir(infected, i₀, r₀, N), NUTS(1_000, 0.65), 2_000);
+r₀ = first(br[:, :new_deaths]);
+chain_sir = sample(bayes_sir(infected, i₀, r₀, N), NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain_sir[[:β, :γ]])
 
 # Hope you had learned some new bayesian computational skills and also took notice
