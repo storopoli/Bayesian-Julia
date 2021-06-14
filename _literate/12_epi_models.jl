@@ -125,7 +125,12 @@ u = [N - i₀, i₀, 0.0]
 p = [0.5, 0.05]
 prob = ODEProblem(sir_ode!, u, (1.0, 100.0), p)
 sol_ode = solve(prob)
-plot(sol_ode, label=[L"S" L"I" L"R" ], lw=3, ylabel="N", title="SIR Model for 100 days -- " * "\\beta = 0.5, \\gamma = 0.05")
+plot(sol_ode, label=[L"S" L"I" L"R" ],
+     lw=3,
+     xlabel=L"t",
+     ylabel=L"N",
+     yformatter= y -> string(round(Int64, y÷1_000_000)) * "mi",
+     title="SIR Model for 100 days - β = 0.5, γ = 0.05")
 savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 
 # \fig{ode_solve}
