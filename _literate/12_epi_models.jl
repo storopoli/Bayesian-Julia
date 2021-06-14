@@ -124,8 +124,8 @@ plot(sol_ode, label=[L"S" L"I" L"R" ],
      lw=3,
      xlabel=L"t",
      ylabel=L"N",
-     yformatter= y -> string(round(Int64, y÷1_000_000)) * "mi",
-     title="SIR Model for 100 days - β = 0.5, γ = 0.05")
+     yformatter=y -> string(round(Int64, y ÷ 1_000_000)) * "mi",
+     title="SIR Model for 100 days, β = $(p[1]), γ = $(p[2])")
 savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 
 # \fig{ode_solve}
@@ -146,8 +146,8 @@ setprogress!(false) # hide
   l = length(infected)
 
   #priors
-  β ~ TruncatedNormal(2, 1, 1e-6, 10)     # using 10 instead of Inf because numerical issues arose
-  γ ~ TruncatedNormal(0.4, 0.5, 1e-6, 10) # using 10 instead of Inf because numerical issues arose
+  β ~ TruncatedNormal(2, 1, 1e-4, 10)     # using 10 instead of Inf because numerical issues arose
+  γ ~ TruncatedNormal(0.4, 0.5, 1e-4, 10) # using 10 instead of Inf because numerical issues arose
   ϕ⁻ ~ truncated(Exponential(5), 1, 20)
   ϕ = 1.0 / ϕ⁻
 
@@ -168,7 +168,6 @@ setprogress!(false) # hide
   #likelihood
   solᵢ = max.(1e-4, solᵢ) # numerical issues arose
   infected ~ arraydist(LazyArray(@~ NegativeBinomial.(solᵢ, ϕ)))
-  end
 end;
 
 # Now run the model and inspect our parameters estimates.
