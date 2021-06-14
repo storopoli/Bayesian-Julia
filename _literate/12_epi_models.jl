@@ -70,16 +70,11 @@ savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 # $$
 
 # where:
-
-# * $S(t)$ -- the number of people susceptible to becoming infected (no immunity),
-
-# * $I(t)$ -- the number of people currently infected (and infectious),
-
-# * $R(t)$ -- the number of recovered people (we assume they remain immune indefinitely),
-
-# * $\beta$ -- the constant rate of infectious contact between people,
-
-# * $\gamma$ -- constant recovery rate of infected individuals.
+# * $S(t)$ -- the number of people susceptible to becoming infected (no immunity)
+# * $I(t)$ -- the number of people currently infected (and infectious)
+# * $R(t)$ -- the number of recovered people (we assume they remain immune indefinitely)
+# * $\beta$ -- the constant rate of infectious contact between people
+# * $\gamma$ -- constant recovery rate of infected individuals
 
 # ## How to code and ODE in Julia?
 
@@ -147,7 +142,7 @@ seed!(123)
 setprogress!(false) # hide
 
 @model bayes_sir(infected, i₀, r₀, N) = begin
-  #Calculate number of timepoints
+  #calculate number of timepoints
   l = length(infected)
 
   #priors
@@ -180,8 +175,8 @@ end;
 # We will be using the default `NUTS()` sampler with `2_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
 
-infected = br[:, :new_confirmed];
-r₀ = first(br[:, :new_deaths]);
+infected = br[:, :new_confirmed]
+r₀ = first(br[:, :new_deaths])
 chain_sir = sample(bayes_sir(infected, i₀, r₀, N), NUTS(), MCMCThreads(), 2_000, 4)
 summarystats(chain_sir[[:β, :γ]])
 
