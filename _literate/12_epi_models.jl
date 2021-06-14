@@ -71,15 +71,15 @@ savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 
 # where:
 
-# * $S(t)$ is the number of people susceptible to becoming infected (no immunity),
+# * $S(t)$ -- the number of people susceptible to becoming infected (no immunity),
 
-# * $I(t)$ is the number of people currently infected (and infectious),
+# * $I(t)$ -- the number of people currently infected (and infectious),
 
-# * $R(t)$ is the number of recovered people (we assume they remain immune indefinitely),
+# * $R(t)$ -- the number of recovered people (we assume they remain immune indefinitely),
 
-# * $\beta$ is the constant rate of infectious contact between people,
+# * $\beta$ -- the constant rate of infectious contact between people,
 
-# * $\gamma$ the constant recovery rate of infected individuals.
+# * $\gamma$ -- constant recovery rate of infected individuals.
 
 # ## How to code and ODE in Julia?
 
@@ -88,10 +88,10 @@ savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 # 1. Use [`DifferentialEquations.jl`](https://diffeq.sciml.ai/)
 # 2. Create a ODE function
 # 3. Choose:
-#    * Initial Conditions: $u_0$
-#    * Parameters: $p$
-#    * Time Span: $t$
-#    * *Optional*: [Solver](https://diffeq.sciml.ai/stable/solvers/ode_solve/) or leave blank for auto
+#    * Initial Conditions -- $u_0$
+#    * Parameters -- $p$
+#    * Time Span -- $t$
+#    * *Optional* -- [Solver](https://diffeq.sciml.ai/stable/solvers/ode_solve/) or leave blank for auto
 
 # PS: If you like SIR models checkout [`epirecipes/sir-julia`](https://github.com/epirecipes/sir-julia)
 
@@ -125,7 +125,7 @@ u = [N - i₀, i₀, 0.0]
 p = [0.5, 0.05]
 prob = ODEProblem(sir_ode!, u, (1.0, 100.0), p)
 sol_ode = solve(prob)
-plot(sol_ode, label=[L"S" L"I" L"R" ], lw=3, ylabel="N", title="SIR Model for 100 days -- " * "\\beta = $(p[1]), \\gamma = $(p[2])")
+plot(sol_ode, label=[L"S" L"I" L"R" ], lw=3, ylabel="N", title="SIR Model for 100 days -- " * "\\beta = 0.5, \\gamma = 0.05")
 savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 
 # \fig{ode_solve}
