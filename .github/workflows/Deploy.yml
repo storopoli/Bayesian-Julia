@@ -21,16 +21,6 @@ jobs:
       uses: julia-actions/setup-julia@v1
       with:
         version: 1.6
-    - uses: actions/cache@v1
-        env:
-          cache-name: cache-artifacts
-        with:
-          path: ~/.julia/artifacts
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-test-
-            ${{ runner.os }}-
     # NOTE
     #   The steps below ensure that NodeJS and Franklin are loaded then it
     #   installs highlight.js which is needed for the prerendering step
