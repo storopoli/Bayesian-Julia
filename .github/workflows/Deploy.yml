@@ -21,6 +21,16 @@ jobs:
       uses: julia-actions/setup-julia@v1
       with:
         version: 1.6
+    - uses: actions/cache@v1
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: ~/.julia/artifacts
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
     # NOTE
     #   The steps below ensure that NodeJS and Franklin are loaded then it
     #   installs highlight.js which is needed for the prerendering step
@@ -34,13 +44,13 @@ jobs:
             using NodeJS; run(`$(npm_cmd()) install highlight.js`);
             using Franklin;
             Pkg.activate("."); Pkg.instantiate();
-            optimize()'
+            optimize(); verify_links();' > build.log
       env:
           # Fixes 'GKS: can't connect to GKS socket application' errors
           # and quality of output plots in GR back end.
           GKSwstype: nul
     - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@releases/v3
+      uses: JamesIves/github-pages-deploy-action@4.1.0
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
@@ -49,3 +59,12 @@ jobs:
         CLEAN: true
         # To save space; we don't really need older versions.
         SINGLE_COMMIT: true
+    - name: Validate output
+        run: |
+          # A Franklin Warning means an error occurred when evaluating code.
+          if grep -1 "Franklin Warning" build.log; then
+            echo "Franklin reported a warning"
+            exit 1
+          else
+            echo "Franklin did not report a warning"
+          fi
