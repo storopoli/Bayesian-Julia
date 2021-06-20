@@ -50,11 +50,11 @@ jobs:
         # To save space; we don't really need older versions.
         SINGLE_COMMIT: true
     - name: Validate output
-        run: |
-          # A Franklin Warning means an error occurred when evaluating code.
-          if grep -1 "Franklin Warning" build.log; then
-            echo "Franklin reported a warning"
-            exit 1
-          else
-            echo "Franklin did not report a warning"
-          fi
+      run: |
+        # A Franklin Warning means an error occurred when evaluating code.
+        if grep -1 "Franklin Warning" build.log; then
+          echo "Franklin reported a warning"
+          exit 1
+        else
+          echo "Franklin did not report a warning"
+        fi
