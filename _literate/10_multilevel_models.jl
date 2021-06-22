@@ -151,7 +151,7 @@ end;
 
 # ### Random-Intercept-Slope Model
 
-# The third approach is the **random-slope model** in which we specify a different intercept
+# The third approach is the **random-intercept-slope model** in which we specify a different intercept
 # and  slope for each group, in addition to the global intercept.
 # These group-level intercepts and slopes are sampled from hyperpriors.
 
