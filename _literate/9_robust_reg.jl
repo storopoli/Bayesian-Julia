@@ -14,7 +14,7 @@
 # (figure below). It does not have a "fat tail" (or sometimes known as "long tail"). In other words, the observations are
 # not far from the mean. When we use this distribution as a likelihood function in the Bayesian models, we force that all
 # estimates must be conditioned into a normal distribution of the dependent variable. If there are many outliers in the
-# data (observations quite far from the mean), this causes the estimates of of the independent variables' coefficients to
+# data (observations quite far from the mean), this causes the estimates of the independent variables' coefficients to
 # be unstable. This is because the normal distribution cannot contemplate observations that are very spread away from the
 # mean without having to change the mean's position (or location). In other words, the bell curve needs to "shift" to be able
 # to contemplate outliers, thus making the inference unstable.
