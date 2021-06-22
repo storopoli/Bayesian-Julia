@@ -1130,7 +1130,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # ## MCMC Metrics
 
 # All Markov chains have some convergence and diagnostics metrics that you should be aware of. Note that this is still an ongoing
-# are of intense research and new metrics are constantly being proposed
+# area of intense research and new metrics are constantly being proposed
 # (*e.g.* Lambert & Vehtari (2020) or Vehtari, Gelman., Simpson, Carpenter & Bürkner (2021))
 # To show MCMC metrics let me recover our six-sided dice example from [4. **How to use Turing**](/pages/4_Turing/):
 
