@@ -43,9 +43,9 @@
 
 using Plots, StatsPlots, Distributions, LaTeXStrings
 
-bar(DiscreteUniform(1, 6),
+plot(DiscreteUniform(1, 6),
         label="6-sided Dice",
-        ms=5,
+        markershape=:circle,
         xlabel=L"\theta",
         ylabel="Mass",
         ylims=(0, 0.3)
@@ -68,14 +68,18 @@ savefig(joinpath(@OUTPUT, "discrete_uniform.svg")); # hide
 
 # Example: Whether the patient survived or died or whether the customer completes their purchase or not.
 
-bar(Bernoulli(0.5),
+plot(Bernoulli(0.5),
+        markershape=:circle,
         label=L"p=0.5",
-        alpha=0.3,
+        alpha=0.5,
         xlabel=L"\theta",
         ylabel="Mass",
         ylim=(0, 1)
     )
-bar!(Bernoulli(0.2), label=L"p=0.2", alpha=0.3)
+plot!(Bernoulli(0.2),
+        markershape=:circle,
+        label=L"p=0.5",
+        alpha=0.5)
 savefig(joinpath(@OUTPUT, "bernoulli.svg")); # hide
 
 # \fig{bernoulli}
@@ -94,13 +98,17 @@ savefig(joinpath(@OUTPUT, "bernoulli.svg")); # hide
 
 # Example: number of heads in 5 coin flips.
 
-bar(Binomial(5, 0.5),
+plot(Binomial(5, 0.5),
+        markershape=:circle,
         label=L"p=0.5",
-        alpha=0.3,
+        alpha=0.5,
         xlabel=L"\theta",
         ylabel="Mass"
     )
-bar!(Binomial(5, 0.2), label=L"p=0.2", alpha=0.3)
+plot!(Binomial(5, 0.2),
+        markershape=:circle,
+        label=L"p=0.2",
+        alpha=0.5)
 savefig(joinpath(@OUTPUT, "binomial.svg")); # hide
 
 # \fig{binomial}
@@ -118,13 +126,17 @@ savefig(joinpath(@OUTPUT, "binomial.svg")); # hide
 
 # Example: Number of emails you receive daily. Number of holes you find on the street.
 
-bar(Poisson(1),
+plot(Poisson(1),
+        markershape=:circle,
         label=L"\lambda=1",
-        alpha=0.3,
+        alpha=0.5,
         xlabel=L"\theta",
         ylabel="Mass"
     )
-bar!(Poisson(4), label=L"\lambda=4", alpha=0.3)
+plot!(Poisson(4),
+    markershape=:circle,
+    label=L"\lambda=4",
+    alpha=0.5)
 savefig(joinpath(@OUTPUT, "poisson.svg")); # hide
 
 # \fig{poisson}
@@ -147,13 +159,17 @@ savefig(joinpath(@OUTPUT, "poisson.svg")); # hide
 
 # Example: Annual count of tropical cyclones.
 
-bar(NegativeBinomial(1, 0.5),
+plot(NegativeBinomial(1, 0.5),
+        markershape=:circle,
         label=L"k=1",
-        alpha=0.3,
+        alpha=0.5,
         xlabel=L"\theta",
         ylabel="Mass"
     )
-bar!(NegativeBinomial(2, 0.5), label=L"k=2", alpha=0.3)
+plot!(NegativeBinomial(2, 0.5),
+        markershape=:circle,
+        label=L"k=2",
+        alpha=0.5)
 savefig(joinpath(@OUTPUT, "negbinomial.svg")); # hide
 
 # \fig{negbinomial}
