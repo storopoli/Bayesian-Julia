@@ -1,0 +1,22 @@
+# LaTeX Stuff
+*.bib linguist-generated
+*.tex linguist-generated
+
+# Site
+_build/* text
+_layout/* text
+*.html  text
+*.css   text
+
+# Serialisation
+*.json  text
+*.toml  text
+*.xml   text
+*.yaml  text
+*.yml   text
+
+# Data files
+*.csv   text
+
+# JavaScript Libraries
+*.js linguist-generated
