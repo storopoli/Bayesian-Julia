@@ -3,10 +3,10 @@
 *.tex linguist-generated
 
 # Site
-_build/* text
-_layout/* text
-*.html  text
-*.css   text
+_build/* linguist-generated
+_layout/* linguist-generated
+*.html  linguist-generated
+*.css   linguist-generated
 
 # Serialisation
 *.json  text
