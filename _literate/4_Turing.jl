@@ -107,14 +107,12 @@ using Turing
 setprogress!(false) # hide
 
 @model dice_throw(y) = begin
-    #Our prior belief about the probability of each result in a six-sided dice.
-    #p is a vector of length 6 each with probability p that sums up to 1.
+    # Our prior belief about the probability of each result in a six-sided dice.
+    # p is a vector of length 6 each with probability p that sums up to 1.
     p ~ Dirichlet(6, 1)
 
-    #Each outcome of the six-sided dice has a probability p.
-    for i in eachindex(y)
-        y[i] ~ Categorical(p)
-    end
+    # Each outcome of the six-sided dice has a probability p.
+    y ~ filldist(Categorical(p), length(y))
 end;
 
 # Here we are using the [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) which
@@ -134,10 +132,11 @@ mean(Dirichlet(6, 1))
 sum(mean(Dirichlet(6, 1)))
 
 # Also, since the outcome of a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution) is an integer
-# and `y` is a $N$-dimensional vector of integers we need to apply some sort of broadcasting here. This is
-# done by adding a for loop[^efficiency]. We could also use the familiar dot `.` broadcasting operator in Julia:
+# and `y` is a $N$-dimensional vector of integers we need to apply some sort of broadcasting here.
+# `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# We could also use the familiar dot `.` broadcasting operator in Julia:
 # `y .~ Categorical(p)` to signal that all elements of `y` are distributed as a Categorical distribution.
-# But doing that does not allow us to do predictive checks (more on this below). So, instead we use a for loop.
+# But doing that does not allow us to do predictive checks (more on this below). So, instead we use `filldist()`.
 
 # ### Simulating Data
 
@@ -273,7 +272,6 @@ summarystats(posterior_check)
 # ## Footnotes
 #
 # [^MCMC]: see [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
-# [^efficiency]: actually is even better to use Turing's `filldist()` function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution. I will cover Turing's computational "tricks of the trade" in [11. **Computational Tricks with Turing**](/pages/11_Turing_tricks/).
 # [^visualization]: we'll cover those plots and diagnostics in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/).
 # [^workflow]: note that this workflow is a extremely simplified adaptation from the original workflow on which it was based. I suggest the reader to consult the original workflow of Gelman et al. (2020).
 # [^missing]: in a real-world scenario, you'll probably want to use more than just **one** observation as a predictive check, so you should use something like `Vector{Missing}(missing, length(y))` or `fill(missing, length(y)`.

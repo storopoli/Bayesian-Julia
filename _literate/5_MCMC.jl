@@ -1138,14 +1138,12 @@ using Turing
 setprogress!(false) # hide
 
 @model dice_throw(y) = begin
-    #Our prior belief about the probability of each result in a six-sided dice.
-    #p is a vector of length 6 each with probability p that sums up to 1.
+    # Our prior belief about the probability of each result in a six-sided dice.
+    # p is a vector of length 6 each with probability p that sums up to 1.
     p ~ Dirichlet(6, 1)
 
-    #Each outcome of the six-sided dice has a probability p.
-    for i in eachindex(y)
-        y[i] ~ Categorical(p)
-    end
+    # Each outcome of the six-sided dice has a probability p.
+    y ~ filldist(Categorical(p), length(y))
 end;
 
 # Let's once again generate 1,000 throws of a six-sided dice:
