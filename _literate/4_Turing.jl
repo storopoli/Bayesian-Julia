@@ -257,12 +257,12 @@ typeof(prior_check)
 
 # And we can call `summarystats()`:
 
-summarystats(prior_check)
+summarystats(prior_check[:, 1:5, :]) # just the first 5 prior samples
 
 # We can do the same with `chain` for a *posterior* predictive check:
 
 posterior_check = predict(model_predict, chain);
-summarystats(posterior_check)
+summarystats(posterior_check[:, 1:5, :]) # just the first 5 posterior samples
 
 # ## Conclusion
 

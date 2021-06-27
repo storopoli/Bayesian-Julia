@@ -44,10 +44,10 @@ jobs:
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@4.1.0
       with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: __site
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
+        folder: __site
         # To reduce state.
-        CLEAN: true
+        clean: true
         # To save space; we don't really need older versions.
-        SINGLE_COMMIT: true
+        single-commit: true
