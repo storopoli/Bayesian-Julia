@@ -36,9 +36,11 @@ jobs:
             Pkg.activate("."); Pkg.instantiate();
             optimize(); verify_links();' > build.log
       env:
+          # Allows the use of unicode characters in Plots.jl
+          GKS_ENCODING: "utf8"
           # Fixes 'GKS: can't connect to GKS socket application' errors
           # and quality of output plots in GR back end.
-          GKSwstype: nul
+          GKSwstype: "100"
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@4.1.0
       with:
