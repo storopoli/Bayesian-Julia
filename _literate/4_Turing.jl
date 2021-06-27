@@ -243,8 +243,12 @@ prior_chain = sample(model, Prior(), 2_000);
 # model but with the observations set to `missing`[^missing], and then calling `predict()` on the predictive model and the previously
 # drawn samples. First let's do the *prior* predictive check:
 
-missing_data = Vector{Missing}(missing, 1) # vector of `missing`
-model_predict = dice_throw(missing_data) # instantiate the "predictive model"
+missing_data = Vector{Missing}(missing, length(data)) # vector of `missing`
+model_missing = dice_throw(missing_data)
+model_predict = DynamicPPL.Model{(:y,)}(:model_predict_missing_data,
+                    model_missing.f,
+                    model_missing.args,
+                    model_missing.defaults) # instantiate the "predictive model"
 prior_check = predict(model_predict, prior_chain);
 
 # Note that `predict()` returns a `Chains` object from `MCMCChains.jl`:
