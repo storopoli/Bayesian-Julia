@@ -239,9 +239,8 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 prior_chain = sample(model, Prior(), 2_000);
 
 # Now we can perform predictive checks using both the prior (`prior_chain`) or posterior (`chain`) distributions.
-# To draw from the prior and posterior predictive distributions we instantiate a "predictive model", *i.e.* a Turing
-# model but with the observations set to `missing`[^missing], and then calling `predict()` on the predictive model and the previously
-# drawn samples. First let's do the *prior* predictive check:
+# To draw from the prior and posterior predictive distributions we instantiate a "predictive model", *i.e.* a Turing model but with the observations set to `missing`[^missing], and then calling `predict()` on the predictive model and the previously drawn samples.
+# First let's do the *prior* predictive check:
 
 missing_data = Vector{Missing}(missing, length(data)) # vector of `missing`
 model_missing = dice_throw(missing_data)
@@ -250,6 +249,12 @@ model_predict = DynamicPPL.Model{(:y,)}(:model_predict_missing_data,
                     model_missing.args,
                     model_missing.defaults) # instantiate the "predictive model"
 prior_check = predict(model_predict, prior_chain);
+
+# Here we are creating a `missing_data` object which is a `Vector` of the same length as the `data` and populated with type `missing` as values.
+# We then instantiate a new `dice_throw` model with the `missing_data` vector as the `data` argument.
+# We proceed by instantiating a new Turing `DynamicPPL.Model` model with the `missing_data` vector as the `data` argument.
+# The boilerplate around `DynamicPPL.Model` is the default arguments that a `DynamicPPL.Model` model needs to have.
+# Finally, we call `predict()` on the predictive model and the previously drawn samples, which in our case are the samples from the prior distribution (`prior_chain`).
 
 # Note that `predict()` returns a `Chains` object from `MCMCChains.jl`:
 
