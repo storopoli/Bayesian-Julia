@@ -94,13 +94,56 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 # The intercept $\alpha$ and coefficients $\boldsymbol{\beta}$ are only interpretable after exponentiation.
 
+# What remains is to specify the model parameters' prior distributions:
+
+# * Prior Distribution of $\alpha$ -- Knowledge we possess regarding the model's intercept.
+# * Prior Distribution of $\boldsymbol{\beta}$  -- Knowledge we possess regarding the model's independent variables' coefficients.
+
+# Our goal is to instantiate a regression with count data using the observed data ($\mathbf{y}$ and $\mathbf{X}$) and find the posterior
+# distribution of our model's parameters of interest ($\alpha$ and $\boldsymbol{\beta}$). This means to find the full posterior
+# distribution of:
+
+# $$ P(\boldsymbol{\theta} \mid \mathbf{y}) = P(\alpha, \boldsymbol{\beta} \mid \mathbf{y}) $$
+
+# Note that contrary to the linear regression, which used a Gaussian/normal likelihood function, we don't have an error
+# parameter $\sigma$ in our regression with count data. This is due to the Poisson not having
+# a "scale" parameter such as the $\sigma$ parameter in the Gaussian/normal distribution.
+
+# This is easily accomplished with Turing:
+
+using Turing
+using LazyArrays
+using Random:seed!
+seed!(123)
+setprogress!(false) # hide
+
+@model poissonreg(X,  y; predictors=size(X, 2)) = begin
+	#priors
+	α ~ Normal(0, 2.5)
+	β ~ filldist(TDist(3), predictors)
+
+	#likelihood
+	y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
+end;
+
+# Here I am specifying very weakly informative priors:
+
+# * $\alpha \sim \text{Normal}(0, 2.5)$ -- This means a normal distribution centered on 0 with a standard deviation of 2.5. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
+# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+
+# Turing's `arraydist()` function wraps an array of distributions returning a new distribution sampling from the individual
+# distributions. And the LazyArrays' `LazyArray()` constructor wrap a lazy object that wraps a computation producing an array
+# to an array. Last, but not least, the macro `@~` creates a broadcast and is a nice short hand for the familiar dot `.`
+# broadcasting operator in Julia. This is an efficient way to tell Turing that our `y` vector is distributed lazily as a
+# `LogPoisson` broadcasted to `α` added to the product of the data matrix `X` and `β` coefficient vector. `LogPoisson` is
+# Turing's efficient distribution that already apply exponentiation to all the linear predictors.
+
 # ### Using Negative Binomial Likelihood
 
 # $$
 # \begin{aligned}
 # \mathbf{y} &\sim \text{Negative Binomial}\left( e^{(\alpha + \mathbf{X} \cdot \boldsymbol{\beta})}, \phi \right) \\
-# \phi &= \frac{1}{\phi^-} \\
-# \phi^- &\sim \text{Gamma}(0.01, 0.01) \\
+# \phi &\sim \text{Gamma}(0.01, 0.01) \\
 # \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
 # \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}})
 # \end{aligned}
@@ -129,7 +172,7 @@ plot(Gamma(0.01, 0.01),
         lw=2, label=false,
         xlabel=L"\phi",
         ylabel="Density",
-        xlims=(0, 0.01))
+        xlims=(0, 0.001))
 savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
 
 # \fig{gamma}
@@ -150,42 +193,89 @@ savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
 # parameter $\sigma$ in our regression with count data. This is due to neither the Poisson nor negative binomial distributions having
 # a "scale" parameter such as the $\sigma$ parameter in the Gaussian/normal distribution.
 
-# This is easily accomplished with Turing:
+# #### Alternative Negative Binomial Parameterization
 
-using Turing
-using LazyArrays
-using Random:seed!
-seed!(123)
-setprogress!(false) # hide
+# One last thing before we get into the details of the negative binomial distribution is to consider an alternative parameterization.
+# Julia's `Distributions.jl` and, consequently, Turing's parameterization of the negative binomial distribution follows the following the [Wolfram reference](https://reference.wolfram.com/language/ref/NegativeBinomialDistribution.html):
+
+# $$
+# \text{Negative-Binomial}(k \mid r, p) \sim \frac{\Gamma(k+r)}{k! \Gamma(r)} p^r (1 - p)^k, \quad \text{for } k = 0, 1, 2, \ldots
+# $$
+
+# where:
+# * $k$ -- number of failures before the $r$th success in a sequence of independent Bernoulli trials
+# * $r$ -- number of successes
+# * $p$ -- probability of success in an individual Bernoulli trial
+
+# This is not ideal for most of the modeling situations that we would employ the negative binomial distribution.
+# In particular, we want to have a parameterization that is more appropriate for count data.
+# What we need is the familiar **mean** (or location) and **variance** (or scale) parameterization.
+# If we look in [Stan's documentation for the `neg_binomial_2` function](https://mc-stan.org/docs/functions-reference/nbalt.html), we have the following two equations:
+
+# $$
+# \begin{aligned}
+# \mu &= \frac{r (1 - p)}{p} \label{negbin_mean} \\
+# \mu + \frac{\mu^2}{\phi} &= \frac{r (1 - p)}{p^2} \label{negbin_variance}
+# \end{aligned}
+# $$
+
+# With a little bit of algebra, we can substitute \eqref{negbin_mean} into the right hand side of \eqref{negbin_variance} and get the following:
+
+# $$
+# \begin{aligned}
+# \mu + \frac{\mu^2}{\phi} &= \frac{μ}{p} \\
+# 1 + \frac{\mu}{\phi} &= \frac{1}{p} \\
+# p &= \frac{1}{\frac{1 + \mu}{\phi}}
+# \end{aligned}
+# $$
+
+# Then in \eqref{negbin_mean} we have:
+
+# $$
+# \begin{aligned}
+# \mu &= r \left(1 - \left( \frac{1}{\frac{1 + \mu}{\phi}} \right) \right) \cdot \left(1 + \frac{\mu}{\phi} \right) \\
+# \mu &= r \left( \left(1 + \frac{\mu}{\phi} \right) - 1 \right) \\
+# r &= \phi
+# \end{aligned}
+# $$
+
+# Hence, the resulting map is $\text{Negative-Binomial}(\mu, \phi) \equiv \text{Negative-Binomial} \left( r = \phi, p = \frac{1}{\frac{1 + \mu}{\phi}} \right)$.
+# I would like to point out that this implementation was done by [Tor Fjelde](https://github.com/torfjelde) in a [COVID-19 model with the code available in GitHub](https://github.com/cambridge-mlg/Covid19).
+# So we can use this parameterization in our negative binomial regression model.
+# But first, we need to define an alternative negative binomial distribution function:
+
+function NegativeBinomial2(μ, ϕ)
+    p = 1 / (1 + μ / ϕ)
+    r = ϕ
+
+    return NegativeBinomial(r, p)
+end
+
+# Now we create our Turing model with the alternative `NegBinomial2` parameterization:
 
 @model negbinreg(X,  y; predictors=size(X, 2)) = begin
 	#priors
 	α ~ Normal(0, 2.5)
 	β ~ filldist(TDist(3), predictors)
+    ϕ⁻ ~ Gamma(0.01, 0.01)
+    ϕ = 1 / ϕ⁻
 
 	#likelihood
-	y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
+	y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
 end;
 
-# Here I am specifying very weakly informative priors:
+# Here I am also specifying very weakly informative priors:
 
 # * $\alpha \sim \text{Normal}(0, 2.5)$ -- This means a normal distribution centered on 0 with a standard deviation of 2.5. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
 # * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# * $\phi \sim \text{Exponential}(1)$ -- overdispersion parameter of the negative binomial distribution.
 
 # Turing's `arraydist()` function wraps an array of distributions returning a new distribution sampling from the individual
 # distributions. And the LazyArrays' `LazyArray()` constructor wrap a lazy object that wraps a computation producing an array
 # to an array. Last, but not least, the macro `@~` creates a broadcast and is a nice short hand for the familiar dot `.`
 # broadcasting operator in Julia. This is an efficient way to tell Turing that our `y` vector is distributed lazily as a
-# `LogPoisson` broadcasted to `α` added to the product of the data matrix `X` and `β` coefficient vector. `LogPoisson` is
-# Turing's efficient distribution that already apply exponentiation to all the linear predictors.
-
-# If you want to use the negative binomial likelihood in your model you change or add the following lines:
-
-# ```julia
-# ϕ⁻ ~ Gamma(0.01, 0.01) # or Exponential(1)
-# ϕ = 1 / ϕ⁻
-# y ~ arraydist(LazyArray(@~ NegativeBinomial.(exp.(α .+ X * β), ϕ)))
-# ```
+# `NegativeBinomial2` broadcasted to `α` added to the product of the data matrix `X` and `β` coefficient vector.
+# Note that `NegativeBinomial2` does not apply exponentiation so we had to include the `exp.()` broadcasted function to all the linear predictors.
 
 # ## Example - Roaches Extermination
 
@@ -212,17 +302,20 @@ describe(roaches)
 # Also note that the traps were set in general for only 1 day and it ranges from 0.2 days (almost 5 hours) to 4.3 days
 # (which is approximate 4 days and 7 hours).
 
-# Now let's us instantiate our model with the data:
+# ### Poisson Regression
+
+# Let's first run the Poisson regression.
+# First, we instantiate our model with the data:
 
 X = Matrix(select(roaches, Not(:y)))
 y = roaches[:, :y]
-model = negbinreg(X, y);
+model_poisson = poissonreg(X, y);
 
 # And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
 
-chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
-summarystats(chain)
+chain_poisson = sample(model_poisson, NUTS(), MCMCThreads(), 2_000, 4)
+summarystats(chain_poisson)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
 # Note that the coefficients are in log scale. So we need to apply the exponential function to them.
@@ -230,7 +323,7 @@ summarystats(chain)
 
 using Chain
 
-@chain quantile(chain) begin
+@chain quantile(chain_poisson) begin
 	DataFrame
     select(_,
         :parameters,
@@ -248,6 +341,32 @@ end
 
 # That's how you interpret 95% credible intervals from a `quantile()` output of a regression with count data `Chains`
 # object converted from a log scale.
+
+# ### Negative Binomial Regression
+
+# Let's now run the negative binomial regression.
+
+model_negbin = negbinreg(X, y);
+
+# We will also default `NUTS()` sampler with `2_000` samples, with 4 Markov chains using multiple threads `MCMCThreads()`:
+
+seed!(111) # hide
+chain_negbin = sample(model_negbin, NUTS(),MCMCThreads(), 2_000, 4)
+summarystats(chain_negbin)
+
+# We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
+# Note that the coefficients are in log scale. So we need to also apply the exponential function as we did before.
+
+@chain quantile(chain_negbin) begin
+	DataFrame
+    select(_,
+        :parameters,
+        names(_, r"%") .=> ByRow(exp),
+        renamecols=false)
+end
+
+# Our results show much more uncertainty in the coefficients than in the Poisson regression.
+# So it might be best to use the Poisson regression in the `roaches` dataset.
 
 # ## References
 
