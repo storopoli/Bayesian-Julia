@@ -215,11 +215,11 @@ savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
 # $$
 # \begin{aligned}
 # \mu &= \frac{r (1 - p)}{p} \label{negbin_mean} \\
-# \mu + \frac{\mu^2}{\phi} &= \frac{r (1 - p)}{p^2} \label{negbin_variance}
+# \mu + \frac{\mu^2}{\phi} &= \frac{r (1 - p)}{p^2}
 # \end{aligned}
 # $$
 
-# With a little bit of algebra, we can substitute \eqref{negbin_mean} into the right hand side of \eqref{negbin_variance} and get the following:
+# With a little bit of algebra, we can substitute the first equation of \eqref{negbin_mean} into the right hand side of the second equation and get the following:
 
 # $$
 # \begin{aligned}

@@ -45,7 +45,11 @@ last(br, 5)
 # Here is a plot of the data:
 
 using Plots, StatsPlots, LaTeXStrings
-@df br plot(:date, :new_confirmed, xlab=L"t", ylab="infected", label=false, title="Brasil COVID 2020")
+@df br plot(:date,
+            :new_confirmed,
+            xlab=L"t", ylab="infected daily",
+            yformatter=y -> string(round(Int64, y ÷ 1_000)) * "K",
+            label=false)
 savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 
 # \fig{infected}
@@ -133,50 +137,59 @@ savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 
 # ## How to use a ODE solver in a Turing Model
 
+# Please note that we are using the alternative negative binomial parameterization as specified in [8. **Bayesian Regression with Count Data**](/pages/8_count_reg/):
+
+function NegativeBinomial2(μ, ϕ)
+    p = 1 / (1 + μ / ϕ)
+    r = ϕ
+
+    return NegativeBinomial(r, p)
+end
+
 # Now this is the fun part. It's easy: just stick it inside!
 
 using Turing
+using LazyArrays
 using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
 @model bayes_sir(infected, i₀, r₀, N) = begin
-  #calculate number of timepoints
-  l = length(infected)
+    #calculate number of timepoints
+    l = length(infected)
 
-  #priors
-  β ~ TruncatedNormal(2, 1, 1e-4, 10)     # using 10 instead of Inf because numerical issues arose
-  γ ~ TruncatedNormal(0.4, 0.5, 1e-4, 10) # using 10 instead of Inf because numerical issues arose
-  ϕ⁻ ~ truncated(Exponential(5), 1, 20)
-  ϕ = 1.0 / ϕ⁻
+    #priors
+    β ~ TruncatedNormal(2, 1, 1e-4, 10)     # using 10 instead of Inf because numerical issues arose
+    γ ~ TruncatedNormal(0.4, 0.5, 1e-4, 10) # using 10 instead of Inf because numerical issues arose
+    ϕ⁻ ~ truncated(Exponential(5), 0, 1e5)
+    ϕ = 1.0 / ϕ⁻
 
-  #ODE Stuff
-  I = i₀
-  u0 = [N - I, I, r₀] # S,I,R
-  p = [β, γ]
-  tspan = (1.0, float(l))
-  prob = ODEProblem(sir_ode!,
-          u0,
-          tspan,
-          p)
-  sol = solve(prob,
-              Tsit5(), # similar to RK45 in Stan but 10% faster
-              saveat=1.0)
-  solᵢ = Array(sol)[2, :] # New Infected
+    #ODE Stuff
+    I = i₀
+    u0 = [N - I, I, r₀] # S,I,R
+    p = [β, γ]
+    tspan = (1.0, float(l))
+    prob = ODEProblem(sir_ode!,
+            u0,
+            tspan,
+            p)
+    sol = solve(prob,
+                Tsit5(), # similar to Dormand-Prince RK45 in Stan but 20% faster
+                saveat=1.0)
+    solᵢ = Array(sol)[2, :] # New Infected
+    solᵢ = max.(1e-4, solᵢ) # numerical issues arose
 
-  #likelihood
-  for i in 1:l
-    solᵢ[i] = max(1e-4, solᵢ[i]) # numerical issues arose
-    infected[i] ~ NegativeBinomial(solᵢ[i], ϕ)
-  end
+    #likelihood
+    infected ~ arraydist(LazyArray(@~ NegativeBinomial2.(solᵢ, ϕ)))
 end;
 
 # Now run the model and inspect our parameters estimates.
-# We will be using the default `NUTS()` sampler with `2_000` samples:
+# We will be using the default `NUTS()` sampler with `2_000` samples on only one Markov chain:
 
 infected = br[:, :new_confirmed]
 r₀ = first(br[:, :new_deaths])
-chain_sir = sample(bayes_sir(infected, i₀, r₀, N), NUTS(), 2_000)
+model_sir = bayes_sir(infected, i₀, r₀, N)
+chain_sir = sample(model_sir, NUTS(), 2_000)
 summarystats(chain_sir[[:β, :γ]])
 
 # Hope you had learned some new bayesian computational skills and also took notice
