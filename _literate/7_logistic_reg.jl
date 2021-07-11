@@ -136,12 +136,12 @@ seed!(123)
 setprogress!(false) # hide
 
 @model logreg(X,  y; predictors=size(X, 2)) = begin
-	#priors
-	α ~ Normal(0, 2.5)
-	β ~ filldist(TDist(3), predictors)
+    #priors
+    α ~ Normal(0, 2.5)
+    β ~ filldist(TDist(3), predictors)
 
-	#likelihood
-	y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
+    #likelihood
+    y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -222,7 +222,7 @@ summarystats(chain)
 using Chain
 
 @chain quantile(chain) begin
-	DataFrame
+    DataFrame
     select(_,
         :parameters,
         names(_, r"%") .=> ByRow(exp),
@@ -239,7 +239,7 @@ function logodds2prob(logodds::Float64)
 end
 
 @chain quantile(chain) begin
-	DataFrame
+    DataFrame
     select(_,
         :parameters,
         names(_, r"%") .=> ByRow(logodds2prob),

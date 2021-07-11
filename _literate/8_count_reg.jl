@@ -118,12 +118,12 @@ seed!(123)
 setprogress!(false) # hide
 
 @model poissonreg(X,  y; predictors=size(X, 2)) = begin
-	#priors
-	α ~ Normal(0, 2.5)
-	β ~ filldist(TDist(3), predictors)
+    #priors
+    α ~ Normal(0, 2.5)
+    β ~ filldist(TDist(3), predictors)
 
-	#likelihood
-	y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
+    #likelihood
+    y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -254,14 +254,14 @@ end
 # Now we create our Turing model with the alternative `NegBinomial2` parameterization:
 
 @model negbinreg(X,  y; predictors=size(X, 2)) = begin
-	#priors
-	α ~ Normal(0, 2.5)
-	β ~ filldist(TDist(3), predictors)
+    #priors
+    α ~ Normal(0, 2.5)
+    β ~ filldist(TDist(3), predictors)
     ϕ⁻ ~ Gamma(0.01, 0.01)
     ϕ = 1 / ϕ⁻
 
-	#likelihood
-	y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
+    #likelihood
+    y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
 end;
 
 # Here I am also specifying very weakly informative priors:
@@ -324,7 +324,7 @@ summarystats(chain_poisson)
 using Chain
 
 @chain quantile(chain_poisson) begin
-	DataFrame
+    DataFrame
     select(_,
         :parameters,
         names(_, r"%") .=> ByRow(exp),
@@ -358,7 +358,7 @@ summarystats(chain_negbin)
 # Note that the coefficients are in log scale. So we need to also apply the exponential function as we did before.
 
 @chain quantile(chain_negbin) begin
-	DataFrame
+    DataFrame
     select(_,
         :parameters,
         names(_, r"%") .=> ByRow(exp),
