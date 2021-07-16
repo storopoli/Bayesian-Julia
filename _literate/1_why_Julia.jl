@@ -316,7 +316,7 @@
 #
 # $$ \text{PDF}(\boldsymbol{\mu}, \boldsymbol{\Sigma}) = (2\pi)^{-{\frac{k}{2}}}\det({\boldsymbol{\Sigma}})^{-{\frac {1}{2}}}e^{-{\frac{1}{2}}(\mathbf{x}-{\boldsymbol{\mu}})^{T}{\boldsymbol{\Sigma }}^{-1}(\mathbf{x} -{\boldsymbol{\mu}})} \label{mvnpdf} , $$
 #
-# where $\boldsymbol{\mu}$ is a vector of means, $\boldsymbol{\Sigma}$ is a covariance matrix, $\det$ is the determinant and $\mathbf{x}$
+# where $\boldsymbol{\mu}$ is a vector of means, $k$ is the number of dimensions, $\boldsymbol{\Sigma}$ is a covariance matrix, $\det$ is the determinant and $\mathbf{x}$
 # is a vector of values that the PDF is evaluted for.
 
 # **SPOILER ALERT**: Julia will beat this C++ Eigen implementation by being almost 100x faster. So I will try to *help* C++ beat Julia (😂)
