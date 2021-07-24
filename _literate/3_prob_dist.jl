@@ -78,7 +78,7 @@ plot(Bernoulli(0.5),
     )
 plot!(Bernoulli(0.2),
         markershape=:circle,
-        label=L"p=0.5",
+        label=L"p=0.2",
         alpha=0.5)
 savefig(joinpath(@OUTPUT, "bernoulli.svg")); # hide
 
