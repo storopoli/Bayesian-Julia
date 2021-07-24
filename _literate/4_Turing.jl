@@ -89,7 +89,8 @@ using Plots, StatsPlots, Distributions, LaTeXStrings
 dice = DiscreteUniform(1, 6)
 plot(dice,
     label="six-sided Dice",
-    lw=5,
+    markershape=:circle,
+    ms=5,
     xlabel=L"\theta",
     ylabel="Mass",
     ylims=(0, 0.3)
