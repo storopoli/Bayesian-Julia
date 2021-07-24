@@ -1,28 +1,28 @@
 # # How to use Turing
 
-# [**Turing**](http://turing.ml/) is a ecosystem of Julia packages for Bayesian Inference using
+# [**Turing**](http://turing.ml/) is an ecosystem of Julia packages for Bayesian Inference using
 # [probabilistic programming](https://en.wikipedia.org/wiki/Probabilistic_programming).
-# Turing provide an easy an intuitive way of specifying models.
+# Turing provides an easy and intuitive way of specifying models.
 
 # ## Probabilistic Programming
 
-# What is a **probabilistic programming** (PP)? It is a **programming paradigm** in which probabilistic models
+# What is **probabilistic programming** (PP)? It is a **programming paradigm** in which probabilistic models
 # are specified and inference for these models is performed **automatically** (Hardesty, 2015). In more clear terms,
 # PP and PP Languages (PPLs) allows us to specify **variables as random variables** (like Normal, Binominal etc.) with
 # **known or unknown parameters**. Then, we **construct a model** using these variables by specifying how the variables
 #  related to each other, and finally **automatic inference of the variables' unknown parameters** is then performed.
 
-# In a Bayesian approach this means specifying **priors**, **likelihoods** and let the PPL compute the **posterior**.
+# In a Bayesian approach this means specifying **priors**, **likelihoods** and letting the PPL compute the **posterior**.
 # Since the denominator in the posterior is often intractable, we use Markov Chain Monte Carlo[^MCMC] and some fancy
 # algorithm that uses the posterior geometry to guide the MCMC proposal using Hamiltonian dynamics called
 # Hamiltonian Monte Carlo (HMC) to approximate the posterior. This involves, besides a suitable PPL, automatic differentiation,
 # MCMC chains interface, and also an efficient HMC algorithm implementation. In order to provide all of these features,
-# Turing has a whole ecosystem to address each and everyone of these components.
+# Turing has a whole ecosystem to address each and every one of these components.
 
 # ## Turing's Ecosystem
 
-# Before we dive into how to specify models in Turing. Let's discuss Turing's **ecosystem**.
-# We have several Julia packages under the Turing's GitHub organization [TuringLang](https://github.com/TuringLang),
+# Before we dive into how to specify models in Turing, let's discuss Turing's **ecosystem**.
+# We have several Julia packages under Turing's GitHub organization [TuringLang](https://github.com/TuringLang),
 # but I will focus on 6 of those:
 
 # * [`Turing.jl`](https://github.com/TuringLang/Turing.jl)
@@ -54,13 +54,13 @@
 # [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl) and [`ReverseDiff.jl`](https://github.com/JuliaDiff/ReverseDiff.jl).
 # The main goal of `DistributionsAD.jl` is to make the output of `logpdf` differentiable with respect to all continuous parameters
 # of a distribution as well as the random variable in the case of continuous distributions. This is the package that guarantees the
-# "automatical inference" part of the definition of a PPL.
+# "automatic inference" part of the definition of a PPL.
 
 # Finally, [`Bijectors.jl`](https://github.com/TuringLang/Bijectors.jl) implements a set of functions for transforming constrained
 # random variables (e.g. simplexes, intervals) to Euclidean space. Note that `Bijectors.jl` is still a work-in-progress and
 # in the future we'll have better implementation for more constraints, *e.g.* positive ordered vectors of random variables.
 
-# Most of the time we will not be dealing with neither of these packages directly, since `Turing.jl` will take care of the interfacing
+# Most of the time we will not be dealing with these packages directly, since `Turing.jl` will take care of the interfacing
 # for us. So let's talk about `Turing.jl`.
 
 # ## `Turing.jl`
@@ -89,6 +89,7 @@ using Plots, StatsPlots, Distributions, LaTeXStrings
 dice = DiscreteUniform(1, 6)
 plot(dice,
     label="six-sided Dice",
+    markershape=:circle,
     ms=5,
     xlabel=L"\theta",
     ylabel="Mass",
@@ -117,7 +118,7 @@ end;
 
 # Here we are using the [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution) which
 # is the multivariate generalization of the [Beta distribution](https://en.wikipedia.org/wiki/Beta_distribution).
-# The Dirichlet distribution is often used as the conjugate prior for Categorical or Multinomial distributions. Since our dice
+# The Dirichlet distribution is often used as the conjugate prior for Categorical or Multinomial distributions. Our dice
 # is modelled as a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution)
 # with six possible results $y \in \{ 1, 2, 3, 4, 5, 6 \}$ with some probability vector
 # $\mathbf{p} = (p_1, \dots, p_6)$. Since all mutually exclusive outcomes must sum up to 1 to be a valid probability, we impose the constraint that
@@ -133,7 +134,7 @@ sum(mean(Dirichlet(6, 1)))
 
 # Also, since the outcome of a [Categorical distribution](https://en.wikipedia.org/wiki/Categorical_distribution) is an integer
 # and `y` is a $N$-dimensional vector of integers we need to apply some sort of broadcasting here.
-# `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# `filldist()` is a nice Turing function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 # We could also use the familiar dot `.` broadcasting operator in Julia:
 # `y .~ Categorical(p)` to signal that all elements of `y` are distributed as a Categorical distribution.
 # But doing that does not allow us to do predictive checks (more on this below). So, instead we use `filldist()`.
@@ -156,7 +157,7 @@ first(data, 5)
 
 model = dice_throw(data);
 
-# Next, we call the Turing's `sample()` function that takes a Turing model as a first argument, along with a
+# Next, we call Turing's `sample()` function that takes a Turing model as a first argument, along with a
 # sampler as the second argument, and the third argument is the number of iterations. Here, I will use the `NUTS()` sampler from
 # `AdvancedHMC.jl` and 2,000 iterations. Please note that, as default, Turing samplers will discard the first half of iterations as
 # warmup. So the sampler will output 1,000 samples (`floor(2_000 / 2)`):
@@ -180,7 +181,7 @@ summaries
 
 sum(summaries[:, :mean])
 
-# In the future if you have some crazy huge models and you just want a **subset** of parameters from my chains?
+# In the future if you have some crazy huge models and you just want a **subset** of parameters from your chains?
 # Just do `group(chain, :parameter)` or index with `chain[:, 1:6, :]`:
 
 summarystats(chain[:, 1:3, :])
@@ -220,8 +221,8 @@ savefig(joinpath(@OUTPUT, "chain.svg")); # hide
 
 # Predictive checks are a great way to **validate a model**.
 # The idea is to **generate data from the model** using **parameters from draws from the prior or posterior**.
-# **Prior predictive check** is when we simulate data using model's parameters values drawn fom the **prior** distribution,
-# and **posterior predictive check** is is when we simulate data using model's parameters values drawn fom the **posterior**
+# **Prior predictive check** is when we simulate data using model parameter values drawn fom the **prior** distribution,
+# and **posterior predictive check** is is when we simulate data using model parameter values drawn fom the **posterior**
 # distribution.
 
 # The workflow we do when specifying and sampling Bayesian models is not linear or acyclic (Gelman et al., 2020). This means
