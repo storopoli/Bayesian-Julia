@@ -48,7 +48,7 @@
 
 # Still developing the argument:
 # > "Probabilistic reasoning - always understood as subjective - stems
-# > merely stems from our being uncertain about something. It makes no difference whether the uncertainty
+# > merely from our being uncertain about something. It makes no difference whether the uncertainty
 # > relates to an unforeseeable future [^subjective], or to an unnoticed past, or to a past doubtfully reported
 # > or forgotten [^objective]... The only relevant thing is uncertainty - the extent of our own knowledge and ignorance.
 # > The actual fact of whether or not the events considered are in some sense determined, or known by other people,
@@ -78,7 +78,7 @@
 
 # 1. **Non-negativity**: For all $A$, $P(A) \geq 0$. Every probability is positive (greater than or equal to zero), regardless of the event.
 # 2. **Additivity**: For two mutually exclusive $A$ and $B$ (cannot occur at the same time[^mutually2]): $P(A) = 1 - P(B)$ and $P(B) = 1 - P(A)$.
-# 3. **Normalization**: The probability of all possible events $A_1, A_2, \dots$ must add up to 1: $\sum_{n \in \mathbb{N}} A_n = 1$.
+# 3. **Normalization**: The probability of all possible events $A_1, A_2, \dots$ must add up to 1: $\sum_{n \in \mathbb{N}} P(A_n) = 1$.
 
 # ![Andrey Nikolaevich Kolmogorov](/pages/images/kolmogorov.jpg)
 #
