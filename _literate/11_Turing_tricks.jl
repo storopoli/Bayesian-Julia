@@ -8,7 +8,7 @@
 
 # ## QR Decomposition
 
-# Back in "Linear Algebra 101" we've learned that any matrix (even retangular ones) can be factored
+# Back in "Linear Algebra 101" we've learned that any matrix (even rectangular ones) can be factored
 # into the product of two matrices:
 
 # * $\mathbf{Q}$: an orthogonal matrix (its columns are orthogonal unit vectors meaning $\mathbf{Q}^T = \mathbf{Q}^{-1})$.
@@ -73,7 +73,7 @@ chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 # Now let's us incorporate QR decomposition in the linear regression model.
 # Here, I will use the "thin" instead of the "fat" QR, which scales the $\mathbf{Q}$ and $\mathbf{R}$
 # matrices by a factor of $\sqrt{n-1}$ where $n$ is the number of rows of $\mathbf{X}$.
-# In practice it is better implement the thin QR decomposition, which is to be preferred to the fat QR decomposition.
+# In practice it is better to implement the thin QR decomposition, which is to be preferred to the fat QR decomposition.
 # It is numerically more stable. Mathematically, the thin QR decomposition is:
 
 # $$
@@ -93,7 +93,7 @@ chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
 # \end{aligned}
 # $$
 
-# Then we can recover original $\boldsymbol{\beta}$ with:
+# Then we can recover the original $\boldsymbol{\beta}$ with:
 
 # $$ \boldsymbol{\beta} = \mathbf{R}^{*-1} \cdot \widetilde{\boldsymbol{\beta}} $$
 
@@ -141,7 +141,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 # the $\epsilon$ factor. But, the opposite is in the lower part of the funnel: way more steps $L$ and be
 # more conservative with the $\epsilon$ factor.
 
-# To see the devil's funnel (how it is known in some Bayesian circles) in action, let's code it in Turing and them sample:
+# To see the devil's funnel (how it is known in some Bayesian circles) in action, let's code it in Turing and then sample:
 
 @model funnel() = begin
     y ~ Normal(0, 3)
