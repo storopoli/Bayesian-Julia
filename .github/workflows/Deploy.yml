@@ -42,14 +42,6 @@ jobs:
           # Fixes 'GKS: can't connect to GKS socket application' errors
           # and quality of output plots in GR back end.
           GKSwstype: "100"
-    - name: Validate output
-      run: |
-        if grep -1 "Franklin Warning" build.log; then
-          echo "Franklin reported a warning"
-          exit 1
-        else
-          echo "Franklin did not report a warning"
-        fi
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@4.1.0
       with:
