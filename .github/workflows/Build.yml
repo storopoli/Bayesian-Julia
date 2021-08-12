@@ -1,0 +1,52 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-20.04
+    env:
+        JULIA_NUM_THREADS: 2
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - name: Install Node
+      uses: actions/setup-node@v2
+    - run: npm install highlight.js
+    - name: Install Julia
+      uses: julia-actions/setup-julia@v1
+      with:
+        version: 1.6
+    # NOTE
+    #   The steps below ensure that NodeJS and Franklin are loaded then it
+    #   installs highlight.js which is needed for the prerendering step
+    #   (code highlighting + katex prerendering).
+    #   Then the environment is activated and instantiated to install all
+    #   Julia packages which may be required to successfully build your site.
+    #   The last line should be `optimize()` though you may want to give it
+    #   specific arguments, see the documentation or ?optimize in the REPL.
+    - run: julia -e '
+            using Pkg; Pkg.add(["Franklin", "NodeJS"]);
+            using NodeJS; run(`$(npm_cmd()) install highlight.js`);
+            using Franklin;
+            Pkg.activate("."); Pkg.instantiate();
+            optimize(); verify_links();' > build.log
+      env:
+          # Allows the use of unicode characters in Plots.jl
+          GKS_ENCODING: "utf8"
+          # Fixes 'GKS: can't connect to GKS socket application' errors
+          # and quality of output plots in GR back end.
+          GKSwstype: "100"
+    - name: Validate output
+      run: |
+        if grep -1 "Franklin Warning" build.log; then
+          echo "Franklin reported a warning"
+          exit 1
+        else
+          echo "Franklin did not report a warning"
+        fi
