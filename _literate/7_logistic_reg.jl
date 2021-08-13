@@ -162,7 +162,7 @@ end;
 # y ~ arraydist(LazyArray(@~ BinomialLogit.(n, α .+ X * β)))
 # ```
 
-# ## Example - Contamined Water Wells
+# ## Example - Contaminated Water Wells
 
 # For our example, I will use a famous dataset called `wells` (Gelman & Hill, 2007), which is data from a survey of 3,200
 # residents in a small area of Bangladesh suffering from arsenic contamination of groundwater. Respondents with elevated
