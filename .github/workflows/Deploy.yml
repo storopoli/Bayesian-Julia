@@ -31,10 +31,10 @@ jobs:
     #   The last line should be `optimize()` though you may want to give it
     #   specific arguments, see the documentation or ?optimize in the REPL.
     - run: julia -e '
-            using Pkg; Pkg.add([Pkg.PackageSpec("Franklin"), Pkg.PackageSpec("NodeJS"), Pkg.PackageSpec(name="Parsers", version="1.1.2"), Pkg.PackageSpec(name="JSON", version="0.21.1")]);
+            using Pkg;
+            Pkg.activate("."); Pkg.instantiate();
             using NodeJS; run(`$(npm_cmd()) install highlight.js`);
             using Franklin;
-            Pkg.activate("."); Pkg.instantiate();
             optimize(); verify_links();' > build.log
       env:
           # Allows the use of unicode characters in Plots.jl
