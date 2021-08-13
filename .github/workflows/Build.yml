@@ -6,7 +6,7 @@ on:
       - master
   workflow_dispatch:
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-20.04
     env:
         JULIA_NUM_THREADS: 2
