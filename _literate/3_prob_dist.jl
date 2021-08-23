@@ -146,7 +146,7 @@ savefig(joinpath(@OUTPUT, "poisson.svg")); # hide
 
 # The negative binomial distribution describes an event of the number of successes in a sequence of $n$ independent experiment(s),
 # each asking a yes-no question with probability $p$ until $k$ success(es) is obtained. Note that it becomes identical to the
-# Poisson distribution when at the limit of $k \to \infty$. This makes the negative binomial a robust option to replace a Poisson
+# Poisson distribution at the limit of $k \to \infty$. This makes the negative binomial a robust option to replace a Poisson
 # distribution to model phenomena with a overdispersion* (excess expected variation in data).
 
 # The negative binomial distribution has two parameters and its notation is $\text{NB} (k, p)$ or $\text{Negative-Binomial} (k, p)$:
