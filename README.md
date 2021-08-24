@@ -82,7 +82,7 @@ To configure a local environment:
 7. [**Bayesian Logistic Regression**](https://storopoli.io/Bayesian-Julia/pages/7_logistic_reg/)
 8. [**Bayesian Regression with Count Data**](https://storopoli.io/Bayesian-Julia/pages/8_count_reg/)
 9. [**Robust Bayesian Regression**](https://storopoli.io/Bayesian-Julia/pages/9_robust_reg/)
-10. [**Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/)
+10. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.io/Bayesian-Julia/pages/10_multilevel_models/)
 11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.io/Bayesian-Julia/pages/11_Turing_tricks/)
 12. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.io/Bayesian-Julia/pages/12_epi_models/)
 
