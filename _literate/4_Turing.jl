@@ -159,8 +159,8 @@ model = dice_throw(data);
 
 # Next, we call Turing's `sample()` function that takes a Turing model as a first argument, along with a
 # sampler as the second argument, and the third argument is the number of iterations. Here, I will use the `NUTS()` sampler from
-# `AdvancedHMC.jl` and 2,000 iterations. Please note that, as default, Turing samplers will discard the first half of iterations as
-# warmup. So the sampler will output 1,000 samples (`floor(2_000 / 2)`):
+# `AdvancedHMC.jl` and 2,000 iterations. Please note that, as default, Turing samplers will discard the first thousand (1,000) iterations as warmup.
+# So the sampler will output 2,000 samples starting from sample 1,001 until sample 3,000: 
 
 chain = sample(model, NUTS(), 2_000);
 
