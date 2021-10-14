@@ -245,8 +245,8 @@ chain_ncp = sample(model_ncp, NUTS(), MCMCThreads(), 2_000, 4)
 # in Turing. Before we conclude, we need to recover our original `αⱼ`s. We can do this by multiplying `zⱼ[idx] .* τ`:
 
 τ = summarystats(chain_ncp)[:τ, :mean]
-αⱼ = mapslices(x -> x * τ, chain_ncp[:,namesingroup(chain_ncp, :zⱼ),:].value.data, dims=[2])
-chain_ncp_reconstructed = hcat(Chains(αⱼ, ["αⱼ[$i]" for i in 1:length(unique(idx))]), chain_ncp)
+αⱼ = mapslices(x -> x * τ, chain_ncp[:, namesingroup(chain_ncp, :zⱼ), :].value.data, dims=[2])
+chain_ncp_reconstructed = hcat(MCMCChains.resetrange(chain_ncp), Chains(αⱼ, ["αⱼ[$i]" for i in 1:length(unique(idx))]))
 
 # ## References
 
