@@ -11,12 +11,11 @@
 # For this tutorial I'll be using Brazil's COVID data from the [Media Consortium](https://brasil.io/covid19/).
 # For reproducibility, we'll restrict the data to the year of 2020:
 
-using Downloads, DataFrames, CSV, GZip, Chain, Dates
+using Downloads, DataFrames, CSV, Chain, Dates
 
 url = "https://data.brasil.io/dataset/covid19/caso_full.csv.gz"
 file = Downloads.download(url)
-df = CSV.File(GZip.open(file, "r")) |> DataFrame
-
+df = CSV.File(file) |> DataFrame
 br = @chain df begin
     filter([:date, :city] => (date, city) -> date < Dates.Date("2021-01-01") && date > Dates.Date("2020-04-01") && ismissing(city), _)
     groupby(:date)
