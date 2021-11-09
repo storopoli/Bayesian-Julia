@@ -170,7 +170,7 @@ end
 
 chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
 
-# Much better now: all `rhat` are well below `1.01` (or above `0.99`).
+# Much better now: all `rhat` are well below `1.01` (or below `0.99`).
 
 # How we would implement this a real-world model in Turing? Let's go back to the `cheese` random-intercept model
 # in [10. **Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/). Here was the
