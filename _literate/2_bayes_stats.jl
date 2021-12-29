@@ -113,7 +113,7 @@
 
 # Conditional probability leads us to another important concept: joint probability. **Joint probability
 # is the "probability that two events will both occur"**. Continuing with our Poker example, the probability
-# that you will receive two Ace cards ($A$) and a King ($K$) as two starting cards is:
+# that you will receive two cards, Ace ($A$) and a King ($K$) as two starting cards is:
 
 # $$
 # \begin{aligned}
