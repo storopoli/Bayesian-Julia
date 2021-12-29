@@ -115,7 +115,8 @@ chain_qr = sample(model_qr, NUTS(1_000, 0.65), MCMCThreads(), 2_000, 4)
 # Now we have to reconstruct our $\boldsymbol{\beta}$s:
 
 betas = mapslices(x -> R_ast^-1 * x, chain_qr[:, namesingroup(chain_qr, :β),:].value.data, dims=[2])
-chain_qr_reconstructed = hcat(Chains(betas, ["real_β[$i]" for i in 1:size(Q_ast, 2)]), chain_qr)
+chain_beta = setrange(Chains(betas, ["real_β[$i]" for i in 1:size(Q_ast, 2)]), 1_001:1:3_000)
+chain_qr_reconstructed = hcat(chain_beta, chain_qr)
 
 # ## Non-Centered Parametrization
 
