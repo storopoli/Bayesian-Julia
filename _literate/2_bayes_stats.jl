@@ -317,15 +317,15 @@
 
 # To understand the $p$-value any statistical test first find out what is the null hypothesis behind that test. The
 # definition of $p$-value will not change. In every test it is always the same. What changes with the test is the null hypothesis.
-# Each test has its $H_0$. For example, some common statistical tests ($\text{D}$ = data):
+# Each test has its $H_0$. For example, some common statistical tests ($\text{D}^*$ = data at least as extreme as the results actually observed):
 
-# * $t$ Test: $P(D \mid \text{the difference between groups are zero})$
-# * ANOVA: $P(D \mid \text{there is no difference between groups})$
-# * Regression: $P(D \mid \text{the coefficient is zero})$
-# * Shapiro-Wilk: $P(D \mid \text{the sample follows a normal distribution})$
+# * $t$ Test: $P(\text{D}^* \mid \text{the difference between groups are zero})$
+# * ANOVA: $P(\text{D}^* \mid \text{there is no difference between groups})$
+# * Regression: $P(\text{D}^* \mid \text{the coefficient is zero})$
+# * Shapiro-Wilk: $P(\text{D}^* \mid \text{the sample follows a normal distribution})$
 
 # $p$-value is the probability of the data you obtained given that the null hypothesis is true. For those who like
-# mathematical formalism: $p = P(D \mid H_0)$. In English, this expression means "the probability of $D$ conditioned to $H_0$".
+# mathematical formalism: $p = P(\text{D}^* \mid H_0)$. In English, this expression means "the probability of $\text{D}^*$ conditioned to $H_0$".
 # Before moving on to some examples and attempts to formalize an intuition about $p$-values, it is important to note that
 # $p$-values say something about **data** and not **hypotheses**. For $p$-value, **the null hypothesis is true, and we are
 # only evaluating whether the data conforms to this null hypothesis or not**. If you leave this tutorial armed with this intuition,
