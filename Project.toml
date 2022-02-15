@@ -23,4 +23,4 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 
 [compat]
 Turing = "0.20"
-julia = "1.7"
+julia = "1"
