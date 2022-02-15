@@ -543,7 +543,7 @@ encounter(whiskers, spots)
 # ### Example: One-hot Vector
 #
 # Now let's change to another nice example of creating a [one-hot vector](https://en.wikipedia.org/wiki/One-hot).
-# One-hot vector is a vector of integers in which all indices are zero (0) expect for one single index that is one (1).
+# One-hot vector is a vector of integers in which all indices are zero (0) except for one single index that is one (1).
 # In machine learning, one-hot encoding is a frequently used method to deal with categorical data. Because many machine
 # learning models need their input variables to be numeric, categorical variables need to be transformed in the pre-processing part.
 # The example below is heavily inspired by a [post from Vasily Pisarev](https://habr.com/ru/post/468609/)[^onehotpost].
