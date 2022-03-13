@@ -95,7 +95,7 @@ using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+@model function varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
@@ -135,7 +135,7 @@ end;
 
 # In Turing we can accomplish this as:
 
-@model varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+@model function varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))                   # population-level intercept
     σ ~ Exponential(1 / std(y))                         # residual SD
@@ -175,7 +175,7 @@ end;
 
 # In Turing we can accomplish this as:
 
-@model varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+@model function varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))                    # population-level intercept
     σ ~ Exponential(1 / std(y))                          # residual SD

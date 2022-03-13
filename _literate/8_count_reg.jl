@@ -117,7 +117,7 @@ using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model poissonreg(X,  y; predictors=size(X, 2)) = begin
+@model function poissonreg(X,  y; predictors=size(X, 2))
     #priors
     α ~ Normal(0, 2.5)
     β ~ filldist(TDist(3), predictors)
@@ -253,7 +253,7 @@ end
 
 # Now we create our Turing model with the alternative `NegBinomial2` parameterization:
 
-@model negbinreg(X,  y; predictors=size(X, 2)) = begin
+@model function negbinreg(X,  y; predictors=size(X, 2))
     #priors
     α ~ Normal(0, 2.5)
     β ~ filldist(TDist(3), predictors)

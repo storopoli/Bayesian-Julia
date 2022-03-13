@@ -49,7 +49,7 @@ using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model linreg(X, y; predictors=size(X, 2)) = begin
+@model function function linreg(X, y; predictors=size(X, 2)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))
     β ~ filldist(TDist(3), predictors)
@@ -144,7 +144,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 
 # To see the devil's funnel (how it is known in some Bayesian circles) in action, let's code it in Turing and then sample:
 
-@model funnel() = begin
+@model function funnel()
     y ~ Normal(0, 3)
     x ~ Normal(0, exp(y / 2))
 end
@@ -162,7 +162,7 @@ end
 # This is why is called Non-Centered Parametrization because we "decouple" the parameters and
 # reconstruct them before.
 
-@model ncp_funnel() = begin
+@model function ncp_funnel()
     x̃ ~ Normal()
     ỹ ~ Normal()
     y = 3.0 * ỹ         # implies y ~ Normal(0, 3)
@@ -177,7 +177,7 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
 # in [10. **Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/). Here was the
 # approach that we took, also known as Centered Parametrization (CP):
 
-@model varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+@model function varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
@@ -194,7 +194,7 @@ end;
 
 # To perform a Non-Centered Parametrization (NCP) in this model we do as following:
 
-@model varying_intercept_ncp(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)) = begin
+@model function varying_intercept_ncp(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients

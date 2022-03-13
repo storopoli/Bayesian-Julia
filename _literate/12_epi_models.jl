@@ -153,7 +153,7 @@ using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model bayes_sir(infected, i₀, r₀, N) = begin
+@model function bayes_sir(infected, i₀, r₀, N)
     #calculate number of timepoints
     l = length(infected)
 
