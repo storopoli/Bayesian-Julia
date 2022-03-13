@@ -49,7 +49,7 @@ using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model function function linreg(X, y; predictors=size(X, 2)
+@model function linreg(X, y; predictors=size(X, 2)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))
     β ~ filldist(TDist(3), predictors)
