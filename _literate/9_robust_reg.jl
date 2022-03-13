@@ -124,7 +124,7 @@ seed!(123)
 seed!(456) # hide
 setprogress!(false) # hide
 
-@model robustreg(X, y; predictors=size(X, 2)) = begin
+@model function robustreg(X, y; predictors=size(X, 2))
     #priors
     νₐ ~ LogNormal(1, 1)
     νᵦ ~ LogNormal(1, 1)

@@ -135,7 +135,7 @@ using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model logreg(X,  y; predictors=size(X, 2)) = begin
+@model function logreg(X,  y; predictors=size(X, 2))
     #priors
     α ~ Normal(0, 2.5)
     β ~ filldist(TDist(3), predictors)

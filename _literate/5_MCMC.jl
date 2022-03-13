@@ -1137,7 +1137,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 using Turing
 setprogress!(false) # hide
 
-@model dice_throw(y) = begin
+@model function dice_throw(y)
     #Our prior belief about the probability of each result in a six-sided dice.
     #p is a vector of length 6 each with probability p that sums up to 1.
     p ~ Dirichlet(6, 1)
