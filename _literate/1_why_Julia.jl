@@ -127,11 +127,11 @@
 
 # ## Ease of Use
 
-# What is most striking that Julia can be as fast as C (and faster than Java in some applications) while **having a very simple and
+# What is most striking is that Julia can be as fast as C (and faster than Java in some applications) while **having a very simple and
 # intelligible syntax**. This feature along with its speed is what Julia creators denote as **"the two language problem"** that Julia
-# address. The **"two language problem" is a very typical situation in scientific computing** where a researcher or computer scientist
+# addresses. The **"two language problem" is a very typical situation in scientific computing** where a researcher or computer scientist
 # devises an algorithm or a solution that he or she prototypes in an easy to code language (like Python) and, if it works, he or she
-# would code in a fast language that is not easy to code (C or FORTRAN). Thus, we have two languages involved in the process of
+# would code in a fast language that is not easy to code (C or FORTRAN). Thus, we have two languages involved in the process 
 # of developing a new solution. One which is easy to prototype but is not suited for implementation (mostly due to  being slow).
 # And another one which is not so easy to code (and, consequently, not easy to prototype) but suited for implementation
 # (mostly because it is fast). Julia comes to **eliminate such situations** by being the **same language** that you **prototype** (ease of use)
