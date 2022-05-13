@@ -366,7 +366,7 @@
 
 # Now let's go to the last, but not least: [`Stan`](https://mc-stan.org) is a probabilistic language for specifying probabilistic
 # models (does the same as `Turing.jl` does) and comes also with a very fast C++-based MCMC sampler. `Stan` is a personal favorite
-# of mine and I have a [whole graduate course of Bayesian statistics using `Stan`](https://storopoli.io/Estatistica-Bayesiana/).
+# of mine and I have a [whole graduate course of Bayesian statistics using `Stan`](https://storopoli.github.io/Estatistica-Bayesiana/).
 # Here's the `Stan` implementation:
 
 # ```stan

@@ -13,7 +13,7 @@ Bayesian for Everyone!
 
 </div>
 
-Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
+Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/). Tutorials are available at [storopoli.github.io/Bayesian-Julia](https://storopoli.github.io/Bayesian-Julia).
 
 **Bayesian statistics** is an approach to inferential statistics based on Bayes' theorem, where available knowledge about parameters in a statistical model is updated with the information in observed data. The background knowledge is expressed as a prior distribution and combined with observational data in the form of a likelihood function to determine the posterior distribution. The posterior can also be used for making predictions about future events.
 
@@ -51,7 +51,7 @@ Welcome to the repository of tutorials on how to do **Bayesian Statistics** usin
 
 ## Author
 
-Jose Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.io>
+Jose Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.github.io>
 
 ## How to use the content?
 
@@ -72,18 +72,18 @@ To configure a local environment:
 
 ## Tutorials
 
-1. [**Why Julia?**](https://storopoli.io/Bayesian-Julia/pages/1_why_Julia/)
-2. [**What is Bayesian Statistics?**](https://storopoli.io/Bayesian-Julia/pages/2_bayes_stats/)
-3. [**Common Probability Distributions**](https://storopoli.io/Bayesian-Julia/pages/3_prob_dist/)
-4. [**How to use Turing**](https://storopoli.io/Bayesian-Julia/pages/4_Turing/)
-5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.io/Bayesian-Julia/pages/5_MCMC/)
-6. [**Bayesian Linear Regression**](https://storopoli.io/Bayesian-Julia/pages/6_linear_reg/)
-7. [**Bayesian Logistic Regression**](https://storopoli.io/Bayesian-Julia/pages/7_logistic_reg/)
-8. [**Bayesian Regression with Count Data**](https://storopoli.io/Bayesian-Julia/pages/8_count_reg/)
-9. [**Robust Bayesian Regression**](https://storopoli.io/Bayesian-Julia/pages/9_robust_reg/)
-10. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.io/Bayesian-Julia/pages/10_multilevel_models/)
-11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.io/Bayesian-Julia/pages/11_Turing_tricks/)
-12. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.io/Bayesian-Julia/pages/12_epi_models/)
+1. [**Why Julia?**](https://storopoli.github.io/Bayesian-Julia/pages/1_why_Julia/)
+2. [**What is Bayesian Statistics?**](https://storopoli.github.io/Bayesian-Julia/pages/2_bayes_stats/)
+3. [**Common Probability Distributions**](https://storopoli.github.io/Bayesian-Julia/pages/3_prob_dist/)
+4. [**How to use Turing**](https://storopoli.github.io/Bayesian-Julia/pages/4_Turing/)
+5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.github.io/Bayesian-Julia/pages/5_MCMC/)
+6. [**Bayesian Linear Regression**](https://storopoli.github.io/Bayesian-Julia/pages/6_linear_reg/)
+7. [**Bayesian Logistic Regression**](https://storopoli.github.io/Bayesian-Julia/pages/7_logistic_reg/)
+8. [**Bayesian Regression with Count Data**](https://storopoli.github.io/Bayesian-Julia/pages/8_count_reg/)
+9. [**Robust Bayesian Regression**](https://storopoli.github.io/Bayesian-Julia/pages/9_robust_reg/)
+10. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.github.io/Bayesian-Julia/pages/10_multilevel_models/)
+11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.github.io/Bayesian-Julia/pages/11_Turing_tricks/)
+12. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.github.io/Bayesian-Julia/pages/12_epi_models/)
 
 ## What about other Turing tutorials?
 
@@ -97,14 +97,14 @@ Despite not being the only Turing tutorial that exists, this tutorial aims to in
 
 To cite these tutorials, please use:
 
-    Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
+    Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.github.io/Bayesian-Julia.
 
 Or in BibTeX format (LaTeX):
 
     @misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
-      url = {https://storopoli.io/Bayesian-Julia},
+      url = {https://storopoli.github.io/Bayesian-Julia},
       year = {2021}
     }
 
