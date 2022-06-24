@@ -51,7 +51,7 @@ Welcome to the repository of tutorials on how to do **Bayesian Statistics** usin
 
 ## Author
 
-Jose Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.github.io>
+Jose Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.io>
 
 ## How to use the content?
 
