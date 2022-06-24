@@ -408,7 +408,7 @@
 # an interval in which we are sure that the value of the parameter of interest is, based on the likelihood conditioned on the observed
 # data - $P(y \mid \theta)$; and the prior probability of the parameter of interest - $P(\theta)$. It is basically a "slice" of
 # the posterior probability of the parameter restricted to a certain level of certainty. For example: a 95% credibility interval
-# shows the interval that we are 95% sure that captures the value of our parameter of intereest. That simple...
+# shows the interval that we are 95% sure that captures the value of our parameter of interest. That simple...
 
 # For example, see figure below, which shows a Log-Normal distribution with mean 0 and standard deviation 2. The green dot
 # shows the maximum likelihood estimation (MLE) of the value of $\theta$ which is simply the mode of distribution. And in

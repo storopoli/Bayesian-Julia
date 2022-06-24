@@ -50,7 +50,7 @@ savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 # Logistic regression would add the logistic function to the linear term:
 
 # * $\hat{p} = \text{Logistic}(\text{Linear}) = \frac{1}{1 + e^{-\operatorname{Linear}}}$ - predicted probability of the observation being the value 1
-# * $\hat{\mathbf{y}}=\left\{\begin{array}{ll} 0 & \text { if } \hat{p} < 0.5 \\ 1 & \text { if } \hat{p} \geq 0.5 \end{array}\right.$ - predicted discreve value of $\mathbf{y}$
+# * $\hat{\mathbf{y}}=\left\{\begin{array}{ll} 0 & \text { if } \hat{p} < 0.5 \\ 1 & \text { if } \hat{p} \geq 0.5 \end{array}\right.$ - predicted discrete value of $\mathbf{y}$
 
 # **Example**:
 
