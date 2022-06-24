@@ -8,7 +8,7 @@
 ![Bayesian for Everyone](images/bayes-meme.jpg)
 \center{*Bayesian for Everyone*} \\
 
-Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/). Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
+Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/). Tutorials are available at [storopoli.github.io/Bayesian-Julia](https://storopoli.github.io/Bayesian-Julia).
 
 **Bayesian statistics** is an approach to inferential statistics based on Bayes' theorem, where available knowledge about parameters in a statistical model is updated with the information in observed data. The background knowledge is expressed as a prior distribution and combined with observational data in the form of a likelihood function to determine the posterior distribution. The posterior can also be used for making predictions about future events.
 
@@ -30,7 +30,7 @@ Welcome to the repository of tutorials on how to do **Bayesian Statistics** usin
 
 ## Author
 
-José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.io>
+José Eduardo Storopoli, PhD - [*Lattes* CV](http://lattes.cnpq.br/2281909649311607) - [ORCID](https://orcid.org/0000-0002-0559-5176) - <https://storopoli.github.io>
 
 ## How to use the content?
 
@@ -77,7 +77,7 @@ Despite not being the only Turing tutorial that exists, this tutorial aims to in
 To cite these tutorials, please use:
 
 ```plaintext
-Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
+Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.github.io/Bayesian-Julia.
 ```
 
 Or in BibTeX format $\LaTeX$:
@@ -86,7 +86,7 @@ Or in BibTeX format $\LaTeX$:
 @misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
-      url = {https://storopoli.io/Bayesian-Julia},
+      url = {https://storopoli.github.io/Bayesian-Julia},
       year = {2021}
     }
 ```
