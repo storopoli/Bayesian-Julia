@@ -1239,8 +1239,8 @@ savefig(joinpath(@OUTPUT, "traceplot_bad_chain.svg")); # hide
 # If your Bayesian model has problems with convergence there are some steps that can be tried[^QR].
 # Listed here from the simplest to the most complex:
 
-# 1. **Increase the number of iterations and chains**: First option is to increase the number of MCMC iterations and it is also possible to increase the number of paralle chains to be sampled.
-# 2. **Model reparametrization**: the second option is to reparameterize the model. There are two ways to parameterize the model: the first with centered parameterization (CP) and the second with non-centered parameterization (NCP). NCP is most useful in Multilevel Models, therefore we will cover NCP in [10. **Multilevel Models**](/pages/10_multilevel_models/).
+# 1. **Increase the number of iterations and chains**: First option is to increase the number of MCMC iterations and it is also possible to increase the number of parallel chains to be sampled.
+# 2. **Model reparameterization**: the second option is to reparameterize the model. There are two ways to parameterize the model: the first with centered parameterization (CP) and the second with non-centered parameterization (NCP). NCP is most useful in Multilevel Models, therefore we will cover NCP in [10. **Multilevel Models**](/pages/10_multilevel_models/).
 # 3. **Collect more data**: sometimes the model is too complex and we need a larger sample to get stable estimates.
 # 4. **Rethink the model**: convergence failure when we have adequate sampling is usually due to a specification of priors and likelihood function that are not compatible with the data. In this case, it is necessary to rethink the data's generative process in which the model's assumptions are anchored.
 
