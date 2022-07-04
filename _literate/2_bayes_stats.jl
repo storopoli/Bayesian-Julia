@@ -553,7 +553,7 @@ savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
 # [^subjective]: my observation: related to the subjective Bayesian approach.
 # [^objective]: my observation: related to the objective frequentist approach.
 # [^realnumber]: a number that can be expressed as a point on a continuous line that originates from minus infinity and ends and plus infinity $(-\infty, +\infty)$; for those who like computing it is a floating point `float` or` double`.
-# [^mutually]: *i.e.* the events are "mutually exclusive".
+# [^mutually]: *i.e.* the events are "mutually exclusive". That means that only $A$ or $B$ can occur in the whole sample space.
 # [^axioms]: in mathematics, axioms are assumptions assumed to be true that serve as premises or starting points for the elaboration of arguments and theorems. Often the axioms are questionable, for example non-Euclidean geometry refutes Euclid's fifth axiom on parallel lines. So far there is no questioning that has supported the scrutiny of time and science about the three axioms of probability.
 # [^mutually2]: for example, the result of a given coin is one of two mutually exclusive events: heads or tails.
 # [^thomaspricelaplace]: the formal name of the theorem is Bayes-Price-Laplace, as Thomas Bayes was the first to discover, Richard Price took his drafts, formalized in mathematical notation and presented to the Royal Society of London, and Pierre Laplace rediscovered the theorem without having had previous contact in the late 18th century in France by using probability for statistical inference with Census data in the Napoleonic era.
