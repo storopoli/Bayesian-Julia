@@ -1,8 +1,9 @@
 # # Why Julia?
 
-# [Julia](https://www.julialang.org) (Bezanson, Edelman, Karpinski & Shah, 2017) is a relatively new language, first released in 2012, aims to be both **high-level** and **fast**.
-# Julia is a fast dynamic-typed language that just-in-time (JIT)
-# compiles into native code using LLVM. It ["runs like C but reads like Python"](https://www.nature.com/articles/d41586-019-02310-3),
+# [Julia](https://www.julialang.org) (Bezanson, Edelman, Karpinski & Shah, 2017) is a relatively new language,
+# first released in 2012, aims to be both **high-level** and **fast**.
+# Julia is a fast dynamic-typed language that just-in-time (JIT) compiles into native code using LLVM.
+# It ["runs like C but reads like Python"](https://www.nature.com/articles/d41586-019-02310-3),
 # meaning that is *blazing* fast, easy to prototype and read/write code.
 # It is **multi-paradigm**, combining features of imperative, functional, and object-oriented programming.
 
@@ -16,22 +17,26 @@
 # > Something that is dirt simple to learn, yet keeps the most serious hackers happy. We want it interactive and we want it compiled.
 
 # **Why this needs to be an extra language?** Why cannot Python (or R) be made that fast for instance?
-# See the official compact answer to this in the [Julia manual FAQ](https://docs.julialang.org/en/v1/manual/faq/#Why-don't-you-compile-Matlab/Python/R/%E2%80%A6-code-to-Julia?):
+# See the official compact answer to this in the
+# [Julia manual FAQ](https://docs.julialang.org/en/v1/manual/faq/#Why-don't-you-compile-Matlab/Python/R/%E2%80%A6-code-to-Julia?):
 
-# > The basic issue is that there is nothing special about Julia's compiler: we use a commonplace compiler (LLVM) with no
-# > "secret sauce" that other language developers don't know about.
+# > The basic issue is that there is nothing special about Julia's compiler:
+# > we use a commonplace compiler (LLVM) with no "secret sauce" that other language developers don't know about.
 # > Julia's performance advantage derives almost entirely from its front-end: its language semantics allow a well-written Julia program
-# > to give more opportunities to the compiler to generate efficient code and memory layouts. If you tried to compile Matlab or
-# > Python code to Julia, our compiler would be limited by the semantics of Matlab or Python to producing code no better than that of
-# > existing compilers for those languages (and probably worse).
+# > to give more opportunities to the compiler to generate efficient code and memory layouts.
+# > If you tried to compile Matlab or Python code to Julia,
+# > our compiler would be limited by the semantics of Matlab or
+# > Python to producing code no better than that of existing compilers for those languages (and probably worse).
 # >
 # > Julia's advantage is that good performance is not limited to a small subset of "built-in" types and operations,
 # > and one can write high-level type-generic code that works on arbitrary user-defined types while remaining fast and memory-efficient.
-# > Types in languages like Python simply don't provide enough information to the compiler for similar capabilities, so as soon as you used
-# > those languages as a Julia front-end you would be stuck.
+# > Types in languages like Python simply don't provide enough information to the compiler for similar capabilities,
+# > so as soon as you used those languages as a Julia front-end you would be stuck.
 
-# These are the "official" answers from the Julia community. Now let me share with you my opinion.
-# From my point-of-view Julia has **three main features that makes it a unique language to work with**, specially in scientific computing:
+# These are the "official" answers from the Julia community.
+# Now let me share with you my opinion.
+# From my point-of-view Julia has **three main features that makes it a unique language to work with**,
+# specially in scientific computing:
 
 # * **Speed**
 # * **Ease of Use**
@@ -41,23 +46,27 @@
 
 # ## Speed
 
-# Yes, Julia is **fast**. **Very fast!** It was made for speed from the drawing board. It bypass any sort of intermediate representation and translate
-# code into machine native code using LLVM compiler. Comparing this with R, that uses either FORTRAN or C, or Python, that uses CPython;
+# Yes, Julia is **fast**. **Very fast!** It was made for speed from the drawing board.
+# It bypass any sort of intermediate representation and translate code into machine native code using LLVM compiler.
+# Comparing this with R, that uses either FORTRAN or C, or Python, that uses CPython;
 # and you'll clearly see that Julia has a major speed advantage over other languages that are common in data science and statistics.
-# Julia exposes the machine code to LLVM's compiler which in turn can optimize code as it wishes, like a good compiler such as LLVM excels in.
+# Julia exposes the machine code to LLVM's compiler which in turn can optimize code as it wishes,
+# like a good compiler such as LLVM excels in.
 
 # One notable example: NASA uses Julia to analyze the
 # "[Largest Batch of Earth-Sized Planets Ever Found](https://exoplanets.nasa.gov/news/1669/seven-rocky-trappist-1-planets-may-be-made-of-similar-stuff/)".
-# Also, you can find [benchmarks](https://julialang.org/benchmarks/) for a range of common code patterns, such as function calls, string
-# parsing, sorting, numerical loops, random number generation, recursion, and array operations using Julia and also several
-# other languages such as C, Rust, Go, JavaScript, R, Python, Fortran and Java. The figure below was taken from
-# [Julia's website](https://julialang.org/benchmarks/). As you can see Julia is **indeed** fast:
+# Also, you can find [benchmarks](https://julialang.org/benchmarks/) for a range of common code patterns,
+# such as function calls, string parsing, sorting, numerical loops, random number generation, recursion,
+# and array operations using Julia and also several other languages such as C, Rust, Go, JavaScript, R, Python, Fortran and Java.
+# The figure below was taken from [Julia's website](https://julialang.org/benchmarks/).
+# As you can see Julia is **indeed** fast:
 
 # ![Common Benchmarks](/pages/images/benchmarks.svg)
 #
 # \center{*Common Benchmarks*} \\
 
-# Let me demonstrate how fast Julia is. Here is a simple "groupby" operation using random stuff to emulate common data analysis
+# Let me demonstrate how fast Julia is.
+# Here is a simple "groupby" operation using random stuff to emulate common data analysis
 # "split-apply-combine" operations in three languages[^updatedversion] :
 #
 # * Julia: using [`DataFrames.jl`](https://dataframes.juliadata.org/stable/) - 0.4ms
@@ -121,25 +130,31 @@
 # )
 # ```
 
-# So clearly **Julia is the winner here**, being **4x faster than Python** and almost **10x faster than R**. Also note that `Pandas`
-# (along with `NumPy`) and `{dplyr}` are all written in C or C++. Additionally, I didn't let Julia cheat by allowing the compiler
-# optimize for `df` by passing a reference `$df`. So, I guess this is a fair comparison.
+# So clearly **Julia is the winner here**, being **4x faster than Python** and almost **10x faster than R**.
+# Also note that `Pandas` (along with `NumPy`) and `{dplyr}` are all written in C or C++.
+# Additionally, I didn't let Julia cheat by allowing the compiler optimize for `df` by passing a reference `$df`.
+# So, I guess this is a fair comparison.
 
 # ## Ease of Use
 
-# What is most striking is that Julia can be as fast as C (and faster than Java in some applications) while **having a very simple and
-# intelligible syntax**. This feature along with its speed is what Julia creators denote as **"the two language problem"** that Julia
-# addresses. The **"two language problem" is a very typical situation in scientific computing** where a researcher or computer scientist
-# devises an algorithm or a solution that he or she prototypes in an easy to code language (like Python) and, if it works, he or she
-# would code in a fast language that is not easy to code (C or FORTRAN). Thus, we have two languages involved in the process 
-# of developing a new solution. One which is easy to prototype but is not suited for implementation (mostly due to  being slow).
-# And another one which is not so easy to code (and, consequently, not easy to prototype) but suited for implementation
-# (mostly because it is fast). Julia comes to **eliminate such situations** by being the **same language** that you **prototype** (ease of use)
+# What is most striking is that Julia can be as fast as C (and faster than Java in some applications)
+# while **having a very simple and intelligible syntax**.
+# This feature along with its speed is what Julia creators denote as **"the two language problem"** that Julia addresses.
+# The **"two language problem" is a very typical situation in scientific computing**
+# where a researcher or computer scientist devises an algorithm or a solution that he or she
+# prototypes in an easy to code language (like Python) and, if it works,
+# he or she would code in a fast language that is not easy to code (C or FORTRAN).
+# Thus, we have two languages involved in the process  of developing a new solution.
+# One which is easy to prototype but is not suited for implementation (mostly due to  being slow).
+# And another one which is not so easy to code (and, consequently, not easy to prototype)
+# but suited for implementation (mostly because it is fast).
+# Julia comes to **eliminate such situations** by being the **same language** that you **prototype** (ease of use)
 # and **implement the solution** (speed).
 
-# Also, Julia lets you use **unicode characters as variables or parameters**. This means no more using `sigma` or `sigma_i`,
-# and instead just use `σ` or `σᵢ` as you would in mathematical notation. When you see code for an algorithm or for a
-# mathematical equation you see a **one-to-one relation to code and math**. This is a **powerful** feature.
+# Also, Julia lets you use **unicode characters as variables or parameters**.
+# This means no more using `sigma` or `sigma_i`, and instead just use `σ` or `σᵢ` as you would in mathematical notation.
+# When you see code for an algorithm or for a mathematical equation you see a **one-to-one relation to code and math**.
+# This is a **powerful** feature.
 
 # I think that the "two language problem" and the one-to-one code and math relation are best described by
 # one of the creators of Julia, Alan Edelman, in a **TED Talk** (see the video below):
@@ -152,13 +167,14 @@
 # [**Metropolis algorithm**](https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm)
 # for a **bivariate normal distribution**. I would mostly prototype it in a dynamically-typed language such as R or Python.
 # Then, deploy the algorithm using a fast but hard to code language such as C++. This is exactly what I'll do now.
-# The algorithm will be coded in **Julia**, **R**, **C++** and [**`Stan`**](https://mc-stan.org). There are two caveats.
-# First, I am coding the **original 1950s Metropolis version**, not the **1970s Metropolis-Hastings**, which implies
-# **symmetrical proposal distributions** just for the sake of the example.
+# The algorithm will be coded in **Julia**, **R**, **C++** and [**`Stan`**](https://mc-stan.org).
+# There are two caveats.
+# First, I am coding the **original 1950s Metropolis version**, not the **1970s Metropolis-Hastings**,
+# which implies **symmetrical proposal distributions** just for the sake of the example.
 # Second, the proposals are based on a **uniform distribution** on the current proposal values of the proposal values ± a certain `width`.
 #
-# Let's start with **Julia** which uses the [`Distributions.jl`](https://juliastats.org/Distributions.jl/stable/) package for
-# its probabilistic distributions along with `logpdf()` defined methods for all of the distributions.
+# Let's start with **Julia** which uses the [`Distributions.jl`](https://juliastats.org/Distributions.jl/stable/)
+# package for its probabilistic distributions along with `logpdf()` defined methods for all of the distributions.
 
 # ```julia
 # using Distributions
@@ -220,9 +236,12 @@
 # }
 # ```
 
-# Now **C++**. Here I am using the [`Eigen`](https://eigen.tuxfamily.org/) library. Note that, since C++ is a very powerful language
-# to be used as "close to the metal" as possible, I don't have any
-# convenient predefined multivariate normal to use. So I will have to create this from zero[^mvnimplem]. Ok, be **ready**!
+# Now **C++**.
+# Here I am using the [`Eigen`](https://eigen.tuxfamily.org/) library.
+# Note that, since C++ is a very powerful language to be used as "close to the metal" as possible,
+# I don't have any convenient predefined multivariate normal to use.
+# So I will have to create this from zero[^mvnimplem].\
+# Ok, be **ready**!
 # This is a mouthful:
 
 # ```cpp
@@ -316,12 +335,13 @@
 #
 # $$ \text{PDF}(\boldsymbol{\mu}, \boldsymbol{\Sigma}) = (2\pi)^{-{\frac{k}{2}}}\det({\boldsymbol{\Sigma}})^{-{\frac {1}{2}}}e^{-{\frac{1}{2}}(\mathbf{x}-{\boldsymbol{\mu}})^{T}{\boldsymbol{\Sigma }}^{-1}(\mathbf{x} -{\boldsymbol{\mu}})} \label{mvnpdf} , $$
 #
-# where $\boldsymbol{\mu}$ is a vector of means, $k$ is the number of dimensions, $\boldsymbol{\Sigma}$ is a covariance matrix, $\det$ is the determinant and $\mathbf{x}$
-# is a vector of values that the PDF is evaluated for.
+# where $\boldsymbol{\mu}$ is a vector of means, $k$ is the number of dimensions, $\boldsymbol{\Sigma}$ is a covariance matrix,
+# $\det$ is the determinant and $\mathbf{x}$ is a vector of values that the PDF is evaluated for.
 
-# **SPOILER ALERT**: Julia will beat this C++ Eigen implementation by being almost 100x faster. So I will try to *help* C++ beat Julia (😂)
-# by making a bivariate normal class `BiNormal` in order to avoid the expensive operation of inverting a covariance matrix and computing
-# determinants in every logpdf proposal evaluation.
+# **SPOILER ALERT**: Julia will beat this C++ Eigen implementation by being almost 100x faster.
+# So I will try to *help* C++ beat Julia (😂) by making a bivariate normal class `BiNormal`
+# in order to avoid the expensive operation of inverting a covariance matrix and
+# computing determinants in every logpdf proposal evaluation.
 # Also since we are not doing linear algebra computations I've removed Eigen and used C++ STL's `<vector>`:
 
 # ```cpp
@@ -364,9 +384,10 @@
 #
 # no more determinants or matrix inversions. Easy-peasy for C++.
 
-# Now let's go to the last, but not least: [`Stan`](https://mc-stan.org) is a probabilistic language for specifying probabilistic
-# models (does the same as `Turing.jl` does) and comes also with a very fast C++-based MCMC sampler. `Stan` is a personal favorite
-# of mine and I have a [whole graduate course of Bayesian statistics using `Stan`](https://storopoli.github.io/Estatistica-Bayesiana/).
+# Now let's go to the last,
+# but not least: [`Stan`](https://mc-stan.org) is a probabilistic language for specifying probabilistic models (does the same as `Turing.jl` does)
+# and comes also with a very fast C++-based MCMC sampler.
+# `Stan` is a personal favorite of mine and I have a [whole graduate course of Bayesian statistics using `Stan`](https://storopoli.github.io/Bayesian-Statistics/).
 # Here's the `Stan` implementation:
 
 # ```stan
@@ -398,8 +419,10 @@
 # }
 # ```
 
-# Wow, that was lot... Not let's go to the results. I've benchmarked R and `Stan` code using `{bench}` and `{rstan}` packages, C++ using `catch2`, Julia using
-# `BenchmarkTools.jl`. For all benchmarks the parameters were: `S = 10_000` simulations, `width = 2.75` and `ρ = 0.8`.
+# Wow, that was lot...
+# Not let's go to the results.
+# I've benchmarked R and `Stan` code using `{bench}` and `{rstan}` packages, C++ using `catch2`, Julia using `BenchmarkTools.jl`.
+# For all benchmarks the parameters were: `S = 10_000` simulations, `width = 2.75` and `ρ = 0.8`.
 # From fastest to slowest:
 #
 # * `Stan` - 3.6ms
@@ -410,18 +433,20 @@
 
 # **Conclusion**: a naïve Julia implementation beats C++
 # (while also beating a C++ math-helped faster implementation using bivariate normal PDFs) and gets very close to `Stan`,
-# a highly specialized  probabilistic language that compiles and runs on C++ with lots of contributors, funding and development
-# time invested.
+# a highly specialized  probabilistic language that compiles and runs on C++ with lots of contributors,
+# funding and development time invested.
 
-# Despite being *blazing* fast, Julia also **codes very easily**. You can write and read code without much effort.
+# Despite being *blazing* fast, Julia also **codes very easily**.\
+# You can write and read code without much effort.
 
 # ## Multiple Dispatch
 
-# I think that this is the **real gamechanger of Julia language**: The ability to define **function behavior** across many combinations of argument
-# types via [**multiple dispatch**](https://en.wikipedia.org/wiki/Multiple_dispatch). **Multiple dispatch** is a feature
-# that allows a function or method to be **dynamically dispatched** based on the run-time (dynamic) type or,
-# in the more general case, some other attribute of more than one of its arguments. This is a **generalization of
-# single-dispatch polymorphism** where a function or method call is dynamically dispatched based on the derived type of
+# I think that this is the **real gamechanger of Julia language**:
+# The ability to define **function behavior** across many combinations of argument types via
+# [**multiple dispatch**](https://en.wikipedia.org/wiki/Multiple_dispatch).
+# **Multiple dispatch** is a feature that allows a function or method to be **dynamically dispatched** based on the run-time (dynamic) type or,
+# in the more general case, some other attribute of more than one of its arguments.
+# This is a **generalization of single-dispatch polymorphism** where a function or method call is dynamically dispatched based on the derived type of
 # the object on which the method has been called. Multiple dispatch routes the dynamic dispatch to the
 # implementing function or method using the combined characteristics of one or more arguments.
 
@@ -436,16 +461,17 @@
 #
 # ### Example: Dogs and Cats
 #
-# I will reproduce Karpinski's example. In the talk, Karpinski designs a structure of classes which are very common in
-# object-oriented programming (OOP). In Julia, we don't have classes but we have **structures** (`struct`) that are meant to be
-# "structured data": they define the kind of information that is embedded in the structure,
-# that is a set of fields (aka "properties" or "attributes" in other languages), and then individual instances (or "objects") can
-# be produced each with its own specific values for the fields defined by the structure.
+# I will reproduce Karpinski's example. In the talk, Karpinski designs a structure of classes which are very common in object-oriented programming (OOP).
+# In Julia, we don't have classes but we have **structures** (`struct`) that are meant to be "structured data":
+# they define the kind of information that is embedded in the structure,
+# that is a set of fields (aka "properties" or "attributes" in other languages),
+# and then individual instances (or "objects") can be produced each with its own specific values for the fields defined by the structure.
 #
 # We create an abstract `type` called `Pet`.
 # Then, we proceed by creating two derived `struct` from `Pet` that has one field `name` (a `String`).
-# These derived `struct` are `Dog` and `Cat`. We also define some methods for what happens in an "encounter" by defining
-# a generic function `meets()` and several specific methods of `meets()` that will be multiple dispatched by Julia in runtime
+# These derived `struct` are `Dog` and `Cat`.
+# We also define some methods for what happens in an "encounter" by defining a generic function `meets()`
+# and several specific methods of `meets()` that will be multiple dispatched by Julia in runtime
 # to define the action that one type `Pet` takes when it meets another `Pet`:
 
 abstract type Pet end
@@ -475,8 +501,10 @@ encounter(rex, whiskers)
 encounter(spots, fido)
 encounter(whiskers, spots)
 
-# It works as expected. Now let's translate this to modern C++ as literally as possible.
-# Let's define a class `Pet` with a member variable `name` -- in C ++ we can do this. Then we define a base function `meets()`,
+# It works as expected.
+# Now let's translate this to modern C++ as literally as possible.
+# Let's define a class `Pet` with a member variable `name` -- in C ++ we can do this.
+# Then we define a base function `meets()`,
 # a function `encounter() `for two objects of the type `Pet`, and finally, define derived classes `Dog `and `Cat`
 # overload `meets()` for them:
 #
