@@ -102,12 +102,12 @@ setprogress!(false) # hide
     σ ~ Exponential(1 / std(y))             # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)     # group-level SDs intercepts
+    τ ~ truncated(Cauchy(0, 2); lower=0)    # group-level SDs intercepts
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # group-level intercepts
 
     #likelihood
     ŷ = α .+ X * β .+ αⱼ[idx]
-    y ~ MvNormal(ŷ, σ)
+    y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # ### Random-Slope Model
@@ -137,16 +137,16 @@ end;
 
 @model function varying_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
-    α ~ Normal(mean(y), 2.5 * std(y))                   # population-level intercept
-    σ ~ Exponential(1 / std(y))                         # residual SD
+    α ~ Normal(mean(y), 2.5 * std(y))                    # population-level intercept
+    σ ~ Exponential(1 / std(y))                          # residual SD
     #prior for variance of random slopes
     #usually requires thoughtful specification
-    τ ~ filldist(truncated(Cauchy(0, 2), 0, Inf), n_gr) # group-level slopes SDs
-    βⱼ ~ filldist(Normal(0, 1), predictors, n_gr)       # group-level standard normal slopes
+    τ ~ filldist(truncated(Cauchy(0, 2); lower=0), n_gr) # group-level slopes SDs
+    βⱼ ~ filldist(Normal(0, 1), predictors, n_gr)        # group-level standard normal slopes
 
     #likelihood
     ŷ = α .+ X * βⱼ * τ
-    y ~ MvNormal(ŷ, σ)
+    y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # ### Random-Intercept-Slope Model
@@ -177,19 +177,29 @@ end;
 
 @model function varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
     #priors
-    α ~ Normal(mean(y), 2.5 * std(y))                    # population-level intercept
-    σ ~ Exponential(1 / std(y))                          # residual SD
+    α ~ Normal(mean(y), 2.5 * std(y))                     # population-level intercept
+    σ ~ Exponential(1 / std(y))                           # residual SD
     #prior for variance of random intercepts and slopes
     #usually requires thoughtful specification
-    τₐ ~ truncated(Cauchy(0, 2), 0, Inf)                 # group-level SDs intercepts
-    τᵦ ~ filldist(truncated(Cauchy(0, 2), 0, Inf), n_gr) # group-level slopes SDs
-    αⱼ ~ filldist(Normal(0, τₐ), n_gr)                   # group-level intercepts
-    βⱼ ~ filldist(Normal(0, 1), predictors, n_gr)        # group-level standard normal slopes
+    τₐ ~ truncated(Cauchy(0, 2); lower=0)                 # group-level SDs intercepts
+    τᵦ ~ filldist(truncated(Cauchy(0, 2); lower=0), n_gr) # group-level slopes SDs
+    αⱼ ~ filldist(Normal(0, τₐ), n_gr)                    # group-level intercepts
+    βⱼ ~ filldist(Normal(0, 1), predictors, n_gr)         # group-level standard normal slopes
 
     #likelihood
     ŷ = α .+ αⱼ[idx] .+ X * βⱼ * τᵦ
-    y ~ MvNormal(ŷ, σ)
+    y ~ MvNormal(ŷ, σ^2 * I)
 end;
+
+# In all of the models,
+# we are using the `MvNormal` construction where we specify both
+# a vector of means (first positional argument)
+# and a covariance matrix (second positional argument).
+# Regarding the covariance matrix `σ^2 * I`,
+# it uses the model's errors `σ`, here parameterized as a standard deviation,
+# squares it to produce a variance paramaterization,
+# and multiplies by `I`, which is Julia's `LinearAlgebra` standard module implementation
+# to represent an identity matrix of any size.
 
 # ## Example - Cheese Ratings
 

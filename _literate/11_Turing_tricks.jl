@@ -56,7 +56,7 @@ setprogress!(false) # hide
     σ ~ Exponential(1)
 
     #likelihood
-    y ~ MvNormal(α .+ X * β, σ)
+    y ~ MvNormal(α .+ X * β, σ^2 * I)
 end;
 
 using DataFrames, CSV, HTTP
@@ -184,12 +184,12 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
     σ ~ Exponential(1 / std(y))             # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)     # group-level SDs intercepts
+    τ ~ truncated(Cauchy(0, 2); lower=0)    # group-level SDs intercepts
     αⱼ ~ filldist(Normal(0, τ), n_gr)       # CP group-level intercepts
 
     #likelihood
-    ŷ = α .+ X * β .+ αⱼ[idx]
-    y ~ MvNormal(ŷ, σ)
+    ŷ = α .+ X * β .+ αⱼ[idx]
+    y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # To perform a Non-Centered Parametrization (NCP) in this model we do as following:
@@ -202,12 +202,12 @@ end;
 
     #prior for variance of random intercepts
     #usually requires thoughtful specification
-    τ ~ truncated(Cauchy(0, 2), 0, Inf)    # group-level SDs intercepts
+    τ ~ truncated(Cauchy(0, 2); lower=0)   # group-level SDs intercepts
     zⱼ ~ filldist(Normal(0, 1), n_gr)      # NCP group-level intercepts
 
     #likelihood
-    ŷ = α .+ X * β .+ zⱼ[idx] .* τ
-    y ~ MvNormal(ŷ, σ)
+    ŷ = α .+ X * β .+ zⱼ[idx] .* τ
+    y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # Here we are using a NCP with the `zⱼ`s following a standard normal and we reconstruct the

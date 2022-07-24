@@ -158,9 +158,9 @@ setprogress!(false) # hide
     l = length(infected)
 
     #priors
-    β ~ TruncatedNormal(2, 1, 1e-4, 10)     # using 10 instead of Inf because numerical issues arose
-    γ ~ TruncatedNormal(0.4, 0.5, 1e-4, 10) # using 10 instead of Inf because numerical issues arose
-    ϕ⁻ ~ truncated(Exponential(5), 0, 1e5)
+    β ~ TruncatedNormal(2, 1, 1e-4, 10)     # using 10 because numerical issues arose
+    γ ~ TruncatedNormal(0.4, 0.5, 1e-4, 10) # using 10 because numerical issues arose
+    ϕ⁻ ~ truncated(Exponential(5); lower=0, upper=1e5)
     ϕ = 1.0 / ϕ⁻
 
     #ODE Stuff
