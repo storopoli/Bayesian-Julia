@@ -84,7 +84,7 @@ setprogress!(false) # hide
     σ ~ Exponential(1)
 
     #likelihood
-    y ~ MvNormal(α .+ X * β, σ)
+    y ~ MvNormal(α .+ X * β, σ^2 * I)
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -92,6 +92,15 @@ end;
 # * $\alpha \sim \text{Normal}(\bar{\mathbf{y}}, 2.5 \cdot \sigma_{\mathbf{y}})$ -- This means a normal distribution centered on `y`'s mean with a standard deviation 2.5 times the standard deviation of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
 # * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 # * $\sigma \sim \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
+
+# Also, we are using the `MvNormal` construction where we specify both
+# a vector of means (first positional argument)
+# and a covariance matrix (second positional argument).
+# Regarding the covariance matrix `σ^2 * I`,
+# it uses the model's errors `σ`, here parameterized as a standard deviation,
+# squares it to produce a variance paramaterization,
+# and multiplies by `I`, which is Julia's `LinearAlgebra` standard module implementation
+# to represent an identity matrix of any size.
 
 # ## Example - Children's IQ Score
 
