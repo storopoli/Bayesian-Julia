@@ -90,6 +90,7 @@
 # This is easily accomplished with Turing:
 
 using Turing
+using LinearAlgebra: I
 using Statistics: mean, std
 using Random:seed!
 seed!(123)

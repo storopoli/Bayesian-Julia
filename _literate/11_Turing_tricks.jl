@@ -44,6 +44,7 @@ Q' * Q ≈ I(3)
 # First, let's go back to the `kidiq` example in [6. **Bayesian Linear Regression**](/pages/6_linear_reg/):
 
 using Turing
+using LinearAlgebra: I
 using Statistics: mean, std
 using Random:seed!
 seed!(123)
