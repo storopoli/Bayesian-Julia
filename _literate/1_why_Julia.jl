@@ -442,8 +442,7 @@
 # ## Multiple Dispatch
 
 # I think that this is the **real gamechanger of Julia language**:
-# The ability to define **function behavior** across many combinations of argument types via
-# [**multiple dispatch**](https://en.wikipedia.org/wiki/Multiple_dispatch).
+# The ability to define **function behavior** across many combinations of argument types via [**multiple dispatch**](https://en.wikipedia.org/wiki/Multiple_dispatch).
 # **Multiple dispatch** is a feature that allows a function or method to be **dynamically dispatched** based on the run-time (dynamic) type or,
 # in the more general case, some other attribute of more than one of its arguments.
 # This is a **generalization of single-dispatch polymorphism** where a function or method call is dynamically dispatched based on the derived type of
