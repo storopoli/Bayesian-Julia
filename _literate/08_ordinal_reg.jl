@@ -64,7 +64,7 @@
 # **We need the log-cumulative-odds because it allows us to construct different intercepts for the possible values our ordinal dependent variable**.
 # We create an unique intercept for each possible outcome $k \in K$.
 
-# Notice that the highest probable value of $X$ will always have a log-cumulative-odds of $\infty$, since for $p=1$:
+# Notice that the highest probable value of $Y$ will always have a log-cumulative-odds of $\infty$, since for $p=1$:
 
 # $$\ln \frac{p}{1-p} = \ln \frac{1}{1-1} = \ln 0 = \infty$$
 
