@@ -1,6 +1,6 @@
 # # Robust Bayesian Regression
 
-# Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The third of these is
+# Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The fourth of these is
 # **robust regression**.
 
 # A regression with count data behaves exactly like a linear model: it makes a prediction simply by computing a weighted

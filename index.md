@@ -70,18 +70,19 @@ Pkg.instantiate()
 
 ## Tutorials
 
-1. [**Why Julia?**](/pages/1_why_Julia/)
-2. [**What is Bayesian Statistics?**](/pages/2_bayes_stats/)
-3. [**Common Probability Distributions**](/pages/3_prob_dist/)
-4. [**How to use Turing**](/pages/4_Turing/)
-5. [**Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/)
-6. [**Bayesian Linear Regression**](/pages/6_linear_reg/)
-7. [**Bayesian Logistic Regression**](/pages/7_logistic_reg/)
-8. [**Bayesian Regression with Count Data**](/pages/8_count_reg/)
-9. [**Robust Bayesian Regression**](/pages/9_robust_reg/)
-10. [**Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/)
-11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](/pages/11_Turing_tricks/)
-12. [**Epidemiological Models using ODE Solvers in Turing**](/pages/12_epi_models/)
+1. [**Why Julia?**](/pages/01_why_Julia/)
+2. [**What is Bayesian Statistics?**](/pages/02_bayes_stats/)
+3. [**Common Probability Distributions**](/pages/03_prob_dist/)
+4. [**How to use Turing**](/pages/04_Turing/)
+5. [**Markov Chain Monte Carlo (MCMC)**](/pages/05_MCMC/)
+6. [**Bayesian Linear Regression**](/pages/06_linear_reg/)
+7. [**Bayesian Logistic Regression**](/pages/07_logistic_reg/)
+8. [**Bayesian Ordinal Regression**](/pages/08_ordinal_reg/)
+9. [**Bayesian Regression with Count Data**](/pages/09_count_reg/)
+10. [**Robust Bayesian Regression**](/pages/10_robust_reg/)
+11. [**Multilevel Models (a.k.a. Hierarchical Models)**](/pages/11_multilevel_models/)
+12. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](/pages/12_Turing_tricks/)
+13. [**Epidemiological Models using ODE Solvers in Turing**](/pages/13_epi_models/)
 
 ## Datasets
 

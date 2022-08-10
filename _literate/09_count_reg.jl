@@ -1,6 +1,6 @@
 # # Bayesian Regression with Count Data
 
-# Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The second of these is
+# Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The third of these is
 # **regression with count data** (also called Poisson regression).
 
 # A regression with count data behaves exactly like a linear model: it makes a prediction simply by computing a weighted
