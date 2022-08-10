@@ -1,114 +1,263 @@
-# # Bayesian Logistic Regression
+# # Bayesian Ordinal Regression
 
-# Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The first is
-# **logistic regression** (also called binomial regression).
+# Leaving the universe of linear models, we start to venture into generalized linear models (GLM). The second is
+# **ordinal regression**.
 
-# A logistic regression behaves exactly like a linear model: it makes a prediction simply by computing a weighted
-# sum of the independent variables $\mathbf{X}$ by the estimated coefficients $\boldsymbol{\beta}$, plus an intercept
-# $\alpha$. However, instead of returning a continuous value $y$, such as linear regression, it returns the **logistic
-# function** of $y$:
+# A ordinal regression behaves exactly like a linear model: it makes a prediction simply by computing a weighted
+# sum of the independent variables $\mathbf{X}$ by the estimated coefficients $\boldsymbol{\beta}$,
+# but now we have not only one intercept but several intercepts $\alpha_k$ for $k \in K$.
 
-# $$ \text{Logistic}(x) = \frac{1}{1 + e^{(-x)}} $$
+# We use ordinal regression when our dependent variable is ordinal.
+# That means it has different that have a "natural order"**.
+# Most important, the distance between values is not the same.
+# For example, imagine a pain score scale that goes from 1 to 10.
+# The distance between 1 and 2 is different from the distance 9 to 10.
+# Another example is opinion pools with their ubiquously disagree-agree range
+# of plausible values.
+# These are also known as Likert scale variables.
+# The distance between "disagree" to "not agree or disagree" is different
+# than the distance between "agree" and "strongly agree".
 
-# We use logistic regression when our dependent variable is binary. It has only two distinct values, usually
-# encoded as $0$ or $1$. See the figure below for a graphical intuition of the logistic function:
+# This assumption is what we call the "metric" assumption,
+# also called as the equidistant assumption.
+# Almost always when we model an ordinal dependent variable this assumption is violated.
+# Thus, we cannot blindly employ linear regression here.
 
-using Plots, LaTeXStrings
+# ## How to deal with Ordered Discrete Dependent Variable?
 
-function logistic(x)
-    return 1 / (1 + exp(-x))
+# So, how we deal with ordered discrete responses in our dependent variable?
+# This is similar with the previous logistic regression approach.
+# We have to do a **non-linear transformation of the dependent variable**.
+
+# ### Cumulative Distribution Function (CDF)
+
+# In the case of **ordinal regression**, we need to first transform the dependent variable into a **cumulative scale**.
+# We need to calculate the **cumulative distribution function** (CDF) of our dependent variable:
+
+# $$P(Y \leq y) = \sum^y_{i=y_{\text{min}}} P(Y = i)$$
+
+# The **CDF is a monotonic increasing function** that depicts the **probability of our random variable $Y$ taking values less than a certain value**.
+# In our case, the discrete ordinal case, these values can be represented as positive integers ranging from 1 to the length of possible values.
+# For instance, a 6-categorical ordered response variable will have 6 possible values, and all their CDFs will lie between 0 and 1.
+# Furthermore, their sum will be 1; since it represents the total probability of the variable taking any of the possible values, i.e. 100%.
+
+# ### Log-cumulative-odds
+
+# That is still not enough, we need to apply the **logit function to the CDF**:
+
+# $$\mathrm{logit}(x) = \mathrm{logistic}^{-1}(x) = \ln\left(\frac{x}{1 -x}\right)$$
+
+# where $\ln$ is the natural logarithm function.
+
+# The logit is the **inverse of the logistic transformation**,
+# it takes as a input any number between 0 and 1
+# (where a probability is the perfect candidate) and outputs a real number,
+# which we call the **log-odds**.
+
+# Since we are taking the log-odds of the CDF, we can call this complete transformation as
+# **log-odds of the CDF**, or **log-cumulative-odds**.
+
+# ### $K-1$ Intercepts
+
+# Now, the next question is: what do we do with the log-cumulative-odds?
+
+# **We need the log-cumulative-odds because it allows us to construct different intercepts for the possible values our ordinal dependent variable**.
+# We create an unique intercept for each possible outcome $k \in K$.
+
+# Notice that the highest probable value of $X$ will always have a log-cumulative-odds of $\infty$, since for $p=1$:
+
+# $$\ln \frac{p}{1-p} = \ln \frac{1}{1-1} = \ln 0 = \infty$$
+
+# Thus, we only need $K-1$ intercepts for a $K$ possible depedent variables' response values.
+# These are known as **cut points**.
+
+# Each intercept implies a CDF for each value $K$.
+# This allows us to **violate the equidistant assumption** absent in most ordinal variables.
+
+# Each intercept implies a log-cumulative-odds for each $k \in K$.
+# We also need to **undo the cumulative nature of the $K-1$ intercepts**.
+# We can accomplish this by first converting a **log-cumulative-odds back to a cumulative probability**.
+# This is done by undoing the logit transformation and applying the logistic function:
+
+# $$\mathrm{logit}^{-1}(x) = \mathrm{logistic}(x) = \frac{1}{1 + e^{-x}}$$
+
+# Then, finally, we can remove the **cumulative from "cumulative probability"** by
+# **subtraction of each of the $k$ cut points by their previous $k-1$ cut point**:
+
+# $$P(Y=k) = P(Y \leq k) - P(Y \leq k-1)$$
+
+# where $Y$ is the depedent variable and $k \in K$ are the cut points for each intercept.
+
+# Let me show you an example with some syntethic data.
+
+using DataFrames
+using CairoMakie
+using AlgebraOfGraphics
+using Distributions
+using StatsFuns: logit
+
+# Here we have a discrete variable `x` with 6 possible ordered values as response.
+# The values range from 1 to 6 having probability, respectively:
+# 10%, 15%, 33%, 25%, 10%, and 7%;
+# represented with the `probs` vector.
+# The underlying distribution is represented by a
+# `Categorical` distribution from `Distributions.jl`,
+# which takes a vector of probabilities as parameters (`probs`).
+
+# For each value we are calculating:
+
+# 1. **P**robability **M**ass **F**unction with the `pdf` function
+# 2. **C**umulative **D**istribution **F**unction with the `cdf` function
+# 3. **Log-cumulative-odds** with the `logit` transformation of the CDF
+
+# In the plot below there are 3 subplots:
+# - Upper corner: histogram of `x`
+# - Left lower corner: CDF of `x`
+# - Right lower corner: log-cumulative-odds of `x`
+
+let
+    probs = [0.10, 0.15, 0.33, 0.25, 0.10, 0.07]
+    dist = Categorical(probs)
+    x = 1:length(probs)
+    x_pmf=pdf.(dist, x)
+    x_cdf=cdf.(dist, x)
+    x_logodds_cdf=logit.(x_cdf)
+    df = DataFrame(;
+        x,
+        x_pmf,
+        x_cdf,
+        x_logodds_cdf)
+    labels = ["CDF", "Log-cumulative-odds"]
+    fig = Figure()
+    plt1 = data(df) *
+        mapping(:x, :x_pmf) *
+        visual(BarPlot)
+    plt2 = data(df) *
+        mapping(:x,
+                [:x_cdf, :x_logodds_cdf];
+                col=dims(1) => renamer(labels)) *
+        visual(ScatterLines)
+    axis=(; xticks=1:6)
+    draw!(fig[1, 2:3], plt1; axis)
+    draw!(fig[2, 1:4], plt2;
+          axis,
+          facet=(; linkyaxes=:none))
+    fig
+    save(joinpath(@OUTPUT, "discrete_uniform.svg"), fig); # hide
 end
 
-plot(logistic, -10, 10, label=false,
-     xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
-savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
+# \fig{discrete_uniform}
+# \center{*Discrete Uniform between 1 and 6*} \\
 
-# \fig{logistic}
-# \center{*Logistic Function*} \\
+# As we can see, we have $K-1$ (in our case $6-1=5$) intercept values in log-cumulative-odds.
+# You can carly see that these values they violate the **equidistant assumption**
+# for metric response values.
+# The spacing between the cut points are not the same, they vary.
 
-# As we can see, the logistic function is basically a mapping of any real number to a
-# real number in the range between 0 and 1:
+# ## Adding Coefficients $\boldsymbol{\beta}$
 
-# $$ \text{Logistic}(x) = \{ \mathbb{R} \in [- \infty , + \infty] \} \to \{ \mathbb{R} \in (0, 1) \} $$
+# Ok, the $K-1$ intercepts $\boldsymbol{\alpha}$ are done.
+# Now let's add coefficients to act as covariate effects in our ordinal regression model.
 
-# That is, the logistic function is the ideal candidate for when we need to convert something continuous without restrictions
-# to something continuous restricted between 0 and 1. That is why it is used when we need a model to have a probability as a
-# dependent variable (remembering that any real number between 0 and 1 is a valid probability). In the case of a binary dependent
-# variable, we can use this probability as the chance of the dependent variable taking a value of 0 or 1.
+# We transformed everything into log-odds scale so that we can add effects
+# (coefficients multiplying a covariate) or basal rates (intercepts) together.
+# For each $k \in K-1$, we calculate:
 
-# ## Comparison with Linear Regression
+# $$\phi_k = \alpha_k + \beta_i x_i$$
 
-# Linear regression follows the following mathematical formulation:
+# where $\alpha_k$ is the log-cumulative-odds for the $k \in K-1$ intercepts,
+# $\beta_i$ is the coefficient for the $i$th covariate $x$.
+# Finally, $\phi_k$ represents the linear predictor for the $k$th intercept.
 
-# $$ \text{Linear} = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \dots + \theta_n x_n $$
+# Observe that the coefficient $\beta$ is being added to a log-cumulative-odds,
+# such that, it will be expressed in a log-cumulative-odds also.
 
-# * $\theta$ - model parameters
-#   * $\theta_0$ - intercept
-#   * $\theta_1, \theta_2, \dots$ - independent variables $x_1, x_2, \dots$ coefficients
-# * $n$ - total number of independent variables
+# We can express it in matrix form:
 
-# Logistic regression would add the logistic function to the linear term:
+# $$\boldsymbol{\phi} = \boldsymbol{\alpha} + \mathbf{X} \cdot \boldsymbol{\beta}$$
 
-# * $\hat{p} = \text{Logistic}(\text{Linear}) = \frac{1}{1 + e^{-\operatorname{Linear}}}$ - predicted probability of the observation being the value 1
-# * $\hat{\mathbf{y}}=\left\{\begin{array}{ll} 0 & \text { if } \hat{p} < 0.5 \\ 1 & \text { if } \hat{p} \geq 0.5 \end{array}\right.$ - predicted discrete value of $\mathbf{y}$
+# where $\boldsymbol{\phi}$, $\boldsymbol{\alpha}$ and $\boldsymbol{\beta}$ are vectors
+# and $\mathbf{X}$ is the data matrix where each row is an observation and each column a covariate.
 
-# **Example**:
+# This still obeys the ordered constraint on the dependent variable possible values.
 
-# $$ \text{Probability of Death} = \text{Logistic} \big(-10 + 10 \cdot \text{cancer} + 12 \cdot \text{diabetes} + 8 \cdot \text{obesity} \big) $$
+# #### How to Interpret Coefficient $\boldsymbol{\beta}$?
 
-# ## Bayesian Logistic Regression
+# Now, suppose we have found our ideal value for our $\boldsymbol{\beta}$.
+# **How we would interpret our $\boldsymbol{\beta}$ estimated values?**
 
-# We can model logistic regression in two ways. The first option with a **Bernoulli likelihood** function and the second option with
-# a **binomial likelihood** function.
+# First, to recap, $\boldsymbol{\beta}$ measures the strength of association between
+# the covariate $\mathbf{x}$ and depedent variable $\mathbf{y}$.
+# But, $\boldsymbol{\beta}$ is nested inside a non-linear transformation called
+# logistic function:
 
-# With the **Bernoulli likelihood** we model a binary dependent variable $y$ which is the result of a Bernoulli trial with
-# a certain probability $p$.
+# $$\mathrm{logistic}(\boldsymbol{\beta}) = \frac{1}{1 + e^{-\boldsymbol{\beta}}}$$
 
-# In a **binomial likelihood**, we model a continuous dependent variable $y$ which is the number of successes of $n$
-# independent Bernoulli trials.
+# So, our first step is to **undo the logistic function**.
+# There is a function that is called **logit function** that is the **inverse**
+# of the logistic function:
 
-# ### Using Bernoulli Likelihood
+# $$\mathrm{logistic}^{-1}(x) = \mathrm{logit}(x) = \ln\left(\frac{x}{1 -x}\right)$$
+
+# where $\ln$ is the natural logarithm function.
+
+# If we analyze closely the logit function we can find that
+# inside the $\ln$ there is a disguised odds in the $\frac{x}{1 -x}$.
+# Hence, our $\boldsymbol{\beta}$ can be interpreted as the
+# **logarithm of the odds**, or in short form: the **log-odds**.
+
+# We already saw how odds, log-odds, and probability are related
+# in the previous logistic regression tutorial.
+# So you might want to go back there to get the full explanation.
+
+# The log-odds are the key to interpret coefficient $\boldsymbol{\beta}$**.
+# Any positive value of $\beta$ means that there exists a positive association between $x$ and $y$, while any negative values indicate a negative association between $x$ and $y$.
+# Values close to 0 demonstrates the lack of association between $x$ and $y$.
+
+# ## Likelihood
+
+# We have almost everything we need for our ordinal regression.
+# We are only missing a final touch.
+# Currently our **logistic function outputs a vector of probabilities** that sums to 1.
+
+# All of the intercepts $\alpha_k$ along with the coefficients $\beta_i$ are in
+# log-cumulative-odds scale.
+# If we apply the logistic function to the linear predictors $\phi_k$ we get $K-1$
+# probabilities: one for each $\phi_k$
+
+# We need a **likelihood that can handle a vector of probabilities and outputs a single
+# discrete value**.
+# The **categorical distribution is the perfect candidate**.
+
+# ## Bayesian Ordinal Regression
+
+# Now we have all the components for our Bayesian ordinal regression specification:
 
 # $$
 # \begin{aligned}
-# \mathbf{y} &\sim \text{Bernoulli}\left( p \right) \\
-# \mathbf{p} &\sim \text{Logistic}(\alpha + \mathbf{X} \cdot \boldsymbol{\beta}) \\
-# \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
-# \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}})
+# \mathbf{y} &\sim \text{Categorical}(\mathbf{p}) \\
+# \mathbf{p} &= \text{Logistic}(\boldsymbol{\phi}) \\
+# \boldsymbol{\phi} &= \boldsymbol{\alpha} + \mathbf{X} \cdot \boldsymbol{\beta} \\
+# \alpha_1 &= \text{CDF}(y_1) \\
+# \alpha_k &= \text{CDF}(y_k) - \text{CDF}(y_{k-1}) \quad \text{for} \quad 1 < k < K-1 \\
+# \alpha_{K-1} &= 1 - \text{CDF}(y_{K-1})
 # \end{aligned}
 # $$
 
 # where:
 
-# * $\mathbf{y}$ -- binary dependent variable.
-# * $\mathbf{p}$ -- probability of $\mathbf{y}$ taking the value of $\mathbf{y}$ -- success of an independent Bernoulli trial.
-# * $\text{Logistic}$ -- logistic function.
-# * $\alpha$ -- intercept.
-# * $\boldsymbol{\beta}$ -- coefficient vector.
-# * $\mathbf{X}$ -- data matrix.
 
-# ### Using Binomial Likelihood
+# * $\mathbf{y}$ -- ordered discrete dependent variable.
+# * $\mathbf{p}$ -- probability vector of length $K$.
+# * $K$ -- number of possible values $\mathbf{y}$ can take, i.e. number of ordered discrete values.
+# * $\boldsymbol{\phi}$ -- log-cumulative-odds, i.e. cut points considering the intercepts and covariates effect.
+# * $\alpha_k$ -- intercept in log-cumulative-odds for each $k \in K-1$.
+# * $\mathbf{X}$ -- covariate data matrix.
+# * $\boldsymbol{\beta}$ -- coefficient vector of the same length as the number of columns in $\mathbf{X}$.
+# * $\mathrm{logistic}$ -- logistic function.
+# * $\mathrm{CDF}$ -- **c**umulative **d**istribution **f**unction.
 
-# $$
-# \begin{aligned}
-# \mathbf{y} &\sim \text{Binomial}\left( n, p \right) \\
-# \mathbf{p} &\sim \text{Logistic}(\alpha + \mathbf{X} \cdot \boldsymbol{\beta}) \\
-# \alpha &\sim \text{Normal}(\mu_\alpha, \sigma_\alpha) \\
-# \boldsymbol{\beta} &\sim \text{Normal}(\mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}})
-# \end{aligned}
-# $$
-
-# where:
-
-# * $\mathbf{y}$ -- binary dependent variable -- successes of $n$ independent Bernoulli trials.
-# * $n$ -- number of independent Bernoulli trials.
-# * $\mathbf{p}$ -- probability of $\mathbf{y}$ taking the value of $\mathbf{y}$ -- success of an independent Bernoulli trial.
-# * $\text{Logistic}$ -- logistic function.
-# * $\alpha$ -- intercept.
-# * $\boldsymbol{\beta}$ -- coefficient vector.
-# * $\mathbf{X}$ -- data matrix.
-
-# In both likelihood options, what remains is to specify the model parameters' prior distributions:
+# What remains is to specify the model parameters' prior distributions:
 
 # * Prior Distribution of $\alpha$ -- Knowledge we possess regarding the model's intercept.
 # * Prior Distribution of $\boldsymbol{\beta}$  -- Knowledge we possess regarding the model's independent variables' coefficients.
