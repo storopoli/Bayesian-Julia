@@ -6,4 +6,4 @@
 
 \toc
 
-\literate{/_literate/6_linear_reg.jl}
+\literate{/_literate/06_linear_reg.jl}

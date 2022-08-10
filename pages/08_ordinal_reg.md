@@ -6,4 +6,4 @@
 
 \toc
 
-\literate{/_literate/7_logistic_reg.jl}
+\literate{/_literate/08_ordinal_reg.jl}

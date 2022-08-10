@@ -1,9 +1,9 @@
 @def tags = ["syntax", "code"]
-@def date = Date("2021-05-09")
+@def date = Date("2021-05-04")
 @def showall = true
 @def hascode = true
 @def mintoclevel = 2
 
 \toc
 
-\literate{/_literate/11_Turing_tricks.jl}
+\literate{/_literate/07_logistic_reg.jl}

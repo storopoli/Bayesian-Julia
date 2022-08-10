@@ -89,18 +89,19 @@ To configure a local environment:
 
 ## Tutorials
 
-1. [**Why Julia?**](https://storopoli.github.io/Bayesian-Julia/pages/1_why_Julia/)
-2. [**What is Bayesian Statistics?**](https://storopoli.github.io/Bayesian-Julia/pages/2_bayes_stats/)
-3. [**Common Probability Distributions**](https://storopoli.github.io/Bayesian-Julia/pages/3_prob_dist/)
-4. [**How to use Turing**](https://storopoli.github.io/Bayesian-Julia/pages/4_Turing/)
-5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.github.io/Bayesian-Julia/pages/5_MCMC/)
-6. [**Bayesian Linear Regression**](https://storopoli.github.io/Bayesian-Julia/pages/6_linear_reg/)
-7. [**Bayesian Logistic Regression**](https://storopoli.github.io/Bayesian-Julia/pages/7_logistic_reg/)
-8. [**Bayesian Regression with Count Data**](https://storopoli.github.io/Bayesian-Julia/pages/8_count_reg/)
-9. [**Robust Bayesian Regression**](https://storopoli.github.io/Bayesian-Julia/pages/9_robust_reg/)
-10. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.github.io/Bayesian-Julia/pages/10_multilevel_models/)
-11. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.github.io/Bayesian-Julia/pages/11_Turing_tricks/)
-12. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.github.io/Bayesian-Julia/pages/12_epi_models/)
+1. [**Why Julia?**](https://storopoli.github.io/Bayesian-Julia/pages/01_why_Julia/)
+2. [**What is Bayesian Statistics?**](https://storopoli.github.io/Bayesian-Julia/pages/02_bayes_stats/)
+3. [**Common Probability Distributions**](https://storopoli.github.io/Bayesian-Julia/pages/03_prob_dist/)
+4. [**How to use Turing**](https://storopoli.github.io/Bayesian-Julia/pages/04_Turing/)
+5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.github.io/Bayesian-Julia/pages/05_MCMC/)
+6. [**Bayesian Linear Regression**](https://storopoli.github.io/Bayesian-Julia/pages/06_linear_reg/)
+7. [**Bayesian Logistic Regression**](https://storopoli.github.io/Bayesian-Julia/pages/07_logistic_reg/)
+8. [**Bayesian Ordinal Regression**](https://storopoli.github.io/Bayesian-Julia/pages/08_ordinal_reg/)
+9. [**Bayesian Regression with Count Data**](https://storopoli.github.io/Bayesian-Julia/pages/09_count_reg/)
+10. [**Robust Bayesian Regression**](https://storopoli.github.io/Bayesian-Julia/pages/10_robust_reg/)
+11. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.github.io/Bayesian-Julia/pages/11_multilevel_models/)
+12. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.github.io/Bayesian-Julia/pages/12_Turing_tricks/)
+13. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.github.io/Bayesian-Julia/pages/13_epi_models/)
 
 ## Datasets
 
