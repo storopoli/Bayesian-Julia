@@ -143,11 +143,11 @@ let
           axis,
           facet=(; linkyaxes=:none))
     fig
-    save(joinpath(@OUTPUT, "discrete_uniform.svg"), fig); # hide
+    save(joinpath(@OUTPUT, "logodds.svg"), fig); # hide
 end
 
-# \fig{discrete_uniform}
-# \center{*Discrete Uniform between 1 and 6*} \\
+# \fig{logodds}
+# \center{*Ordinal Dependent Variable*} \\
 
 # As we can see, we have $K-1$ (in our case $6-1=5$) intercept values in log-cumulative-odds.
 # You can carly see that these values they violate the **equidistant assumption**
@@ -246,7 +246,6 @@ end
 
 # where:
 
-
 # * $\mathbf{y}$ -- ordered discrete dependent variable.
 # * $\mathbf{p}$ -- probability vector of length $K$.
 # * $K$ -- number of possible values $\mathbf{y}$ can take, i.e. number of ordered discrete values.
@@ -259,78 +258,91 @@ end
 
 # What remains is to specify the model parameters' prior distributions:
 
-# * Prior Distribution of $\alpha$ -- Knowledge we possess regarding the model's intercept.
+# * Prior Distribution of $\boldsymbol{\alpha}$ -- Knowledge we possess regarding the model's intercepts.
 # * Prior Distribution of $\boldsymbol{\beta}$  -- Knowledge we possess regarding the model's independent variables' coefficients.
 
-# Our goal is to instantiate a logistic regression with the observed data ($\mathbf{y}$ and $\mathbf{X}$) and find the posterior
-# distribution of our model's parameters of interest ($\alpha$ and $\boldsymbol{\beta}$). This means to find the full posterior
+# Our goal is to instantiate an ordinal regression with the observed data ($\mathbf{y}$ and $\mathbf{X}$) and find the posterior
+# distribution of our model's parameters of interest ($\boldsymbol{\alpha}$ and $\boldsymbol{\beta}$). This means to find the full posterior
 # distribution of:
 
-# $$ P(\boldsymbol{\theta} \mid \mathbf{y}) = P(\alpha, \boldsymbol{\beta} \mid \mathbf{y}) $$
+# $$ P(\boldsymbol{\theta} \mid \mathbf{y}) = P(\boldsymbol{\alpha}, \boldsymbol{\beta} \mid \mathbf{y}) $$
 
 # Note that contrary to the linear regression, which used a Gaussian/normal likelihood function, we don't have an error
-# parameter $\sigma$ in our logistic regression. This is due to neither the Bernoulli nor binomial distributions having
+# parameter $\sigma$ in our ordinal regression. This is due to the Categorical distribution not having
 # a "scale" parameter such as the $\sigma$ parameter in the Gaussian/normal distribution.
-
-# Also note that the Bernoulli distribution is a special case of the binomial distribution where $n = 1$:
-
-# $$ \text{Bernoulli}(p) = \text{Binomial}(1, p) $$
 
 # This is easily accomplished with Turing:
 
 using Turing
+using Bijectors
 using LazyArrays
+using LinearAlgebra
 using Random:seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model function logreg(X,  y; predictors=size(X, 2))
+@model function ordreg(X,  y; predictors=size(X, 2), ncateg=maximum(y))
     #priors
-    α ~ Normal(0, 2.5)
-    β ~ filldist(TDist(3), predictors)
+    cutpoints ~ Bijectors.ordered(filldist(TDist(3) * 5, ncateg - 1))
+    β ~ filldist(TDist(3) * 2.5, predictors)
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
+    y ~ arraydist([OrderedLogistic(X[i, :] ⋅ β, cutpoints) for i in 1:length(y)])
 end;
 
-# Here I am specifying very weakly informative priors:
+# First, let's deal with the new stuff in our model: the **`Bijectors.ordered`**.
+# As I've said in the [4. **How to use Turing**](/pages/04_Turing/),
+# Turing has a rich ecossystem of packages.
+# Bijectors implements a set of functions for transforming constrained random variables
+# (e.g. simplexes, intervals) to Euclidean space.
+# Here we are defining `cutpoints` as a `ncateg - 1` vector of Student-$t$ distributions
+# with mean 0, standard deviation 5 and degrees of freedom $\nu = 3$.
+# Remember that we only need $K-1$ cutpoints for all of our $K$ intercepts.
+# And we are also contraining it to be an ordered vector with `Bijectors.ordered`,
+# such that for all cutpoints $c_i$ we have $c_1 < c_2 < ... c_{k-1}$.
 
-# * $\alpha \sim \text{Normal}(0, 2.5)$ -- This means a normal distribution centered on 0 with a standard deviation of 2.5. That prior should with ease cover all possible values of $\alpha$. Remember that the normal distribution has support over all the real number line $\in (-\infty, +\infty)$.
-# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,3)$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# As before, we are giving $\boldsymbol{\beta}$ a very weakly informative priors of a
+# Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu = 3$.
+# That wide-tailed $t$ distribution will cover all possible values for our coefficients.
+# Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 
+# Finally, in the likelihood,
 # Turing's `arraydist()` function wraps an array of distributions returning a new distribution sampling from the individual
-# distributions. And the LazyArrays' `LazyArray()` constructor wrap a lazy object that wraps a computation producing an array
-# to an array. Last, but not least, the macro `@~` creates a broadcast and is a nice short hand for the familiar dot `.`
-# broadcasting operator in Julia. This is an efficient way to tell Turing that our `y` vector is distributed lazily as a
-# `BernoulliLogit` broadcasted to `α` added to the product of the data matrix `X` and `β` coefficient vector.
+# distributions.
+# And we use some indexing inside an array literal.
 
-# If your dependent variable `y` is continuous and represents the number of successes of $n$ independent Bernoulli trials
-# you can use the binomial likelihood in your model:
+# ## Example - Esoph
 
-# ```julia
-# y ~ arraydist(LazyArray(@~ BinomialLogit.(n, α .+ X * β)))
-# ```
+# For our example, I will use a famous dataset called `esoph` (Breslow & Day, 1980),
+# which is data from a case-control study of (o)esophageal cancer in Ille-et-Vilaine, France.
+# It has records for 88 age/alcohol/tobacco combinations:
 
-# ## Example - Contaminated Water Wells
-
-# For our example, I will use a famous dataset called `wells` (Gelman & Hill, 2007), which is data from a survey of 3,200
-# residents in a small area of Bangladesh suffering from arsenic contamination of groundwater. Respondents with elevated
-# arsenic levels in their wells had been encouraged to switch their water source to a safe public or private well in the nearby
-# area and the survey was conducted several years later to learn which of the affected residents had switched wells.
-# It has 3,200 observations and the following variables:
-
-# * `switch` -- binary/dummy (0 or 1) for well-switching.
-# * `arsenic` -- arsenic level in respondent's well.
-# * `dist` -- distance (meters) from the respondent's house to the nearest well with safe drinking water.
-# * `association` -- binary/dummy (0 or 1) if member(s) of household participate in community organizations.
-# * `educ` -- years of education (head of household).
+# * `agegp`: Age group
+#    * `1`:  25-34 years
+#    * `2`:  35-44 years
+#    * `3`:  45-54 years
+#    * `4`:  55-64 years
+#    * `5`:  65-74 years
+#    * `6`:  75+ years
+# * `alcgp`: Alcohol consumption
+#    * `1`:  0-39 g/day
+#    * `2`: 40-79 g/day
+#    * `3`: 80-119 g/day
+#    * `4`: 120+ g/day
+# * `tobgp`: Tobacco consumption
+#    * `1`: 0-9 g/day
+#    * `2`: 10-19 g/day
+#    * `3`: 20-29 g/day
+#    * `4`: 30+ g/day
+# * `ncases`: Number of cases
+# * `ncontrols`: Number of controls
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
 using DataFrames, CSV, HTTP
 
-url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/wells.csv"
-wells = CSV.read(HTTP.get(url).body, DataFrame)
-describe(wells)
+url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/esoph.csv"
+esoph = CSV.read(HTTP.get(url).body, DataFrame)
+describe(esoph)
 
 # As you can see from the `describe()` output 58% of the respondents switched wells and 42% percent of respondents
 # somehow are engaged in community organizations. The average years of education of the household's head is approximate
@@ -339,11 +351,30 @@ describe(wells)
 # know that it is toxic and you probably would never want to have your well contaminated with it. Here, we believe that all
 # of those variables somehow influence the probability of a respondent switch to a safe well.
 
-# Now let's us instantiate our model with the data:
+# Now let's us instantiate our model with the data.
+# But here I need to do some data wrangling to create the data matrix `X`.
+# Specifically, I need to convert all of the categorical variables to integer values,
+# representing the ordinal values of both our independent and also dependent variables:
 
-X = Matrix(select(wells, Not(:switch)))
-y = wells[:, :switch]
-model = logreg(X, y);
+using CategoricalArrays
+
+transform!(
+    esoph,
+    :agegp =>
+        x -> categorical(
+            x; levels=["25-34", "35-44", "45-54", "55-64", "65-74", "75+"], ordered=true
+        ),
+    :alcgp =>
+        x -> categorical(x; levels=["0-39g/day", "40-79", "80-119", "120+"], ordered=true),
+    :tobgp =>
+        x -> categorical(x; levels=["0-9g/day", "10-19", "20-29", "30+"], ordered=true);
+    renamecols=false,
+)
+transform!(esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false)
+
+X = Matrix(select(esoph, [:agegp, :alcgp]))
+y = esoph[:, :tobgp]
+model = ordreg(X, y);
 
 # And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
@@ -395,17 +426,19 @@ end
         renamecols=false)
 end
 
-# There you go, much better now. Let's analyze our results. The intercept `α` is the basal `switch` probability which has
-# a median value of 46%. All coefficients whose 95% credible intervals captures the value $\frac{1}{2} = 0.5$ tells
-# that the effect on the propensity of `switch` is inconclusive. It is pretty much similar to a 95% credible interval
-# that captures the 0 in the linear regression coefficients. So this rules out `β[3]` which is the third column of `X`
-# -- `assoc`. The other remaining 95% credible intervals can be interpreted as follows:
+# There you go, much better now. Let's analyze our results.
+# The `cutpoints` is the basal rate of the probability of our dependent variable
+# having values less than a certain value.
+# For example the cutpoint for having values less than `2` which its code represents
+# the tobacco comsumption of 10-19 g/day has a median value of 20%.
 
-# * `β[1]` -- first column of `X`, `arsenic`, has 95% credible interval 0.595 to 0.634. This means that each increase in one unit of `arsenic` is related to an increase of 9.6% to 13.4% propension of `switch` being 1.
-# * `β[2]` -- second column of `X`, `dist`, has a 95% credible interval from 0.497 to 0.498. So we expect that each increase in one meter of `dist` is related to a decrease of 0.1% propension of `switch` being 0.
-# * `β[4]` -- fourth column of `X`, `educ`, has a 95% credible interval from 0.506 to 0.515. Each increase in one year of `educ` is related to an increase of 0.6% to 1.5% propension of `switch` being 1.
+# Now let's take a look at our coefficients
+# All coefficients whose 95% credible intervals captures the value $\frac{1}{2} = 0.5$ tells
+# that the effect on the propensity of tobacco comsumption is inconclusive.
+# It is pretty much similar to a 95% credible interval that captures the 0 in
+# the linear regression coefficients.
 
-# That's how you interpret 95% credible intervals from a `quantile()` output of a logistic regression `Chains`
+# That's how you interpret 95% credible intervals from a `quantile()` output of a ordinal regression `Chains`
 # object converted from log-odds to probability.
 
 # ## Footnotes
@@ -414,4 +447,4 @@ end
 
 # ## References
 
-# Gelman, A., & Hill, J. (2007). Data analysis using regression and multilevel/hierarchical models. Cambridge university press.
+# Breslow, N. E. & Day, N. E. (1980). **Statistical Methods in Cancer Research. Volume 1: The Analysis of Case-Control Studies**. IARC Lyon / Oxford University Press.
