@@ -159,10 +159,10 @@ model = dice_throw(data);
 
 # Next, we call Turing's `sample()` function that takes a Turing model as a first argument, along with a
 # sampler as the second argument, and the third argument is the number of iterations. Here, I will use the `NUTS()` sampler from
-# `AdvancedHMC.jl` and 2,000 iterations. Please note that, as default, Turing samplers will discard the first thousand (1,000) iterations as warmup.
-# So the sampler will output 2,000 samples starting from sample 1,001 until sample 3,000: 
+# `AdvancedHMC.jl` and 1,000 iterations. Please note that, as default, Turing samplers will discard the first thousand (1,000) iterations as warmup.
+# So the sampler will output 1,000 samples starting from sample 1,001 until sample 2,000: 
 
-chain = sample(model, NUTS(), 2_000);
+chain = sample(model, NUTS(), 1_000);
 
 # Now let's inspect the chain. We can do that with the function `describe()` that will return a 2-element vector of
 # `ChainDataFrame` (this is the type defined by `MCMCChains.jl` to store Markov chain's information regarding the inferred
@@ -246,9 +246,9 @@ prior_chain = sample(model, Prior(), 2_000);
 missing_data = Vector{Missing}(missing, length(data)) # vector of `missing`
 model_missing = dice_throw(missing_data)
 model_predict = DynamicPPL.Model{(:y,)}(:model_predict_missing_data,
-                    model_missing.f,
-                    model_missing.args,
-                    model_missing.defaults) # instantiate the "predictive model"
+    model_missing.f,
+    model_missing.args,
+    model_missing.defaults) # instantiate the "predictive model"
 prior_check = predict(model_predict, prior_chain);
 
 # Here we are creating a `missing_data` object which is a `Vector` of the same length as the `data` and populated with type `missing` as values.

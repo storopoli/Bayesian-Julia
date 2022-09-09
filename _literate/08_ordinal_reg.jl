@@ -119,9 +119,9 @@ let
     probs = [0.10, 0.15, 0.33, 0.25, 0.10, 0.07]
     dist = Categorical(probs)
     x = 1:length(probs)
-    x_pmf=pdf.(dist, x)
-    x_cdf=cdf.(dist, x)
-    x_logodds_cdf=logit.(x_cdf)
+    x_pmf = pdf.(dist, x)
+    x_cdf = cdf.(dist, x)
+    x_logodds_cdf = logit.(x_cdf)
     df = DataFrame(;
         x,
         x_pmf,
@@ -130,20 +130,20 @@ let
     labels = ["CDF", "Log-cumulative-odds"]
     fig = Figure()
     plt1 = data(df) *
-        mapping(:x, :x_pmf) *
-        visual(BarPlot)
+           mapping(:x, :x_pmf) *
+           visual(BarPlot)
     plt2 = data(df) *
-        mapping(:x,
-                [:x_cdf, :x_logodds_cdf];
-                col=dims(1) => renamer(labels)) *
-        visual(ScatterLines)
-    axis=(; xticks=1:6)
+           mapping(:x,
+               [:x_cdf, :x_logodds_cdf];
+               col=dims(1) => renamer(labels)) *
+           visual(ScatterLines)
+    axis = (; xticks=1:6)
     draw!(fig[1, 2:3], plt1; axis)
     draw!(fig[2, 1:4], plt2;
-          axis,
-          facet=(; linkyaxes=:none))
+        axis,
+        facet=(; linkyaxes=:none))
     fig
-    save(joinpath(@OUTPUT, "logodds.svg"), fig); # hide
+    save(joinpath(@OUTPUT, "logodds.svg"), fig) # hide
 end
 
 # \fig{logodds}
@@ -277,11 +277,11 @@ using Turing
 using Bijectors
 using LazyArrays
 using LinearAlgebra
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model function ordreg(X,  y; predictors=size(X, 2), ncateg=maximum(y))
+@model function ordreg(X, y; predictors=size(X, 2), ncateg=maximum(y))
     #priors
     cutpoints ~ Bijectors.ordered(filldist(TDist(3) * 5, ncateg - 1))
     β ~ filldist(TDist(3) * 2.5, predictors)
@@ -368,7 +368,7 @@ transform!(
         x -> categorical(x; levels=["0-39g/day", "40-79", "80-119", "120+"], ordered=true),
     :tobgp =>
         x -> categorical(x; levels=["0-9g/day", "10-19", "20-29", "30+"], ordered=true);
-    renamecols=false,
+    renamecols=false
 )
 transform!(esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false)
 
@@ -376,10 +376,10 @@ X = Matrix(select(esoph, [:agegp, :alcgp]))
 y = esoph[:, :tobgp]
 model = ordreg(X, y);
 
-# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, with
+# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `1_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
 
-chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
+chain = sample(model, NUTS(), MCMCThreads(), 1_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).

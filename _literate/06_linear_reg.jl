@@ -74,7 +74,7 @@
 using Turing
 using LinearAlgebra: I
 using Statistics: mean, std
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
@@ -129,10 +129,10 @@ X = Matrix(select(kidiq, Not(:kid_score)))
 y = kidiq[:, :kid_score]
 model = linreg(X, y);
 
-# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, but
+# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `1_000` samples, but
 # now we will sample from 4 Markov chains using multiple threads `MCMCThreads()`:
 
-chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
+chain = sample(model, NUTS(), MCMCThreads(), 1_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).

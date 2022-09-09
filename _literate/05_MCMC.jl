@@ -340,15 +340,16 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 # Here is a simple implementation in Julia:
 
 function metropolis(S::Int64, width::Float64, ρ::Float64;
-                    μ_x::Float64=0.0, μ_y::Float64=0.0,
-                    σ_x::Float64=1.0, σ_y::Float64=1.0,
-                    start_x=-2.5, start_y=2.5,
-                    seed=123)
+    μ_x::Float64=0.0, μ_y::Float64=0.0,
+    σ_x::Float64=1.0, σ_y::Float64=1.0,
+    start_x=-2.5, start_y=2.5,
+    seed=123)
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
-    accepted = 0::Int64;
-    x = start_x; y = start_y
+    accepted = 0::Int64
+    x = start_x
+    y = start_y
     @inbounds draws[1, :] = [x y]
     for s in 2:S
         x_ = rand(rgn, Uniform(x - width, x + width))
@@ -427,9 +428,9 @@ plt = covellipse(μ, Σ,
 
 met_anim = @animate for i in 1:100
     scatter!(plt, (X_met[i, 1], X_met[i, 2]),
-             label=false, mc=:red, ma=0.5)
-    plot!(X_met[i:i + 1, 1], X_met[i:i + 1, 2], seriestype=:path,
-          lc=:green, la=0.5, label=false)
+        label=false, mc=:red, ma=0.5)
+    plot!(X_met[i:i+1, 1], X_met[i:i+1, 2], seriestype=:path,
+        lc=:green, la=0.5, label=false)
 end
 gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5); # hide
 
@@ -440,10 +441,10 @@ gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5); # hide
 
 const warmup = 1_000
 
-scatter((X_met[warmup:warmup + 1_000, 1], X_met[warmup:warmup + 1_000, 2]),
-         label=false, mc=:red, ma=0.3,
-         xlims=(-3, 3), ylims=(-3, 3),
-         xlabel=L"\theta_1", ylabel=L"\theta_2")
+scatter((X_met[warmup:warmup+1_000, 1], X_met[warmup:warmup+1_000, 2]),
+    label=false, mc=:red, ma=0.3,
+    xlims=(-3, 3), ylims=(-3, 3),
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
@@ -461,9 +462,9 @@ savefig(joinpath(@OUTPUT, "met_first1000.svg")); # hide
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
 scatter((X_met[warmup:end, 1], X_met[warmup:end, 2]),
-         label=false, mc=:red, ma=0.3,
-         xlims=(-3, 3), ylims=(-3, 3),
-         xlabel=L"\theta_1", ylabel=L"\theta_2")
+    label=false, mc=:red, ma=0.3,
+    xlims=(-3, 3), ylims=(-3, 3),
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
@@ -558,14 +559,15 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # $$
 
 function gibbs(S::Int64, ρ::Float64;
-               μ_x::Float64=0.0, μ_y::Float64=0.0,
-               σ_x::Float64=1.0, σ_y::Float64=1.0,
-               start_x=-2.5, start_y=2.5,
-               seed=123)
+    μ_x::Float64=0.0, μ_y::Float64=0.0,
+    σ_x::Float64=1.0, σ_y::Float64=1.0,
+    start_x=-2.5, start_y=2.5,
+    seed=123)
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
-    x = start_x; y = start_y
+    x = start_x
+    y = start_y
     β = ρ * σ_y / σ_x
     λ = ρ * σ_x / σ_y
     sqrt1mrho2 = sqrt(1 - ρ^2)
@@ -637,9 +639,9 @@ plt = covellipse(μ, Σ,
 
 gibbs_anim = @animate for i in 1:200
     scatter!(plt, (X_gibbs[i, 1], X_gibbs[i, 2]),
-             label=false, mc=:red, ma=0.5)
-    plot!(X_gibbs[i:i + 1, 1], X_gibbs[i:i + 1, 2], seriestype=:path,
-          lc=:green, la=0.5, label=false)
+        label=false, mc=:red, ma=0.5)
+    plot!(X_gibbs[i:i+1, 1], X_gibbs[i:i+1, 2], seriestype=:path,
+        lc=:green, la=0.5, label=false)
 end
 gif(gibbs_anim, joinpath(@OUTPUT, "gibbs_anim.gif"), fps=5); # hide
 
@@ -648,10 +650,10 @@ gif(gibbs_anim, joinpath(@OUTPUT, "gibbs_anim.gif"), fps=5); # hide
 
 # Now let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
 
-scatter((X_gibbs[2 * warmup:2 * warmup + 1_000, 1], X_gibbs[2 * warmup:2 * warmup + 1_000, 2]),
-         label=false, mc=:red, ma=0.3,
-         xlims=(-3, 3), ylims=(-3, 3),
-         xlabel=L"\theta_1", ylabel=L"\theta_2")
+scatter((X_gibbs[2*warmup:2*warmup+1_000, 1], X_gibbs[2*warmup:2*warmup+1_000, 2]),
+    label=false, mc=:red, ma=0.3,
+    xlims=(-3, 3), ylims=(-3, 3),
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
@@ -668,10 +670,10 @@ savefig(joinpath(@OUTPUT, "gibbs_first1000.svg")); # hide
 
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
-scatter((X_gibbs[2 * warmup:end, 1], X_gibbs[2 * warmup:end, 2]),
-         label=false, mc=:red, ma=0.3,
-         xlims=(-3, 3), ylims=(-3, 3),
-         xlabel=L"\theta_1", ylabel=L"\theta_2")
+scatter((X_gibbs[2*warmup:end, 1], X_gibbs[2*warmup:end, 2]),
+    label=false, mc=:red, ma=0.3,
+    xlims=(-3, 3), ylims=(-3, 3),
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
@@ -729,21 +731,21 @@ const logocolors = Colors.JULIA_LOGO_COLORS;
 parallel_met = Animation()
 for i in 1:99
     scatter!(plt, (X_met_1[i, 1], X_met_1[i, 2]),
-             label=false, mc=logocolors.blue, ma=0.5)
-    plot!(X_met_1[i:i + 1, 1], X_met_1[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.blue, la=0.5, label=false)
+        label=false, mc=logocolors.blue, ma=0.5)
+    plot!(X_met_1[i:i+1, 1], X_met_1[i:i+1, 2], seriestype=:path,
+        lc=logocolors.blue, la=0.5, label=false)
     scatter!(plt, (X_met_2[i, 1], X_met_2[i, 2]),
-             label=false, mc=logocolors.red, ma=0.5)
-    plot!(X_met_2[i:i + 1, 1], X_met_2[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.red, la=0.5, label=false)
+        label=false, mc=logocolors.red, ma=0.5)
+    plot!(X_met_2[i:i+1, 1], X_met_2[i:i+1, 2], seriestype=:path,
+        lc=logocolors.red, la=0.5, label=false)
     scatter!(plt, (X_met_3[i, 1], X_met_3[i, 2]),
-             label=false, mc=logocolors.green, ma=0.5)
-    plot!(X_met_3[i:i + 1, 1], X_met_3[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.green, la=0.5, label=false)
+        label=false, mc=logocolors.green, ma=0.5)
+    plot!(X_met_3[i:i+1, 1], X_met_3[i:i+1, 2], seriestype=:path,
+        lc=logocolors.green, la=0.5, label=false)
     scatter!(plt, (X_met_4[i, 1], X_met_4[i, 2]),
-             label=false, mc=logocolors.purple, ma=0.5)
-    plot!(X_met_4[i:i + 1, 1], X_met_4[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.purple, la=0.5, label=false)
+        label=false, mc=logocolors.purple, ma=0.5)
+    plot!(X_met_4[i:i+1, 1], X_met_4[i:i+1, 2], seriestype=:path,
+        lc=logocolors.purple, la=0.5, label=false)
     frame(parallel_met)
 end
 gif(parallel_met, joinpath(@OUTPUT, "parallel_met.gif"), fps=5); # hide
@@ -772,21 +774,21 @@ plt = covellipse(μ, Σ,
 parallel_gibbs = Animation()
 for i in 1:199
     scatter!(plt, (X_gibbs_1[i, 1], X_gibbs_1[i, 2]),
-             label=false, mc=logocolors.blue, ma=0.5)
-    plot!(X_gibbs_1[i:i + 1, 1], X_gibbs_1[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.blue, la=0.5, label=false)
+        label=false, mc=logocolors.blue, ma=0.5)
+    plot!(X_gibbs_1[i:i+1, 1], X_gibbs_1[i:i+1, 2], seriestype=:path,
+        lc=logocolors.blue, la=0.5, label=false)
     scatter!(plt, (X_gibbs_2[i, 1], X_gibbs_2[i, 2]),
-             label=false, mc=logocolors.red, ma=0.5)
-    plot!(X_gibbs_2[i:i + 1, 1], X_gibbs_2[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.red, la=0.5, label=false)
+        label=false, mc=logocolors.red, ma=0.5)
+    plot!(X_gibbs_2[i:i+1, 1], X_gibbs_2[i:i+1, 2], seriestype=:path,
+        lc=logocolors.red, la=0.5, label=false)
     scatter!(plt, (X_gibbs_3[i, 1], X_gibbs_3[i, 2]),
-             label=false, mc=logocolors.green, ma=0.5)
-    plot!(X_gibbs_3[i:i + 1, 1], X_gibbs_3[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.green, la=0.5, label=false)
+        label=false, mc=logocolors.green, ma=0.5)
+    plot!(X_gibbs_3[i:i+1, 1], X_gibbs_3[i:i+1, 2], seriestype=:path,
+        lc=logocolors.green, la=0.5, label=false)
     scatter!(plt, (X_gibbs_4[i, 1], X_gibbs_4[i, 2]),
-             label=false, mc=logocolors.purple, ma=0.5)
-    plot!(X_gibbs_4[i:i + 1, 1], X_gibbs_4[i:i + 1, 2], seriestype=:path,
-          lc=logocolors.purple, la=0.5, label=false)
+        label=false, mc=logocolors.purple, ma=0.5)
+    plot!(X_gibbs_4[i:i+1, 1], X_gibbs_4[i:i+1, 2], seriestype=:path,
+        lc=logocolors.purple, la=0.5, label=false)
     frame(parallel_gibbs)
 end
 gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
@@ -889,34 +891,35 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # Alright let's code the HMC algorithm for our toy example's bivariate normal distribution:
 
-using ForwardDiff:gradient
+using ForwardDiff: gradient
 function hmc(S::Int64, width::Float64, ρ::Float64;
-             L=40, ϵ=0.001,
-             μ_x::Float64=0.0, μ_y::Float64=0.0,
-             σ_x::Float64=1.0, σ_y::Float64=1.0,
-             start_x=-2.5, start_y=2.5,
-             seed=123)
+    L=40, ϵ=0.001,
+    μ_x::Float64=0.0, μ_y::Float64=0.0,
+    σ_x::Float64=1.0, σ_y::Float64=1.0,
+    start_x=-2.5, start_y=2.5,
+    seed=123)
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
-    accepted = 0::Int64;
-    x = start_x; y = start_y
+    accepted = 0::Int64
+    x = start_x
+    y = start_y
     @inbounds draws[1, :] = [x y]
-    M = [1. 0.; 0. 1.]
+    M = [1.0 0.0; 0.0 1.0]
     ϕ_d = MvNormal([0.0, 0.0], M)
     for s in 2:S
         x_ = rand(rgn, Uniform(x - width, x + width))
         y_ = rand(rgn, Uniform(y - width, y + width))
         ϕ = rand(rgn, ϕ_d)
-        kinetic = sum(ϕ.^2) / 2
+        kinetic = sum(ϕ .^ 2) / 2
         log_p = logpdf(binormal, [x, y]) - kinetic
         ϕ += 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
         for l in 1:L
             x_, y_ = [x_, y_] + (ϵ * M * ϕ)
-            ϕ += + 0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
+            ϕ += +0.5 * ϵ * gradient(x -> logpdf(binormal, x), [x_, y_])
         end
         ϕ = -ϕ # make the proposal symmetric
-        kinetic = sum(ϕ.^2) / 2
+        kinetic = sum(ϕ .^ 2) / 2
         log_p_ = logpdf(binormal, [x_, y_]) - kinetic
         r = exp(log_p_ - log_p)
 
@@ -997,9 +1000,9 @@ plt = covellipse(μ, Σ,
 
 hmc_anim = @animate for i in 1:100
     scatter!(plt, (X_hmc[i, 1], X_hmc[i, 2]),
-             label=false, mc=:red, ma=0.5)
-    plot!(X_hmc[i:i + 1, 1], X_hmc[i:i + 1, 2], seriestype=:path,
-          lc=:green, la=0.5, label=false)
+        label=false, mc=:red, ma=0.5)
+    plot!(X_hmc[i:i+1, 1], X_hmc[i:i+1, 2], seriestype=:path,
+        lc=:green, la=0.5, label=false)
 end
 gif(hmc_anim, joinpath(@OUTPUT, "hmc_anim.gif"), fps=5); # hide
 
@@ -1008,10 +1011,10 @@ gif(hmc_anim, joinpath(@OUTPUT, "hmc_anim.gif"), fps=5); # hide
 
 # As usual, let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
 
-scatter((X_hmc[warmup:warmup + 1_000, 1], X_hmc[warmup:warmup + 1_000, 2]),
-         label=false, mc=:red, ma=0.3,
-         xlims=(-3, 3), ylims=(-3, 3),
-         xlabel=L"\theta_1", ylabel=L"\theta_2")
+scatter((X_hmc[warmup:warmup+1_000, 1], X_hmc[warmup:warmup+1_000, 2]),
+    label=false, mc=:red, ma=0.3,
+    xlims=(-3, 3), ylims=(-3, 3),
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
@@ -1030,9 +1033,9 @@ savefig(joinpath(@OUTPUT, "hmc_first1000.svg")); # hide
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
 scatter((X_hmc[warmup:end, 1], X_hmc[warmup:end, 2]),
-         label=false, mc=:red, ma=0.3,
-         xlims=(-3, 3), ylims=(-3, 3),
-         xlabel=L"\theta_1", ylabel=L"\theta_2")
+    label=false, mc=:red, ma=0.3,
+    xlims=(-3, 3), ylims=(-3, 3),
+    xlabel=L"\theta_1", ylabel=L"\theta_2")
 
 covellipse!(μ, Σ,
     n_std=1.64, # 5% - 95% quantiles
@@ -1085,8 +1088,8 @@ d = MixtureModel([d1, d2])
 data_mixture = rand(d, 1_000)'
 
 marginalkde(data_mixture[:, 1], data_mixture[:, 2],
-            clip=((-1.6, 3), (-3, 3)),
-            xlabel=L"X", ylabel=L"Y")
+    clip=((-1.6, 3), (-3, 3)),
+    xlabel=L"X", ylabel=L"Y")
 savefig(joinpath(@OUTPUT, "bimodal.svg")); # hide
 
 # \fig{bimodal}
@@ -1102,9 +1105,9 @@ funnel_y = rand(Normal(0, 3), 10_000)
 funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
 
 scatter((funnel_x, funnel_y),
-        label=false, mc=:steelblue, ma=0.3,
-        xlabel=L"X", ylabel=L"Y",
-        xlims=(-100, 100))
+    label=false, mc=:steelblue, ma=0.3,
+    xlabel=L"X", ylabel=L"Y",
+    xlims=(-100, 100))
 savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 
 # \fig{funnel}
@@ -1150,12 +1153,12 @@ end;
 
 data_dice = rand(DiscreteUniform(1, 6), 1_000);
 
-# Like before we'll sample using `NUTS()` and 2,000 iterations. Note that you can use Metropolis with `MH()`, Gibbs with `Gibbs()`
+# Like before we'll sample using `NUTS()` and 1,000 iterations. Note that you can use Metropolis with `MH()`, Gibbs with `Gibbs()`
 # and HMC with `HMC()` if you want to. You can check all Turing's different MCMC samplers in
 # [Turing's documentation](https://turing.ml/dev/docs/using-turing/guide).
 
 model = dice_throw(data_dice)
-chain = sample(model, NUTS(), 2_000);
+chain = sample(model, NUTS(), 1_000);
 summarystats(chain)
 
 # We have the following columns that outpus some kind of MCMC summary statistics:
@@ -1178,7 +1181,7 @@ summarystats(chain)
 # Depending on the model and data, it is possible that HMC (even with NUTS) will not achieve convergence.
 # NUTS will not converge if it encounters divergences either due to a very pathological posterior density topology
 # or if you supply improper parameters. To exemplify let me run a "bad" chain by passing the `NUTS()` constructor
-# a target acceptance rate of `0.3` with only 500 sampling iterations (including warmup):
+# a target acceptance rate of `0.3` with only 500 sampling iterations (including warmup of 1,000 iters):
 
 bad_chain = sample(model, NUTS(0.3), 500)
 summarystats(bad_chain)
