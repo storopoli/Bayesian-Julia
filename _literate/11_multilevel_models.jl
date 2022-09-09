@@ -92,7 +92,7 @@
 using Turing
 using LinearAlgebra: I
 using Statistics: mean, std
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
@@ -252,8 +252,8 @@ idx = cheese[:, :background_int];
 # The first model is the `varying_intercept`:
 
 model_intercept = varying_intercept(X, idx, y)
-chain_intercept = sample(model_intercept, NUTS(), MCMCThreads(), 2_000, 4)
-summarystats(chain_intercept)  |> DataFrame  |> println
+chain_intercept = sample(model_intercept, NUTS(), MCMCThreads(), 1_000, 4)
+summarystats(chain_intercept) |> DataFrame |> println
 
 # Here we can see that the model has a population-level intercept `α` along with population-level coefficients `β`s for each `cheese`
 # dummy variable. But notice that we have also group-level intercepts for each of the groups `αⱼ`s.
@@ -262,8 +262,8 @@ summarystats(chain_intercept)  |> DataFrame  |> println
 # Now let's go to the second model, `varying_slope`:
 
 model_slope = varying_slope(X, idx, y)
-chain_slope = sample(model_slope, NUTS(), MCMCThreads(), 2_000, 4)
-summarystats(chain_slope)  |> DataFrame  |> println
+chain_slope = sample(model_slope, NUTS(), MCMCThreads(), 1_000, 4)
+summarystats(chain_slope) |> DataFrame |> println
 
 # Here we can see that the model has still a population-level intercept `α`. But now our population-level
 # coefficients `β`s are replaced by group-level coefficients `βⱼ`s along with their standard deviation `τᵦ`s.
@@ -273,8 +273,8 @@ summarystats(chain_slope)  |> DataFrame  |> println
 # Now let's go to the third model, `varying_intercept_slope`:
 
 model_intercept_slope = varying_intercept_slope(X, idx, y)
-chain_intercept_slope = sample(model_intercept_slope, NUTS(), MCMCThreads(), 2_000, 4)
-summarystats(chain_intercept_slope)  |> DataFrame  |> println
+chain_intercept_slope = sample(model_intercept_slope, NUTS(), MCMCThreads(), 1_000, 4)
+summarystats(chain_intercept_slope) |> DataFrame |> println
 
 # Now we have fused the previous model in one. We still have a population-level intercept `α`. But now
 # we have in the same model group-level intercepts for each of the groups `αⱼ`s and group-level along with their standard

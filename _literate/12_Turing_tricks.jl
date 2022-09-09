@@ -24,7 +24,7 @@ A = rand(3, 2)
 
 # Now let's factor `A` using `LinearAlgebra`'s `qr()` function:
 
-using LinearAlgebra:qr, I
+using LinearAlgebra: qr, I
 Q, R = qr(A)
 
 # Notice that `qr()` produced a tuple containing two matrices `Q` and `R`. `Q` is a 3x3 orthogonal matrix.
@@ -46,7 +46,7 @@ Q' * Q ≈ I(3)
 using Turing
 using LinearAlgebra: I
 using Statistics: mean, std
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
@@ -67,7 +67,7 @@ kidiq = CSV.read(HTTP.get(url).body, DataFrame)
 X = Matrix(select(kidiq, Not(:kid_score)))
 y = kidiq[:, :kid_score]
 model = linreg(X, y)
-chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
+chain = sample(model, NUTS(), MCMCThreads(), 1_000, 4)
 
 # See the wall duration in Turing's `chain`: for me it took around 24 seconds.
 
@@ -109,13 +109,13 @@ R_ast = R / sqrt(size(X, 1) - 1);
 # Then, we instantiate a model with `Q` instead of `X` and sample as you would:
 
 model_qr = linreg(Q_ast, y)
-chain_qr = sample(model_qr, NUTS(1_000, 0.65), MCMCThreads(), 2_000, 4)
+chain_qr = sample(model_qr, NUTS(1_000, 0.65), MCMCThreads(), 1_000, 4)
 
 # See the wall duration in Turing's `chain_qr`: for me it took around 5 seconds. Much faster than
 # the regular `linreg`.
 # Now we have to reconstruct our $\boldsymbol{\beta}$s:
 
-betas = mapslices(x -> R_ast^-1 * x, chain_qr[:, namesingroup(chain_qr, :β),:].value.data, dims=[2])
+betas = mapslices(x -> R_ast^-1 * x, chain_qr[:, namesingroup(chain_qr, :β), :].value.data, dims=[2])
 chain_beta = setrange(Chains(betas, ["real_β[$i]" for i in 1:size(Q_ast, 2)]), 1_001:1:3_000)
 chain_qr_reconstructed = hcat(chain_beta, chain_qr)
 
@@ -131,9 +131,9 @@ funnel_y = rand(Normal(0, 3), 10_000)
 funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
 
 scatter((funnel_x, funnel_y),
-        label=false, mc=:steelblue, ma=0.3,
-        xlabel=L"X", ylabel=L"Y",
-        xlims=(-100, 100))
+    label=false, mc=:steelblue, ma=0.3,
+    xlabel=L"X", ylabel=L"Y",
+    xlims=(-100, 100))
 savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 
 # \fig{funnel}
@@ -150,9 +150,9 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
     x ~ Normal(0, exp(y / 2))
 end
 
-    chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 2_000, 4)
+chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 1_000, 4)
 
-# Wow, take a look at those `rhat` values... That sucks: all are above `1.01` even with 4 parallel chains with 2,000
+# Wow, take a look at those `rhat` values... That sucks: all are above `1.01` even with 4 parallel chains with 1,000
 # iterations!
 
 # How do we deal with that? We **reparametrize**! Note that we can add two normal distributions in the following manner:
@@ -170,7 +170,7 @@ end
     x = exp(y / 2) * x̃  # implies x ~ Normal(0, exp(y / 2))
 end
 
-chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 2_000, 4)
+chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 1_000, 4)
 
 # Much better now: all `rhat` are well below `1.01` (or below `0.99`).
 
@@ -235,12 +235,12 @@ y = cheese[:, :y];
 idx = cheese[:, :background_int];
 
 model_cp = varying_intercept(X, idx, y)
-chain_cp = sample(model_cp, NUTS(), MCMCThreads(), 2_000, 4)
+chain_cp = sample(model_cp, NUTS(), MCMCThreads(), 1_000, 4)
 
 # Now let's do the NCP hierarchical model:
 
 model_ncp = varying_intercept_ncp(X, idx, y)
-chain_ncp = sample(model_ncp, NUTS(), MCMCThreads(), 2_000, 4)
+chain_ncp = sample(model_ncp, NUTS(), MCMCThreads(), 1_000, 4)
 
 # Notice that some models are better off with a standard Centered Parametrization (as is our `cheese` case here).
 # While others are better off with a Non-Centered Parametrization. But now you know how to apply both parametrizations

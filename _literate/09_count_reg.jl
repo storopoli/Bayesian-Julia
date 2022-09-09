@@ -14,7 +14,7 @@
 using Plots, LaTeXStrings
 
 plot(exp, -6, 6, label=false,
-     xlabel=L"x", ylabel=L"e^x")
+    xlabel=L"x", ylabel=L"e^x")
 savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 # \fig{exponential}
@@ -113,11 +113,11 @@ savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 using Turing
 using LazyArrays
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model function poissonreg(X,  y; predictors=size(X, 2))
+@model function poissonreg(X, y; predictors=size(X, 2))
     #priors
     α ~ Normal(0, 2.5)
     β ~ filldist(TDist(3), predictors)
@@ -169,10 +169,10 @@ end;
 
 using StatsPlots, Distributions
 plot(Gamma(0.01, 0.01),
-        lw=2, label=false,
-        xlabel=L"\phi",
-        ylabel="Density",
-        xlims=(0, 0.001))
+    lw=2, label=false,
+    xlabel=L"\phi",
+    ylabel="Density",
+    xlims=(0, 0.001))
 savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
 
 # \fig{gamma}
@@ -254,7 +254,7 @@ end
 
 # Now we create our Turing model with the alternative `NegBinomial2` parameterization:
 
-@model function negbinreg(X,  y; predictors=size(X, 2))
+@model function negbinreg(X, y; predictors=size(X, 2))
     #priors
     α ~ Normal(0, 2.5)
     β ~ filldist(TDist(3), predictors)
@@ -312,10 +312,10 @@ X = Matrix(select(roaches, Not(:y)))
 y = roaches[:, :y]
 model_poisson = poissonreg(X, y);
 
-# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, with
+# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `1_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
 
-chain_poisson = sample(model_poisson, NUTS(), MCMCThreads(), 2_000, 4)
+chain_poisson = sample(model_poisson, NUTS(), MCMCThreads(), 1_000, 4)
 summarystats(chain_poisson)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
@@ -349,10 +349,10 @@ end
 
 model_negbin = negbinreg(X, y);
 
-# We will also default `NUTS()` sampler with `2_000` samples, with 4 Markov chains using multiple threads `MCMCThreads()`:
+# We will also default `NUTS()` sampler with `1_000` samples, with 4 Markov chains using multiple threads `MCMCThreads()`:
 
 seed!(111) # hide
-chain_negbin = sample(model_negbin, NUTS(),MCMCThreads(), 2_000, 4)
+chain_negbin = sample(model_negbin, NUTS(), MCMCThreads(), 1_000, 4)
 summarystats(chain_negbin)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).

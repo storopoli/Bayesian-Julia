@@ -20,7 +20,7 @@ function logistic(x)
 end
 
 plot(logistic, -10, 10, label=false,
-     xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
+    xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
 savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 
 # \fig{logistic}
@@ -131,11 +131,11 @@ savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 
 using Turing
 using LazyArrays
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model function logreg(X,  y; predictors=size(X, 2))
+@model function logreg(X, y; predictors=size(X, 2))
     #priors
     α ~ Normal(0, 2.5)
     β ~ filldist(TDist(3), predictors)
@@ -196,10 +196,10 @@ X = Matrix(select(wells, Not(:switch)))
 y = wells[:, :switch]
 model = logreg(X, y);
 
-# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, with
+# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `1_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
 
-chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
+chain = sample(model, NUTS(), MCMCThreads(), 1_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).

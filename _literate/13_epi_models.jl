@@ -21,15 +21,15 @@ br = @chain df begin
     groupby(:date)
     combine(
         [:estimated_population_2019,
-         :last_available_confirmed_per_100k_inhabitants,
-         :last_available_deaths,
-         :new_confirmed,
-         :new_deaths] .=> sum .=>
-         [:estimated_population_2019,
-         :last_available_confirmed_per_100k_inhabitants,
-         :last_available_deaths,
-         :new_confirmed,
-         :new_deaths]
+            :last_available_confirmed_per_100k_inhabitants,
+            :last_available_deaths,
+            :new_confirmed,
+            :new_deaths] .=> sum .=>
+            [:estimated_population_2019,
+                :last_available_confirmed_per_100k_inhabitants,
+                :last_available_deaths,
+                :new_confirmed,
+                :new_deaths]
     )
 end;
 
@@ -45,10 +45,10 @@ last(br, 5)
 
 using Plots, StatsPlots, LaTeXStrings
 @df br plot(:date,
-            :new_confirmed,
-            xlab=L"t", ylab="infected daily",
-            yformatter=y -> string(round(Int64, y ÷ 1_000)) * "K",
-            label=false)
+    :new_confirmed,
+    xlab=L"t", ylab="infected daily",
+    yformatter=y -> string(round(Int64, y ÷ 1_000)) * "K",
+    label=false)
 savefig(joinpath(@OUTPUT, "infected.svg")); # hide
 
 # \fig{infected}
@@ -123,12 +123,12 @@ u = [N - i₀, i₀, 0.0]
 p = [0.5, 0.05]
 prob = ODEProblem(sir_ode!, u, (1.0, 100.0), p)
 sol_ode = solve(prob)
-plot(sol_ode, label=[L"S" L"I" L"R" ],
-     lw=3,
-     xlabel=L"t",
-     ylabel=L"N",
-     yformatter=y -> string(round(Int64, y ÷ 1_000_000)) * "mi",
-     title="SIR Model for 100 days, β = $(p[1]), γ = $(p[2])")
+plot(sol_ode, label=[L"S" L"I" L"R"],
+    lw=3,
+    xlabel=L"t",
+    ylabel=L"N",
+    yformatter=y -> string(round(Int64, y ÷ 1_000_000)) * "mi",
+    title="SIR Model for 100 days, β = $(p[1]), γ = $(p[2])")
 savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
 
 # \fig{ode_solve}
@@ -149,7 +149,7 @@ end
 
 using Turing
 using LazyArrays
-using Random:seed!
+using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
@@ -169,12 +169,12 @@ setprogress!(false) # hide
     p = [β, γ]
     tspan = (1.0, float(l))
     prob = ODEProblem(sir_ode!,
-            u0,
-            tspan,
-            p)
+        u0,
+        tspan,
+        p)
     sol = solve(prob,
-                Tsit5(), # similar to Dormand-Prince RK45 in Stan but 20% faster
-                saveat=1.0)
+        Tsit5(), # similar to Dormand-Prince RK45 in Stan but 20% faster
+        saveat=1.0)
     solᵢ = Array(sol)[2, :] # New Infected
     solᵢ = max.(1e-4, solᵢ) # numerical issues arose
 
@@ -183,12 +183,12 @@ setprogress!(false) # hide
 end;
 
 # Now run the model and inspect our parameters estimates.
-# We will be using the default `NUTS()` sampler with `2_000` samples on only one Markov chain:
+# We will be using the default `NUTS()` sampler with `1_000` samples on only one Markov chain:
 
 infected = br[:, :new_confirmed]
 r₀ = first(br[:, :new_deaths])
 model_sir = bayes_sir(infected, i₀, r₀, N)
-chain_sir = sample(model_sir, NUTS(), 2_000)
+chain_sir = sample(model_sir, NUTS(), 1_000)
 summarystats(chain_sir[[:β, :γ]])
 
 # Hope you had learned some new bayesian computational skills and also took notice

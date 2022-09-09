@@ -118,23 +118,23 @@ savefig(joinpath(@OUTPUT, "comparison_normal_student.svg")); # hide
 
 using Turing
 using Statistics: mean, std
-using StatsBase:mad
-using Random:seed!
+using StatsBase: mad
+using Random: seed!
 seed!(123)
 seed!(456) # hide
 setprogress!(false) # hide
 
 @model function robustreg(X, y; predictors=size(X, 2))
-    #priors
-    νₐ ~ LogNormal(1, 1)
-    νᵦ ~ LogNormal(1, 1)
-    α ~ LocationScale(median(y), 2.5 * mad(y), TDist(νₐ))
-    β ~ filldist(TDist(νᵦ), predictors)
-    σ ~ Exponential(1)
-    ν ~ LogNormal(2, 1)
+        #priors
+        νₐ ~ LogNormal(1, 1)
+        νᵦ ~ LogNormal(1, 1)
+        α ~ LocationScale(median(y), 2.5 * mad(y), TDist(νₐ))
+        β ~ filldist(TDist(νᵦ), predictors)
+        σ ~ Exponential(1)
+        ν ~ LogNormal(2, 1)
 
-    #likelihood
-    y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
+        #likelihood
+        y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -196,10 +196,10 @@ X = Matrix(select(duncan, [:income, :education]))
 y = duncan[:, :prestige]
 model = robustreg(X, y);
 
-# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `2_000` samples, with
+# And, finally, we will sample from the Turing model. We will be using the default `NUTS()` sampler with `1_000` samples, with
 # 4 Markov chains using multiple threads `MCMCThreads()`:
 
-chain = sample(model, NUTS(), MCMCThreads(), 2_000, 4)
+chain = sample(model, NUTS(), MCMCThreads(), 1_000, 4)
 summarystats(chain)
 
 # We had no problem with the Markov chains as all the `rhat` are well below `1.01` (or above `0.99`).
