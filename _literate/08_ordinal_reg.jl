@@ -342,14 +342,6 @@ using DataFrames, CSV, HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/esoph.csv"
 esoph = CSV.read(HTTP.get(url).body, DataFrame)
-describe(esoph)
-
-# As you can see from the `describe()` output 58% of the respondents switched wells and 42% percent of respondents
-# somehow are engaged in community organizations. The average years of education of the household's head is approximate
-# 5 years and ranges from 0 (no education at all) to 17 years. The distance to safe drinking water is measured in meters
-# and averages 48m ranging from less than 1m to 339m. Regarding arsenic levels I cannot comment because the only thing I
-# know that it is toxic and you probably would never want to have your well contaminated with it. Here, we believe that all
-# of those variables somehow influence the probability of a respondent switch to a safe well.
 
 # Now let's us instantiate our model with the data.
 # But here I need to do some data wrangling to create the data matrix `X`.
