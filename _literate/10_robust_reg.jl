@@ -97,14 +97,12 @@ savefig(joinpath(@OUTPUT, "comparison_normal_student.svg")); # hide
 
 # Note that there is also nothing special about the priors of the $\boldsymbol{\beta}$ coefficients or the intercept $\alpha$.
 # We could very well also specify other distributions as priors or even make the model even more robust to outliers by
-# specifying priors as Student-$t$ distributions:
+# specifying priors as Student-$t$ distributions with degrees of freedom $\nu = 3$:
 
 # $$
 # \begin{aligned}
-# \alpha &\sim \text{Student}(\nu_\alpha, \mu_\alpha, \sigma_\alpha) \\
-# \boldsymbol{\beta} &\sim \text{Student}(\nu_{\boldsymbol{\beta}}, \mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}}) \\
-# \nu_\alpha &\sim \text{Log-Normal}(1, 1) \\
-# \nu_{\boldsymbol{\beta}} &\sim \text{Log-Normal}(1, 1)
+# \alpha &\sim \text{Student}(\nu_\alpha = 3, \mu_\alpha, \sigma_\alpha) \\
+# \boldsymbol{\beta} &\sim \text{Student}(\nu_{\boldsymbol{\beta}} = 3, \mu_{\boldsymbol{\beta}}, \sigma_{\boldsymbol{\beta}})
 # \end{aligned}
 # $$
 
@@ -126,10 +124,8 @@ setprogress!(false) # hide
 
 @model function robustreg(X, y; predictors=size(X, 2))
         #priors
-        νₐ ~ LogNormal(1, 1)
-        νᵦ ~ LogNormal(1, 1)
-        α ~ LocationScale(median(y), 2.5 * mad(y), TDist(νₐ))
-        β ~ filldist(TDist(νᵦ), predictors)
+        α ~ LocationScale(median(y), 2.5 * mad(y), TDist(3))
+        β ~ filldist(TDist(3), predictors)
         σ ~ Exponential(1)
         ν ~ LogNormal(2, 1)
 
@@ -139,8 +135,8 @@ end;
 
 # Here I am specifying very weakly informative priors:
 
-# * $\alpha \sim \text{Student-}t(\operatorname{median}(\mathbf{y}), 2.5 \cdot \operatorname{MAD}(\mathbf{y}), \nu_{\alpha})$ -- This means a Student-$t$ distribution centered on `y`'s median with variance 2.5 times the mean absolute deviation (MAD) of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the Student-$t$ distribution has support over all the real number line $\in (-\infty, +\infty)$. The `LocationScale()` Turing's function adds location and scale parameters to distributions that doesn't have it. This is the case with the `TDist()` distribution which only takes the `ν` degrees of of freedom as parameter.
-# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,\nu_{\boldsymbol{\beta}})$ -- The predictors all have a prior distribution of a Student-$t$ distribution centered on 0 with variance 1 and degrees of freedom $\nu_{\boldsymbol{\beta}}$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
+# * $\alpha \sim \text{Student-}t(\operatorname{median}(\mathbf{y}), 2.5 \cdot \operatorname{MAD}(\mathbf{y}), \nu_{\alpha} = 3)$ -- This means a Student-$t$ distribution with degrees of freedom `ν = 3` centered on `y`'s median with variance 2.5 times the mean absolute deviation (MAD) of `y`. That prior should with ease cover all possible values of $\alpha$. Remember that the Student-$t$ distribution has support over all the real number line $\in (-\infty, +\infty)$. The `LocationScale()` Turing's function adds location and scale parameters to distributions that doesn't have it. This is the case with the `TDist()` distribution which only takes the `ν` degrees of of freedom as parameter.
+# * $\boldsymbol{\beta} \sim \text{Student-}t(0,1,\nu_{\boldsymbol{\beta}})$ -- The predictors all have a prior distribution of a Student-$t$ distribution with degrees of freedom `ν = 3` centered on 0 with variance 1 and degrees of freedom $\nu_{\boldsymbol{\beta}}$. That wide-tailed $t$ distribution will cover all possible values for our coefficients. Remember the Student-$t$ also has support over all the real number line $\in (-\infty, +\infty)$. Also the `filldist()` is a nice Turing's function which takes any univariate or multivariate distribution and returns another distribution that repeats the input distribution.
 # * $\sigma \sim \text{Exponential}(1)$ -- A wide-tailed-positive-only distribution perfectly suited for our model's error.
 
 # Turing's `arraydist()` function wraps an array of distributions returning a new distribution sampling from the individual
