@@ -12,7 +12,7 @@
 # Most important, the distance between values is not the same.
 # For example, imagine a pain score scale that goes from 1 to 10.
 # The distance between 1 and 2 is different from the distance 9 to 10.
-# Another example is opinion pools with their ubiquously disagree-agree range
+# Another example is opinion pools with their ubiquitous disagree-agree range
 # of plausible values.
 # These are also known as Likert scale variables.
 # The distance between "disagree" to "not agree or disagree" is different
@@ -68,7 +68,7 @@
 
 # $$\ln \frac{p}{1-p} = \ln \frac{1}{1-1} = \ln 0 = \infty$$
 
-# Thus, we only need $K-1$ intercepts for a $K$ possible depedent variables' response values.
+# Thus, we only need $K-1$ intercepts for a $K$ possible dependent variables' response values.
 # These are known as **cut points**.
 
 # Each intercept implies a CDF for each value $K$.
@@ -86,9 +86,9 @@
 
 # $$P(Y=k) = P(Y \leq k) - P(Y \leq k-1)$$
 
-# where $Y$ is the depedent variable and $k \in K$ are the cut points for each intercept.
+# where $Y$ is the dependent variable and $k \in K$ are the cut points for each intercept.
 
-# Let me show you an example with some syntethic data.
+# Let me show you an example with some synthetic data.
 
 using DataFrames
 using CairoMakie
@@ -292,13 +292,13 @@ end;
 
 # First, let's deal with the new stuff in our model: the **`Bijectors.ordered`**.
 # As I've said in the [4. **How to use Turing**](/pages/04_Turing/),
-# Turing has a rich ecossystem of packages.
+# Turing has a rich ecosystem of packages.
 # Bijectors implements a set of functions for transforming constrained random variables
 # (e.g. simplexes, intervals) to Euclidean space.
 # Here we are defining `cutpoints` as a `ncateg - 1` vector of Student-$t$ distributions
 # with mean 0, standard deviation 5 and degrees of freedom $\nu = 3$.
 # Remember that we only need $K-1$ cutpoints for all of our $K$ intercepts.
-# And we are also contraining it to be an ordered vector with `Bijectors.ordered`,
+# And we are also constraining it to be an ordered vector with `Bijectors.ordered`,
 # such that for all cutpoints $c_i$ we have $c_1 < c_2 < ... c_{k-1}$.
 
 # As before, we are giving $\boldsymbol{\beta}$ a very weakly informative priors of a
@@ -422,11 +422,11 @@ end
 # The `cutpoints` is the basal rate of the probability of our dependent variable
 # having values less than a certain value.
 # For example the cutpoint for having values less than `2` which its code represents
-# the tobacco comsumption of 10-19 g/day has a median value of 20%.
+# the tobacco consumption of 10-19 g/day has a median value of 20%.
 
 # Now let's take a look at our coefficients
 # All coefficients whose 95% credible intervals captures the value $\frac{1}{2} = 0.5$ tells
-# that the effect on the propensity of tobacco comsumption is inconclusive.
+# that the effect on the propensity of tobacco consumption is inconclusive.
 # It is pretty much similar to a 95% credible interval that captures the 0 in
 # the linear regression coefficients.
 
