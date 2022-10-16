@@ -116,7 +116,7 @@
 
 # ### Simulations
 
-# I will do some simulations to ilustrate MCMC algorithms and techniques. So, here's the initial setup:
+# I will do some simulations to illustrate MCMC algorithms and techniques. So, here's the initial setup:
 
 using Plots, StatsPlots, Distributions, LaTeXStrings, Random
 
@@ -183,7 +183,7 @@ const mvnormal = MvNormal(μ, Σ)
 
 data = rand(mvnormal, N)';
 
-# In the figure below it is possible to see a countour plot of the PDF of a multivariate normal distribution composed of two normal
+# In the figure below it is possible to see a contour plot of the PDF of a multivariate normal distribution composed of two normal
 # variables $X$ and $Y$, both with mean 0 and standard deviation 1.
 # The correlation between $X$ and $Y$ is $\rho = 0.8$:
 

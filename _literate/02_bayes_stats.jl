@@ -537,7 +537,7 @@ savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
 # I believe Turing is the most **important and popular probabilistic language framework in Julia**. It is what PyMC3 and Stan
 # are for Python and R, but for Julia. Furthermore, you don't have to do "cartwheels" with Theano backends and tensors like
 # in PyMC3 or learn a new language to declare your models like in Stan (or even have to debug C++ stuff).
-# Turing is **all** Julia. It uses Julia arrays, Julia distributions, Julia autodiff, Julia plots, Julia randon number generator,
+# Turing is **all** Julia. It uses Julia arrays, Julia distributions, Julia autodiff, Julia plots, Julia random number generator,
 # Julia MCMC algorithms etc. I think that developing and estimating Bayesian probabilistic models using Julia and Turing is
 # **powerful**, **intuitive**, **fun**, **expressive** and allows **easily new breakthroughs** simply by being 100% Julia and
 # embedded in Julia ecosystem. As discussed in [1. **Why Julia?**](/pages/1_why_Julia/), having multiple dispatch with
