@@ -474,12 +474,16 @@
 # to define the action that one type `Pet` takes when it meets another `Pet`:
 
 abstract type Pet end
-struct Dog <: Pet name::String end
-struct Cat <: Pet name::String end
+struct Dog <: Pet
+    name::String
+end
+struct Cat <: Pet
+    name::String
+end
 
 function encounter(a::Pet, b::Pet)
     verb = meets(a, b)
-    println("$(a.name) meets $(b.name) and $verb")
+    return println("$(a.name) meets $(b.name) and $verb")
 end
 
 meets(a::Dog, b::Dog) = "sniffs";
@@ -639,7 +643,7 @@ using BenchmarkTools
 # with a simple column selection. We do this by defining a new method of the `*` function (multiplier function)
 # of `Base` Julia. Additionally we also create a new optimized method of `inner()` for dealing with `OneHotVector`:
 
-import Base:*
+import Base: *
 
 *(A::AbstractMatrix, v::OneHotVector) = A[:, v.ind]
 inner(v::OneHotVector, A, w::OneHotVector) = A[v.ind, w.ind]
