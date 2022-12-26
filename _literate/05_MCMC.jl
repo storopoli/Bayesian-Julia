@@ -484,7 +484,7 @@ record(f, joinpath(@OUTPUT, "met_anim.gif"); framerate=5) do frame
         linesegments!(X_met[i:(i + 1), 1], X_met[i:(i + 1), 2]; color=(:green, 0.5))
         recordframe!(frame)
     end
-end
+end;
 
 # \fig{met_anim}
 # \center{*Animation of the First 100 Samples Generated from the Metropolis Algorithm*} \\
@@ -697,7 +697,7 @@ record(f, joinpath(@OUTPUT, "gibbs_anim.gif"); framerate=5) do frame
         linesegments!(X_gibbs[i:(i + 1), 1], X_gibbs[i:(i + 1), 2]; color=(:green, 0.5))
         recordframe!(frame)
     end
-end
+end;
 
 # \fig{gibbs_anim}
 # \center{*Animation of the First 100 Samples Generated from the Gibbs Algorithm*} \\
@@ -806,7 +806,7 @@ record(f, joinpath(@OUTPUT, "parallel_met.gif"); framerate=5) do frame
         )
         recordframe!(frame)
     end
-end
+end;
 
 # \fig{parallel_met}
 # \center{*Animation of 4 Parallel Metropolis Markov Chains*} \\
@@ -856,7 +856,7 @@ record(f, joinpath(@OUTPUT, "parallel_gibbs.gif"); framerate=5) do frame
         )
         recordframe!(frame)
     end
-end
+end;
 
 # \fig{parallel_gibbs}
 # \center{*Animation of 4 Parallel Gibbs Markov Chains*} \\
@@ -1075,7 +1075,7 @@ record(f, joinpath(@OUTPUT, "hmc_anim.gif"); framerate=5) do frame
         linesegments!(X_hmc[i:(i + 1), 1], X_hmc[i:(i + 1), 2]; color=(:green, 0.5))
         recordframe!(frame)
     end
-end
+end;
 
 # \fig{hmc_anim}
 # \center{*Animation of the First 100 Samples Generated from the HMC Algorithm*} \\
