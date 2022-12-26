@@ -60,7 +60,9 @@ setprogress!(false) # hide
     return y ~ MvNormal(α .+ X * β, σ^2 * I)
 end;
 
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/kidiq.csv"
 kidiq = CSV.read(HTTP.get(url).body, DataFrame)
@@ -130,20 +132,18 @@ chain_qr_reconstructed = hcat(chain_beta, chain_qr)
 # change the step size $L$ and the $\epsilon$ factor. This is  I've showed one of the most infamous
 # case in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/): Neal's Funnel (Neal, 2003):
 
-using StatsPlots, Distributions, LaTeXStrings
+using CairoMakie
+using Distributions
 funnel_y = rand(Normal(0, 3), 10_000)
 funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
 
-scatter(
-    (funnel_x, funnel_y);
-    label=false,
-    mc=:steelblue,
-    ma=0.3,
-    xlabel=L"X",
-    ylabel=L"Y",
-    xlims=(-100, 100),
+f, ax, s = scatter(
+    funnel_x,
+    funnel_y;
+    color=(:steelblue, 0.3),
+    axis=(; xlabel=L"X", ylabel=L"Y", limits=(-100, 100, nothing, nothing)),
 )
-savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
+save(joinpath(@OUTPUT, "funnel.svg"), f); # hide
 
 # \fig{funnel}
 # \center{*Neal's Funnel*} \\
