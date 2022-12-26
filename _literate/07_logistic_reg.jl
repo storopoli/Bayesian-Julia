@@ -19,8 +19,7 @@ function logistic(x)
     return 1 / (1 + exp(-x))
 end
 
-plot(logistic, -10, 10, label=false,
-    xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
+plot(logistic, -10, 10; label=false, xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
 savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
 
 # \fig{logistic}
@@ -141,7 +140,7 @@ setprogress!(false) # hide
     β ~ filldist(TDist(3), predictors)
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
+    return y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -223,10 +222,7 @@ using Chain
 
 @chain quantile(chain) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Our interpretation of odds is the same as in betting games. Anything below 1 signals a unlikely probability that $y$ will be $1$.
@@ -240,10 +236,7 @@ end
 
 @chain quantile(chain) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(logodds2prob),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(logodds2prob); renamecols=false)
 end
 
 # There you go, much better now. Let's analyze our results. The intercept `α` is the basal `switch` probability which has

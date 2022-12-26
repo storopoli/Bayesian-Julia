@@ -21,10 +21,7 @@
 
 using StatsPlots, Distributions, LaTeXStrings
 
-plot(Normal(0, 1),
-        lw=5, label=false,
-        xlabel=L"x",
-        ylabel="Density")
+plot(Normal(0, 1); lw=5, label=false, xlabel=L"x", ylabel="Density")
 savefig(joinpath(@OUTPUT, "normal.svg")); # hide
 
 # \fig{normal}
@@ -35,11 +32,7 @@ savefig(joinpath(@OUTPUT, "normal.svg")); # hide
 # far from the average without having to "shift" the mean's position (or location). For that we have the Student-$t$ distribution.
 # See the figure below to remember its shape.
 
-plot(TDist(2),
-        lw=5, label=false,
-        xlabel=L"x",
-        ylabel="Density",
-        xlims=(-4, 4))
+plot(TDist(2); lw=5, label=false, xlabel=L"x", ylabel="Density", xlims=(-4, 4))
 savefig(joinpath(@OUTPUT, "tdist.svg")); # hide
 
 # \fig{tdist}
@@ -49,13 +42,8 @@ savefig(joinpath(@OUTPUT, "tdist.svg")); # hide
 
 # Take a look at the tails in the comparison below:
 
-plot(Normal(0, 1),
-        lw=5, label="Normal",
-        xlabel=L"x",
-        ylabel="Density",
-        xlims=(-4, 4))
-plot!(TDist(2),
-        lw=5, label="Student")
+plot(Normal(0, 1); lw=5, label="Normal", xlabel=L"x", ylabel="Density", xlims=(-4, 4))
+plot!(TDist(2); lw=5, label="Student")
 savefig(joinpath(@OUTPUT, "comparison_normal_student.svg")); # hide
 
 # \fig{comparison_normal_student}
@@ -123,14 +111,14 @@ seed!(456) # hide
 setprogress!(false) # hide
 
 @model function robustreg(X, y; predictors=size(X, 2))
-        #priors
-        α ~ LocationScale(median(y), 2.5 * mad(y), TDist(3))
-        β ~ filldist(TDist(3), predictors)
-        σ ~ Exponential(1)
-        ν ~ LogNormal(2, 1)
+    #priors
+    α ~ LocationScale(median(y), 2.5 * mad(y), TDist(3))
+    β ~ filldist(TDist(3), predictors)
+    σ ~ Exponential(1)
+    ν ~ LogNormal(2, 1)
 
-        #likelihood
-        y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
+    #likelihood
+    return y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
 end;
 
 # Here I am specifying very weakly informative priors:

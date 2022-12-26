@@ -96,7 +96,9 @@ using Random: seed!
 seed!(123)
 setprogress!(false) # hide
 
-@model function varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
+@model function varying_intercept(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)
+)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
@@ -108,7 +110,7 @@ setprogress!(false) # hide
 
     #likelihood
     ŷ = α .+ X * β .+ αⱼ[idx]
-    y ~ MvNormal(ŷ, σ^2 * I)
+    return y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # ### Random-Slope Model
@@ -147,7 +149,7 @@ end;
 
     #likelihood
     ŷ = α .+ X * βⱼ * τ
-    y ~ MvNormal(ŷ, σ^2 * I)
+    return y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # ### Random-Intercept-Slope Model
@@ -176,7 +178,9 @@ end;
 
 # In Turing we can accomplish this as:
 
-@model function varying_intercept_slope(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
+@model function varying_intercept_slope(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)
+)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))                     # population-level intercept
     σ ~ Exponential(1 / std(y))                           # residual SD
@@ -189,7 +193,7 @@ end;
 
     #likelihood
     ŷ = α .+ αⱼ[idx] .+ X * βⱼ * τᵦ
-    y ~ MvNormal(ŷ, σ^2 * I)
+    return y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # In all of the models,
@@ -234,8 +238,13 @@ for c in unique(cheese[:, :cheese])
 end
 
 cheese[:, :background_int] = map(cheese[:, :background]) do b
-    b == "rural" ? 1 :
-    b == "urban" ? 2 : missing
+    if b == "rural"
+        1
+    elseif b == "urban"
+        2
+    else
+        missing
+    end
 end
 
 first(cheese, 5)
@@ -253,7 +262,7 @@ idx = cheese[:, :background_int];
 
 model_intercept = varying_intercept(X, idx, y)
 chain_intercept = sample(model_intercept, NUTS(), MCMCThreads(), 1_000, 4)
-summarystats(chain_intercept) |> DataFrame |> println
+println(DataFrame(summarystats(chain_intercept)))
 
 # Here we can see that the model has a population-level intercept `α` along with population-level coefficients `β`s for each `cheese`
 # dummy variable. But notice that we have also group-level intercepts for each of the groups `αⱼ`s.
@@ -263,7 +272,7 @@ summarystats(chain_intercept) |> DataFrame |> println
 
 model_slope = varying_slope(X, idx, y)
 chain_slope = sample(model_slope, NUTS(), MCMCThreads(), 1_000, 4)
-summarystats(chain_slope) |> DataFrame |> println
+println(DataFrame(summarystats(chain_slope)))
 
 # Here we can see that the model has still a population-level intercept `α`. But now our population-level
 # coefficients `β`s are replaced by group-level coefficients `βⱼ`s along with their standard deviation `τᵦ`s.
@@ -274,7 +283,7 @@ summarystats(chain_slope) |> DataFrame |> println
 
 model_intercept_slope = varying_intercept_slope(X, idx, y)
 chain_intercept_slope = sample(model_intercept_slope, NUTS(), MCMCThreads(), 1_000, 4)
-summarystats(chain_intercept_slope) |> DataFrame |> println
+println(DataFrame(summarystats(chain_intercept_slope)))
 
 # Now we have fused the previous model in one. We still have a population-level intercept `α`. But now
 # we have in the same model group-level intercepts for each of the groups `αⱼ`s and group-level along with their standard

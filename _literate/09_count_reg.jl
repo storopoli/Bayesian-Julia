@@ -13,8 +13,7 @@
 
 using Plots, LaTeXStrings
 
-plot(exp, -6, 6, label=false,
-    xlabel=L"x", ylabel=L"e^x")
+plot(exp, -6, 6; label=false, xlabel=L"x", ylabel=L"e^x")
 savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
 
 # \fig{exponential}
@@ -123,7 +122,7 @@ setprogress!(false) # hide
     β ~ filldist(TDist(3), predictors)
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
+    return y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -168,11 +167,9 @@ end;
 # Here is what a $\text{Gamma}(0.01, 0.01)$ looks like:
 
 using StatsPlots, Distributions
-plot(Gamma(0.01, 0.01),
-    lw=2, label=false,
-    xlabel=L"\phi",
-    ylabel="Density",
-    xlims=(0, 0.001))
+plot(
+    Gamma(0.01, 0.01); lw=2, label=false, xlabel=L"\phi", ylabel="Density", xlims=(0, 0.001)
+)
 savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
 
 # \fig{gamma}
@@ -262,7 +259,7 @@ end
     ϕ = 1 / ϕ⁻
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
+    return y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
 end;
 
 # Here I am also specifying very weakly informative priors:
@@ -326,10 +323,7 @@ using Chain
 
 @chain quantile(chain_poisson) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Let's analyze our results. The intercept `α` is the basal number of roaches caught `y` and has
@@ -360,10 +354,7 @@ summarystats(chain_negbin)
 
 @chain quantile(chain_negbin) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Our results show much more uncertainty in the coefficients than in the Poisson regression.

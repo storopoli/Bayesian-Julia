@@ -85,7 +85,7 @@ setprogress!(false) # hide
     σ ~ Exponential(1)
 
     #likelihood
-    y ~ MvNormal(α .+ X * β, σ^2 * I)
+    return y ~ MvNormal(α .+ X * β, σ^2 * I)
 end;
 
 # Here I am specifying very weakly informative priors:
