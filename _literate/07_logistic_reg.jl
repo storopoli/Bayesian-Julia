@@ -13,15 +13,15 @@
 # We use logistic regression when our dependent variable is binary. It has only two distinct values, usually
 # encoded as $0$ or $1$. See the figure below for a graphical intuition of the logistic function:
 
-using Plots, LaTeXStrings
+using CairoMakie
 
 function logistic(x)
     return 1 / (1 + exp(-x))
 end
 
-plot(logistic, -10, 10, label=false,
-    xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
-savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
+f, ax, l = lines(-10 .. 10, logistic; axis=(; xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)"))
+f
+save(joinpath(@OUTPUT, "logistic.svg"), f); # hide
 
 # \fig{logistic}
 # \center{*Logistic Function*} \\
@@ -141,7 +141,7 @@ setprogress!(false) # hide
     β ~ filldist(TDist(3), predictors)
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
+    return y ~ arraydist(LazyArray(@~ BernoulliLogit.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -177,7 +177,9 @@ end;
 # * `educ` -- years of education (head of household).
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/wells.csv"
 wells = CSV.read(HTTP.get(url).body, DataFrame)
@@ -223,10 +225,7 @@ using Chain
 
 @chain quantile(chain) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Our interpretation of odds is the same as in betting games. Anything below 1 signals a unlikely probability that $y$ will be $1$.
@@ -240,10 +239,7 @@ end
 
 @chain quantile(chain) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(logodds2prob),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(logodds2prob); renamecols=false)
 end
 
 # There you go, much better now. Let's analyze our results. The intercept `α` is the basal `switch` probability which has

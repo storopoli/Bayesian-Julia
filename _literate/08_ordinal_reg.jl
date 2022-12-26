@@ -122,28 +122,19 @@ let
     x_pmf = pdf.(dist, x)
     x_cdf = cdf.(dist, x)
     x_logodds_cdf = logit.(x_cdf)
-    df = DataFrame(;
-        x,
-        x_pmf,
-        x_cdf,
-        x_logodds_cdf)
+    df = DataFrame(; x, x_pmf, x_cdf, x_logodds_cdf)
     labels = ["CDF", "Log-cumulative-odds"]
-    fig = Figure()
-    plt1 = data(df) *
-           mapping(:x, :x_pmf) *
-           visual(BarPlot)
-    plt2 = data(df) *
-           mapping(:x,
-               [:x_cdf, :x_logodds_cdf];
-               col=dims(1) => renamer(labels)) *
-           visual(ScatterLines)
+    f = Figure()
+    plt1 = data(df) * mapping(:x, :x_pmf) * visual(BarPlot)
+    plt2 =
+        data(df) *
+        mapping(:x, [:x_cdf, :x_logodds_cdf]; col=dims(1) => renamer(labels)) *
+        visual(ScatterLines)
     axis = (; xticks=1:6)
-    draw!(fig[1, 2:3], plt1; axis)
-    draw!(fig[2, 1:4], plt2;
-        axis,
-        facet=(; linkyaxes=:none))
-    fig
-    save(joinpath(@OUTPUT, "logodds.svg"), fig) # hide
+    draw!(f[1, 2:3], plt1; axis)
+    draw!(f[2, 1:4], plt2; axis, facet=(; linkyaxes=:none))
+    f
+    save(joinpath(@OUTPUT, "logodds.svg"), f) # hide
 end
 
 # \fig{logodds}
@@ -287,7 +278,7 @@ setprogress!(false) # hide
     β ~ filldist(TDist(3) * 2.5, predictors)
 
     #likelihood
-    y ~ arraydist([OrderedLogistic(X[i, :] ⋅ β, cutpoints) for i in 1:length(y)])
+    return y ~ arraydist([OrderedLogistic(X[i, :] ⋅ β, cutpoints) for i in 1:length(y)])
 end;
 
 # First, let's deal with the new stuff in our model: the **`Bijectors.ordered`**.
@@ -338,7 +329,9 @@ end;
 # * `ncontrols`: Number of controls
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/esoph.csv"
 esoph = CSV.read(HTTP.get(url).body, DataFrame)
@@ -360,7 +353,7 @@ transform!(
         x -> categorical(x; levels=["0-39g/day", "40-79", "80-119", "120+"], ordered=true),
     :tobgp =>
         x -> categorical(x; levels=["0-9g/day", "10-19", "20-29", "30+"], ordered=true);
-    renamecols=false
+    renamecols=false,
 )
 transform!(esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false)
 
@@ -395,10 +388,7 @@ using Chain
 
 @chain quantile(chain) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Our interpretation of odds is the same as in betting games. Anything below 1 signals a unlikely probability that $y$ will be $1$.
@@ -412,10 +402,7 @@ end
 
 @chain quantile(chain) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(logodds2prob),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(logodds2prob); renamecols=false)
 end
 
 # There you go, much better now. Let's analyze our results.

@@ -84,19 +84,18 @@
 
 # Graphically this means:
 
-using Plots, StatsPlots, Distributions, LaTeXStrings
+using CairoMakie
+using Distributions
 
 dice = DiscreteUniform(1, 6)
-plot(dice,
+f, ax, b = barplot(
+    dice;
     label="six-sided Dice",
-    markershape=:circle,
-    ms=5,
-    xlabel=L"\theta",
-    ylabel="Mass",
-    ylims=(0, 0.3)
+    axis=(; xlabel=L"\theta", ylabel="Mass", xticks=1:6, limits=(nothing, nothing, 0, 0.3)),
 )
-vline!([mean(dice)], lw=5, col=:red, label=L"E(\theta)")
-savefig(joinpath(@OUTPUT, "dice.svg")); # hide
+vlines!(ax, [mean(dice)]; linewidth=5, color=:red, label=L"E(\theta)")
+axislegend(ax)
+save(joinpath(@OUTPUT, "dice.svg"), f); # hide
 
 # \fig{dice}
 # \center{*A "fair" six-sided Dice: Discrete Uniform between 1 and 6*} \\
@@ -148,15 +147,15 @@ using Random
 
 Random.seed!(123);
 
-data = rand(DiscreteUniform(1, 6), 1_000);
+my_data = rand(DiscreteUniform(1, 6), 1_000);
 
-# The vector `data` is a 1,000-length vector of `Int`s ranging from 1 to 6, just like how a regular six-sided dice outcome would be:
+# The vector `my_data` is a 1,000-length vector of `Int`s ranging from 1 to 6, just like how a regular six-sided dice outcome would be:
 
-first(data, 5)
+first(my_data, 5)
 
-# Once the model is specified we instantiate the model with the single parameter `y` as the simulated `data`:
+# Once the model is specified we instantiate the model with the single parameter `y` as the simulated `my_data`:
 
-model = dice_throw(data);
+model = dice_throw(my_data);
 
 # Next, we call Turing's `sample()` function that takes a Turing model as a first argument, along with a
 # sampler as the second argument, and the third argument is the number of iterations. Here, I will use the `NUTS()` sampler from
@@ -207,10 +206,22 @@ sum([idx * i for (i, idx) in enumerate(summaries[:, :mean])])
 
 typeof(chain)
 
-# We can use plotting capabilities of `MCMCChains.jl` with any `Chains` object:
+# Since `Chains` is a [`Tables.jl`-compatible](https://github.com/JuliaData/Tables.jl/blob/main/INTEGRATIONS.md) data structure,
+# we can use all of the plotting capabilities from [`AlgebraOfGraphics.jl`](https://aog.makie.org/stable/).
 
-plot(chain)
-savefig(joinpath(@OUTPUT, "chain.svg")); # hide
+using AlgebraOfGraphics
+using AlgebraOfGraphics: density
+#exclude additional information such as log probability
+params = names(chain, :parameters)
+chain_mapping =
+    mapping(params .=> "sample value") *
+    mapping(; color=:chain => nonnumeric, row=dims(1) => renamer(params))
+plt1 = data(chain) * mapping(:iteration) * chain_mapping * visual(Lines)
+plt2 = data(chain) * chain_mapping * density()
+f = Figure(; resolution=(800, 600))
+draw!(f[1, 1], plt1)
+draw!(f[1, 2], plt2; axis=(; ylabel="density"))
+save(joinpath(@OUTPUT, "chain.svg"), f); # hide
 
 # \fig{chain}
 # \center{*Visualization of a MCMC Chain simulation*} \\
@@ -244,12 +255,12 @@ prior_chain = sample(model, Prior(), 2_000);
 # To draw from the prior and posterior predictive distributions we instantiate a "predictive model", *i.e.* a Turing model but with the observations set to `missing`, and then calling `predict()` on the predictive model and the previously drawn samples.
 # First let's do the *prior* predictive check:
 
-missing_data = similar(data, Missing) # vector of `missing`
+missing_data = similar(my_data, Missing) # vector of `missing`
 model_missing = dice_throw(missing_data) # instantiate the "predictive model
 prior_check = predict(model_missing, prior_chain);
 
-# Here we are creating a `missing_data` object which is a `Vector` of the same length as the `data` and populated with type `missing` as values.
-# We then instantiate a new `dice_throw` model with the `missing_data` vector as the `data` argument.
+# Here we are creating a `missing_data` object which is a `Vector` of the same length as the `my_data` and populated with type `missing` as values.
+# We then instantiate a new `dice_throw` model with the `missing_data` vector as the `y` argument.
 # Finally, we call `predict()` on the predictive model and the previously drawn samples, which in our case are the samples from the prior distribution (`prior_chain`).
 
 # Note that `predict()` returns a `Chains` object from `MCMCChains.jl`:

@@ -118,7 +118,9 @@
 
 # I will do some simulations to illustrate MCMC algorithms and techniques. So, here's the initial setup:
 
-using Plots, StatsPlots, Distributions, LaTeXStrings, Random
+using CairoMakie
+using Distributions
+using Random
 
 Random.seed!(123);
 
@@ -181,8 +183,6 @@ const Σ = [1 0.8; 0.8 1]
 
 const mvnormal = MvNormal(μ, Σ)
 
-data = rand(mvnormal, N)';
-
 # In the figure below it is possible to see a contour plot of the PDF of a multivariate normal distribution composed of two normal
 # variables $X$ and $Y$, both with mean 0 and standard deviation 1.
 # The correlation between $X$ and $Y$ is $\rho = 0.8$:
@@ -190,16 +190,22 @@ data = rand(mvnormal, N)';
 x = -3:0.01:3
 y = -3:0.01:3
 dens_mvnormal = [pdf(mvnormal, [i, j]) for i in x, j in y]
-contour(x, y, dens_mvnormal, xlabel=L"X", ylabel=L"Y", fill=true)
-savefig(joinpath(@OUTPUT, "countour_mvnormal.svg")); # hide
+f, ax, c = contourf(x, y, dens_mvnormal; axis=(; xlabel=L"X", ylabel=L"Y"))
+Colorbar(f[1, 2], c)
+save(joinpath(@OUTPUT, "countour_mvnormal.svg"), f); # hide
 
 # \fig{countour_mvnormal}
 # \center{*Countour Plot of the PDF of a Multivariate Normal Distribution*} \\
 
 # Also a surface plot can be seen below for you to get a 3-D intuition of what is going on:
 
-surface(x, y, dens_mvnormal, xlabel=L"X", ylabel=L"Y", zlabel="PDF")
-savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
+f, ax, s = surface(
+    x,
+    y,
+    dens_mvnormal;
+    axis=(type=Axis3, xlabel=L"X", ylabel=L"Y", zlabel="PDF", azimuth=pi / 8),
+)
+save(joinpath(@OUTPUT, "surface_mvnormal.svg"), f); # hide
 
 # \fig{surface_mvnormal}
 # \center{*Surface Plot of the PDF of a Multivariate Normal Distribution*} \\
@@ -339,11 +345,18 @@ savefig(joinpath(@OUTPUT, "surface_mvnormal.svg")); # hide
 
 # Here is a simple implementation in Julia:
 
-function metropolis(S::Int64, width::Float64, ρ::Float64;
-    μ_x::Float64=0.0, μ_y::Float64=0.0,
-    σ_x::Float64=1.0, σ_y::Float64=1.0,
-    start_x=-2.5, start_y=2.5,
-    seed=123)
+function metropolis(
+    S::Int64,
+    width::Float64,
+    ρ::Float64;
+    μ_x::Float64=0.0,
+    μ_y::Float64=0.0,
+    σ_x::Float64=1.0,
+    σ_y::Float64=1.0,
+    start_x=-2.5,
+    start_y=2.5,
+    seed=123,
+)
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
@@ -413,26 +426,65 @@ mean(summarystats(chain_met)[:, :ess]) / S
 
 # The animation in figure below shows the first 100 simulations of the Metropolis algorithm used to generate `X_met`.
 # Note that in several iterations the proposal is rejected and the algorithm samples the parameters $\theta_1$ and $\theta_2$
-# from the previous state (which becomes the current one, since the proposal is refused). The blue-filled ellipsis represents
+# from the previous state (which becomes the current one, since the proposal is refused). The blue ellipsis represents
 # the 90% HPD of our toy example's bivariate normal distribution.
 
 # Note: `HPD` stands for *Highest Probability Density* (which in our case the posterior's 90% probability range).
 
-plt = covellipse(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.3,
-    c=:steelblue,
-    label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-met_anim = @animate for i in 1:100
-    scatter!(plt, (X_met[i, 1], X_met[i, 2]),
-        label=false, mc=:red, ma=0.5)
-    plot!(X_met[i:i+1, 1], X_met[i:i+1, 2], seriestype=:path,
-        lc=:green, la=0.5, label=false)
+using LinearAlgebra: eigvals, eigvecs
+#source: https://discourse.julialang.org/t/plot-ellipse-in-makie/82814/4
+function getellipsepoints(cx, cy, rx, ry, θ)
+    t = range(0, 2 * pi; length=100)
+    ellipse_x_r = @. rx * cos(t)
+    ellipse_y_r = @. ry * sin(t)
+    R = [cos(θ) sin(θ); -sin(θ) cos(θ)]
+    r_ellipse = [ellipse_x_r ellipse_y_r] * R
+    x = @. cx + r_ellipse[:, 1]
+    y = @. cy + r_ellipse[:, 2]
+    return (x, y)
 end
-gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5); # hide
+function getellipsepoints(μ, Σ; confidence=0.95)
+    quant = sqrt(quantile(Chisq(2), confidence))
+    cx = μ[1]
+    cy = μ[2]
+
+    egvs = eigvals(Σ)
+    if egvs[1] > egvs[2]
+        idxmax = 1
+        largestegv = egvs[1]
+        smallesttegv = egvs[2]
+    else
+        idxmax = 2
+        largestegv = egvs[2]
+        smallesttegv = egvs[1]
+    end
+
+    rx = quant * sqrt(largestegv)
+    ry = quant * sqrt(smallesttegv)
+
+    eigvecmax = eigvecs(Σ)[:, idxmax]
+    θ = atan(eigvecmax[2] / eigvecmax[1])
+    if θ < 0
+        θ += 2 * π
+    end
+
+    return getellipsepoints(cx, cy, rx, ry, θ)
+end
+
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+record(f, joinpath(@OUTPUT, "met_anim.gif"); framerate=5) do frame
+    for i in 1:100
+        scatter!(ax, (X_met[i, 1], X_met[i, 2]); color=(:red, 0.5))
+        linesegments!(X_met[i:(i + 1), 1], X_met[i:(i + 1), 2]; color=(:green, 0.5))
+        recordframe!(frame)
+    end
+end
 
 # \fig{met_anim}
 # \center{*Animation of the First 100 Samples Generated from the Metropolis Algorithm*} \\
@@ -441,38 +493,35 @@ gif(met_anim, joinpath(@OUTPUT, "met_anim.gif"), fps=5); # hide
 
 const warmup = 1_000
 
-scatter((X_met[warmup:warmup+1_000, 1], X_met[warmup:warmup+1_000, 2]),
-    label=false, mc=:red, ma=0.3,
-    xlims=(-3, 3), ylims=(-3, 3),
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-covellipse!(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
-    c=:steelblue,
-    label="90% HPD")
-
-
-savefig(joinpath(@OUTPUT, "met_first1000.svg")); # hide
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+scatter!(
+    ax,
+    X_met[warmup:(warmup + 1_000), 1],
+    X_met[warmup:(warmup + 1_000), 2];
+    color=(:red, 0.3),
+)
+save(joinpath(@OUTPUT, "met_first1000.svg"), f); # hide
 
 # \fig{met_first1000}
 # \center{*First 1,000 Samples Generated from the Metropolis Algorithm after warm-up*} \\
 
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
-scatter((X_met[warmup:end, 1], X_met[warmup:end, 2]),
-    label=false, mc=:red, ma=0.3,
-    xlims=(-3, 3), ylims=(-3, 3),
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-covellipse!(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
-    c=:steelblue,
-    label="90% HPD")
-savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+scatter!(ax, X_met[warmup:end, 1], X_met[warmup:end, 2]; color=(:red, 0.3))
+save(joinpath(@OUTPUT, "met_all.svg"), f); # hide
 
 # \fig{met_all}
 # \center{*All 9,000 Samples Generated from the Metropolis Algorithm after warm-up*} \\
@@ -558,11 +607,17 @@ savefig(joinpath(@OUTPUT, "met_all.svg")); # hide
 # \end{aligned}
 # $$
 
-function gibbs(S::Int64, ρ::Float64;
-    μ_x::Float64=0.0, μ_y::Float64=0.0,
-    σ_x::Float64=1.0, σ_y::Float64=1.0,
-    start_x=-2.5, start_y=2.5,
-    seed=123)
+function gibbs(
+    S::Int64,
+    ρ::Float64;
+    μ_x::Float64=0.0,
+    μ_y::Float64=0.0,
+    σ_x::Float64=1.0,
+    σ_y::Float64=1.0,
+    start_x=-2.5,
+    start_y=2.5,
+    seed=123,
+)
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
@@ -627,61 +682,57 @@ summarystats(chain_gibbs)
 
 # The animation in figure below shows the first 100 simulations of the Gibbs algorithm used to generate `X_gibbs`.
 # Note that all proposals are accepted now, so the at each iteration we sample new parameters values.
-# The blue-filled ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
+# The blue ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
 
-plt = covellipse(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.3,
-    c=:steelblue,
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
     label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-gibbs_anim = @animate for i in 1:200
-    scatter!(plt, (X_gibbs[i, 1], X_gibbs[i, 2]),
-        label=false, mc=:red, ma=0.5)
-    plot!(X_gibbs[i:i+1, 1], X_gibbs[i:i+1, 2], seriestype=:path,
-        lc=:green, la=0.5, label=false)
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+record(f, joinpath(@OUTPUT, "gibbs_anim.gif"); framerate=5) do frame
+    for i in 1:200
+        scatter!(ax, (X_gibbs[i, 1], X_gibbs[i, 2]); color=(:red, 0.5))
+        linesegments!(X_gibbs[i:(i + 1), 1], X_gibbs[i:(i + 1), 2]; color=(:green, 0.5))
+        recordframe!(frame)
+    end
 end
-gif(gibbs_anim, joinpath(@OUTPUT, "gibbs_anim.gif"), fps=5); # hide
 
 # \fig{gibbs_anim}
 # \center{*Animation of the First 100 Samples Generated from the Gibbs Algorithm*} \\
 
 # Now let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
 
-scatter((X_gibbs[2*warmup:2*warmup+1_000, 1], X_gibbs[2*warmup:2*warmup+1_000, 2]),
-    label=false, mc=:red, ma=0.3,
-    xlims=(-3, 3), ylims=(-3, 3),
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-covellipse!(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
-    c=:steelblue,
-    label="90% HPD")
-
-
-savefig(joinpath(@OUTPUT, "gibbs_first1000.svg")); # hide
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+scatter!(
+    ax,
+    X_gibbs[(2 * warmup):(2 * warmup + 1_000), 1],
+    X_gibbs[(2 * warmup):(2 * warmup + 1_000), 2];
+    color=(:red, 0.3),
+)
+save(joinpath(@OUTPUT, "gibbs_first1000.svg"), f); # hide
 
 # \fig{gibbs_first1000}
 # \center{*First 1,000 Samples Generated from the Gibbs Algorithm after warm-up*} \\
 
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
-scatter((X_gibbs[2*warmup:end, 1], X_gibbs[2*warmup:end, 2]),
-    label=false, mc=:red, ma=0.3,
-    xlims=(-3, 3), ylims=(-3, 3),
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-covellipse!(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
-    c=:steelblue,
-    label="90% HPD")
-savefig(joinpath(@OUTPUT, "gibbs_all.svg")); # hide
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+scatter!(ax, X_gibbs[(2 * warmup):end, 1], X_gibbs[(2 * warmup):end, 2]; color=(:red, 0.3))
+save(joinpath(@OUTPUT, "gibbs_all.svg"), f); # hide
 
 # \fig{gibbs_all}
 # \center{*All 9,000 Samples Generated from the Gibbs Algorithm after warm-up*} \\
@@ -697,7 +748,7 @@ savefig(joinpath(@OUTPUT, "gibbs_all.svg")); # hide
 # First, let's defined 4 different pairs of starting points using a nice Cartesian product
 # from Julia's `Base.Iterators`:
 
-const starts = Iterators.product((-2.5, 2.5), (2.5, -2.5)) |> collect
+const starts = collect(Iterators.product((-2.5, 2.5), (2.5, -2.5)))
 
 # Also, I will restrict this simulation to 100 samples:
 
@@ -705,10 +756,18 @@ const S_parallel = 100;
 
 # Additionally, note that we are using different `seed`s:
 
-X_met_1 = metropolis(S_parallel, width, ρ, seed=124, start_x=first(starts[1]), start_y=last(starts[1]));
-X_met_2 = metropolis(S_parallel, width, ρ, seed=125, start_x=first(starts[2]), start_y=last(starts[2]));
-X_met_3 = metropolis(S_parallel, width, ρ, seed=126, start_x=first(starts[3]), start_y=last(starts[3]));
-X_met_4 = metropolis(S_parallel, width, ρ, seed=127, start_x=first(starts[4]), start_y=last(starts[4]));
+X_met_1 = metropolis(
+    S_parallel, width, ρ; seed=124, start_x=first(starts[1]), start_y=last(starts[1])
+);
+X_met_2 = metropolis(
+    S_parallel, width, ρ; seed=125, start_x=first(starts[2]), start_y=last(starts[2])
+);
+X_met_3 = metropolis(
+    S_parallel, width, ρ; seed=126, start_x=first(starts[3]), start_y=last(starts[3])
+);
+X_met_4 = metropolis(
+    S_parallel, width, ρ; seed=127, start_x=first(starts[4]), start_y=last(starts[4])
+);
 
 # There have been some significant changes in the approval rate for Metropolis proposals. All were around 13%-24%,
 # this is due to the low number of samples (only 100 for each Markov chain), if the samples were larger we would see
@@ -718,80 +777,86 @@ X_met_4 = metropolis(S_parallel, width, ρ, seed=127, start_x=first(starts[4]), 
 # Now let's take a look on how those 4 Metropolis Markov chains sample the parameter space starting from different positions.
 # Each chain will have its own marker and path color, so that we can see their different behavior:
 
-plt = covellipse(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.3,
-    c=:grey,
-    label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
+using Colors
 const logocolors = Colors.JULIA_LOGO_COLORS;
-
-parallel_met = Animation()
-for i in 1:99
-    scatter!(plt, (X_met_1[i, 1], X_met_1[i, 2]),
-        label=false, mc=logocolors.blue, ma=0.5)
-    plot!(X_met_1[i:i+1, 1], X_met_1[i:i+1, 2], seriestype=:path,
-        lc=logocolors.blue, la=0.5, label=false)
-    scatter!(plt, (X_met_2[i, 1], X_met_2[i, 2]),
-        label=false, mc=logocolors.red, ma=0.5)
-    plot!(X_met_2[i:i+1, 1], X_met_2[i:i+1, 2], seriestype=:path,
-        lc=logocolors.red, la=0.5, label=false)
-    scatter!(plt, (X_met_3[i, 1], X_met_3[i, 2]),
-        label=false, mc=logocolors.green, ma=0.5)
-    plot!(X_met_3[i:i+1, 1], X_met_3[i:i+1, 2], seriestype=:path,
-        lc=logocolors.green, la=0.5, label=false)
-    scatter!(plt, (X_met_4[i, 1], X_met_4[i, 2]),
-        label=false, mc=logocolors.purple, ma=0.5)
-    plot!(X_met_4[i:i+1, 1], X_met_4[i:i+1, 2], seriestype=:path,
-        lc=logocolors.purple, la=0.5, label=false)
-    frame(parallel_met)
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+record(f, joinpath(@OUTPUT, "parallel_met.gif"); framerate=5) do frame
+    for i in 1:99
+        scatter!(ax, (X_met_1[i, 1], X_met_1[i, 2]); color=(logocolors.blue, 0.5))
+        linesegments!(
+            X_met_1[i:(i + 1), 1], X_met_1[i:(i + 1), 2]; color=(logocolors.blue, 0.5)
+        )
+        scatter!(ax, (X_met_2[i, 1], X_met_2[i, 2]); color=(logocolors.red, 0.5))
+        linesegments!(
+            X_met_2[i:(i + 1), 1], X_met_2[i:(i + 1), 2]; color=(logocolors.red, 0.5)
+        )
+        scatter!(ax, (X_met_3[i, 1], X_met_3[i, 2]); color=(logocolors.green, 0.5))
+        linesegments!(
+            X_met_3[i:(i + 1), 1], X_met_3[i:(i + 1), 2]; color=(logocolors.green, 0.5)
+        )
+        scatter!(ax, (X_met_4[i, 1], X_met_4[i, 2]); color=(logocolors.purple, 0.5))
+        linesegments!(
+            X_met_4[i:(i + 1), 1], X_met_4[i:(i + 1), 2]; color=(logocolors.purple, 0.5)
+        )
+        recordframe!(frame)
+    end
 end
-gif(parallel_met, joinpath(@OUTPUT, "parallel_met.gif"), fps=5); # hide
 
 # \fig{parallel_met}
 # \center{*Animation of 4 Parallel Metropolis Markov Chains*} \\
 
 # Now we'll do the the same for Gibbs, taking care to provide also different `seed`s and starting points:
 
-X_gibbs_1 = gibbs(S_parallel * 2, ρ, seed=124, start_x=first(starts[1]), start_y=last(starts[1]));
-X_gibbs_2 = gibbs(S_parallel * 2, ρ, seed=125, start_x=first(starts[2]), start_y=last(starts[2]));
-X_gibbs_3 = gibbs(S_parallel * 2, ρ, seed=126, start_x=first(starts[3]), start_y=last(starts[3]));
-X_gibbs_4 = gibbs(S_parallel * 2, ρ, seed=127, start_x=first(starts[4]), start_y=last(starts[4]));
+X_gibbs_1 = gibbs(
+    S_parallel * 2, ρ; seed=124, start_x=first(starts[1]), start_y=last(starts[1])
+);
+X_gibbs_2 = gibbs(
+    S_parallel * 2, ρ; seed=125, start_x=first(starts[2]), start_y=last(starts[2])
+);
+X_gibbs_3 = gibbs(
+    S_parallel * 2, ρ; seed=126, start_x=first(starts[3]), start_y=last(starts[3])
+);
+X_gibbs_4 = gibbs(
+    S_parallel * 2, ρ; seed=127, start_x=first(starts[4]), start_y=last(starts[4])
+);
 
 # Now let's take a look on how those 4 Gibbs Markov chains sample the parameter space starting from different positions.
 # Each chain will have its own marker and path color, so that we can see their different behavior:
 
-plt = covellipse(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.3,
-    c=:grey,
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
     label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-parallel_gibbs = Animation()
-for i in 1:199
-    scatter!(plt, (X_gibbs_1[i, 1], X_gibbs_1[i, 2]),
-        label=false, mc=logocolors.blue, ma=0.5)
-    plot!(X_gibbs_1[i:i+1, 1], X_gibbs_1[i:i+1, 2], seriestype=:path,
-        lc=logocolors.blue, la=0.5, label=false)
-    scatter!(plt, (X_gibbs_2[i, 1], X_gibbs_2[i, 2]),
-        label=false, mc=logocolors.red, ma=0.5)
-    plot!(X_gibbs_2[i:i+1, 1], X_gibbs_2[i:i+1, 2], seriestype=:path,
-        lc=logocolors.red, la=0.5, label=false)
-    scatter!(plt, (X_gibbs_3[i, 1], X_gibbs_3[i, 2]),
-        label=false, mc=logocolors.green, ma=0.5)
-    plot!(X_gibbs_3[i:i+1, 1], X_gibbs_3[i:i+1, 2], seriestype=:path,
-        lc=logocolors.green, la=0.5, label=false)
-    scatter!(plt, (X_gibbs_4[i, 1], X_gibbs_4[i, 2]),
-        label=false, mc=logocolors.purple, ma=0.5)
-    plot!(X_gibbs_4[i:i+1, 1], X_gibbs_4[i:i+1, 2], seriestype=:path,
-        lc=logocolors.purple, la=0.5, label=false)
-    frame(parallel_gibbs)
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+record(f, joinpath(@OUTPUT, "parallel_gibbs.gif"); framerate=5) do frame
+    for i in 1:199
+        scatter!(ax, (X_gibbs_1[i, 1], X_gibbs_1[i, 2]); color=(logocolors.blue, 0.5))
+        linesegments!(
+            X_gibbs_1[i:(i + 1), 1], X_gibbs_1[i:(i + 1), 2]; color=(logocolors.blue, 0.5)
+        )
+        scatter!(ax, (X_gibbs_2[i, 1], X_gibbs_2[i, 2]); color=(logocolors.red, 0.5))
+        linesegments!(
+            X_gibbs_2[i:(i + 1), 1], X_gibbs_2[i:(i + 1), 2]; color=(logocolors.red, 0.5)
+        )
+        scatter!(ax, (X_gibbs_3[i, 1], X_gibbs_3[i, 2]); color=(logocolors.green, 0.5))
+        linesegments!(
+            X_gibbs_3[i:(i + 1), 1], X_gibbs_3[i:(i + 1), 2]; color=(logocolors.green, 0.5)
+        )
+        scatter!(ax, (X_gibbs_4[i, 1], X_gibbs_4[i, 2]); color=(logocolors.purple, 0.5))
+        linesegments!(
+            X_gibbs_4[i:(i + 1), 1], X_gibbs_4[i:(i + 1), 2]; color=(logocolors.purple, 0.5)
+        )
+        recordframe!(frame)
+    end
 end
-gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 
 # \fig{parallel_gibbs}
 # \center{*Animation of 4 Parallel Gibbs Markov Chains*} \\
@@ -886,18 +951,25 @@ gif(parallel_gibbs, joinpath(@OUTPUT, "parallel_gibbs.gif"), fps=5); # hide
 #      \theta^{t-1} & \text{otherwise}
 #      \end{cases}$$
 
-
 # ### HMC -- Implementation
 
 # Alright let's code the HMC algorithm for our toy example's bivariate normal distribution:
 
 using ForwardDiff: gradient
-function hmc(S::Int64, width::Float64, ρ::Float64;
-    L=40, ϵ=0.001,
-    μ_x::Float64=0.0, μ_y::Float64=0.0,
-    σ_x::Float64=1.0, σ_y::Float64=1.0,
-    start_x=-2.5, start_y=2.5,
-    seed=123)
+function hmc(
+    S::Int64,
+    width::Float64,
+    ρ::Float64;
+    L=40,
+    ϵ=0.001,
+    μ_x::Float64=0.0,
+    μ_y::Float64=0.0,
+    σ_x::Float64=1.0,
+    σ_y::Float64=1.0,
+    start_x=-2.5,
+    start_y=2.5,
+    seed=123,
+)
     rgn = MersenneTwister(seed)
     binormal = MvNormal([μ_x; μ_y], [σ_x ρ; ρ σ_y])
     draws = Matrix{Float64}(undef, S, 2)
@@ -954,7 +1026,7 @@ gradient(x -> logpdf(mvnormal, x), [1, -1])
 # Now let's run our HMC Markov chain.
 # We are going to use $L = 40$ and (don't ask me how I found out) $\epsilon = 0.0856$:
 
-X_hmc = hmc(S, width, ρ, ϵ=0.0856, L=40);
+X_hmc = hmc(S, width, ρ; ϵ=0.0856, L=40);
 
 # Our acceptance rate is 20.79%.
 # As before lets' take a quick peek into `X_hmc`, we'll see it's a matrix of $X$ and $Y$ values as columns and the time $t$ as rows:
@@ -988,62 +1060,57 @@ mean(summarystats(chain_hmc)[:, :ess]) / S
 # The animation in figure below shows the first 100 simulations of the HMC algorithm used to generate `X_hmc`.
 # Note that we have a gradient-guided proposal at each iteration, so the animation would resemble more like
 # a very lucky random-walk Metropolis [^luckymetropolis].
-# The blue-filled ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
+# The blue ellipsis represents the 90% HPD of our toy example's bivariate normal distribution.
 
-plt = covellipse(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.3,
-    c=:steelblue,
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
     label="90% HPD",
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-hmc_anim = @animate for i in 1:100
-    scatter!(plt, (X_hmc[i, 1], X_hmc[i, 2]),
-        label=false, mc=:red, ma=0.5)
-    plot!(X_hmc[i:i+1, 1], X_hmc[i:i+1, 2], seriestype=:path,
-        lc=:green, la=0.5, label=false)
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+record(f, joinpath(@OUTPUT, "hmc_anim.gif"); framerate=5) do frame
+    for i in 1:100
+        scatter!(ax, (X_hmc[i, 1], X_hmc[i, 2]); color=(:red, 0.5))
+        linesegments!(X_hmc[i:(i + 1), 1], X_hmc[i:(i + 1), 2]; color=(:green, 0.5))
+        recordframe!(frame)
+    end
 end
-gif(hmc_anim, joinpath(@OUTPUT, "hmc_anim.gif"), fps=5); # hide
 
 # \fig{hmc_anim}
 # \center{*Animation of the First 100 Samples Generated from the HMC Algorithm*} \\
 
 # As usual, let's take a look how the first 1,000 simulations were, excluding 1,000 initial iterations as warm-up.
 
-scatter((X_hmc[warmup:warmup+1_000, 1], X_hmc[warmup:warmup+1_000, 2]),
-    label=false, mc=:red, ma=0.3,
-    xlims=(-3, 3), ylims=(-3, 3),
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-covellipse!(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
-    c=:steelblue,
-    label="90% HPD")
-
-
-savefig(joinpath(@OUTPUT, "hmc_first1000.svg")); # hide
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+scatter!(
+    ax,
+    X_hmc[warmup:(warmup + 1_000), 1],
+    X_hmc[warmup:(warmup + 1_000), 2];
+    color=(:red, 0.3),
+)
+save(joinpath(@OUTPUT, "hmc_first1000.svg"), f); # hide
 
 # \fig{hmc_first1000}
 # \center{*First 1,000 Samples Generated from the HMC Algorithm after warm-up*} \\
 
-
 # And, finally, lets take a look in the all 9,000 samples generated after the warm-up of 1,000 iterations.
 
-scatter((X_hmc[warmup:end, 1], X_hmc[warmup:end, 2]),
-    label=false, mc=:red, ma=0.3,
-    xlims=(-3, 3), ylims=(-3, 3),
-    xlabel=L"\theta_1", ylabel=L"\theta_2")
-
-covellipse!(μ, Σ,
-    n_std=1.64, # 5% - 95% quantiles
-    xlims=(-3, 3), ylims=(-3, 3),
-    alpha=0.5,
-    c=:steelblue,
-    label="90% HPD")
-savefig(joinpath(@OUTPUT, "hmc_all.svg")); # hide
+f, ax, l = lines(
+    getellipsepoints(μ, Σ; confidence=0.9)...;
+    label="90% HPD",
+    linewidth=2,
+    axis=(; limits=(-3, 3, -3, 3), xlabel=L"\theta_1", ylabel=L"\theta_2"),
+)
+axislegend(ax)
+scatter!(ax, X_hmc[warmup:end, 1], X_hmc[warmup:end, 2]; color=(:red, 0.3))
+save(joinpath(@OUTPUT, "hmc_all.svg"), f); # hide
 
 # \fig{hmc_all}
 # \center{*All 9,000 Samples Generated from the HMC Algorithm after warm-up*} \\
@@ -1085,12 +1152,17 @@ d2 = MvNormal([0, 0], [8.4 2.0; 2.0 1.7])
 
 d = MixtureModel([d1, d2])
 
-data_mixture = rand(d, 1_000)'
+x = -6:0.01:15
+y = -2.5:0.01:4.2
+dens_mixture = [pdf(d, [i, j]) for i in x, j in y]
 
-marginalkde(data_mixture[:, 1], data_mixture[:, 2],
-    clip=((-1.6, 3), (-3, 3)),
-    xlabel=L"X", ylabel=L"Y")
-savefig(joinpath(@OUTPUT, "bimodal.svg")); # hide
+f, ax, s = surface(
+    x,
+    y,
+    dens_mixture;
+    axis=(type=Axis3, xlabel=L"X", ylabel=L"Y", zlabel="PDF", azimuth=pi / 4),
+)
+save(joinpath(@OUTPUT, "bimodal.svg"), f); # hide
 
 # \fig{bimodal}
 # \center{*Multivariate Bimodal Normal*} \\
@@ -1104,11 +1176,13 @@ savefig(joinpath(@OUTPUT, "bimodal.svg")); # hide
 funnel_y = rand(Normal(0, 3), 10_000)
 funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
 
-scatter((funnel_x, funnel_y),
-    label=false, mc=:steelblue, ma=0.3,
-    xlabel=L"X", ylabel=L"Y",
-    xlims=(-100, 100))
-savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
+f, ax, s = scatter(
+    funnel_x,
+    funnel_y;
+    color=(:steelblue, 0.3),
+    axis=(; xlabel=L"X", ylabel=L"Y", limits=(-100, 100, nothing, nothing)),
+)
+save(joinpath(@OUTPUT, "funnel.svg"), f); # hide
 
 # \fig{funnel}
 # \center{*Neal's Funnel*} \\
@@ -1146,7 +1220,7 @@ setprogress!(false) # hide
     p ~ Dirichlet(6, 1)
 
     #Each outcome of the six-sided dice has a probability p.
-    y ~ filldist(Categorical(p), length(y))
+    return y ~ filldist(Categorical(p), length(y))
 end;
 
 # Let's once again generate 1,000 throws of a six-sided dice:
@@ -1210,16 +1284,29 @@ mean(chain[:acceptance_rate])
 # during a good part (or all) of the Markov chain sampling. We can do that with the `MCMCChains.jl`'s function `traceplot()`.
 # Let's look the "good" `chain` first:
 
-traceplot(chain)
-savefig(joinpath(@OUTPUT, "traceplot_chain.svg")); # hide
+using AlgebraOfGraphics
+params = names(chain, :parameters)
+chain_mapping =
+    mapping(params .=> "sample value") *
+    mapping(; color=:chain => nonnumeric, row=dims(1) => renamer(params))
+plt = data(chain) * mapping(:iteration) * chain_mapping * visual(Lines)
+f = Figure(; resolution=(1200, 900))
+draw!(f[1, 1], plt)
+save(joinpath(@OUTPUT, "traceplot_chain.svg"), f); # hide
 
 # \fig{traceplot_chain}
 # \center{*Traceplot for `chain`*} \\
 
 # And now the `bad_chain`:
 
-traceplot(bad_chain)
-savefig(joinpath(@OUTPUT, "traceplot_bad_chain.svg")); # hide
+params = names(bad_chain, :parameters)
+chain_mapping =
+    mapping(params .=> "sample value") *
+    mapping(; color=:chain => nonnumeric, row=dims(1) => renamer(params))
+plt = data(bad_chain) * mapping(:iteration) * chain_mapping * visual(Lines)
+f = Figure(; resolution=(1200, 900))
+draw!(f[1, 1], plt)
+save(joinpath(@OUTPUT, "traceplot_bad_chain.svg"), f); # hide
 
 # \fig{traceplot_bad_chain}
 # \center{*Traceplot for `bad_chain`*} \\

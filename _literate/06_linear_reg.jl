@@ -85,7 +85,7 @@ setprogress!(false) # hide
     σ ~ Exponential(1)
 
     #likelihood
-    y ~ MvNormal(α .+ X * β, σ^2 * I)
+    return y ~ MvNormal(α .+ X * β, σ^2 * I)
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -114,7 +114,9 @@ end;
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
 
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/kidiq.csv"
 kidiq = CSV.read(HTTP.get(url).body, DataFrame)

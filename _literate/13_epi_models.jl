@@ -11,25 +11,40 @@
 # For this tutorial I'll be using Brazil's COVID data from the [Media Consortium](https://brasil.io/covid19/).
 # For reproducibility, we'll restrict the data to the year of 2020:
 
-using Downloads, DataFrames, CSV, Chain, Dates
+using Downloads
+using DataFrames
+using CSV
+using Chain
+using Dates
 
 url = "https://data.brasil.io/dataset/covid19/caso_full.csv.gz"
 file = Downloads.download(url)
-df = CSV.File(file) |> DataFrame
+df = DataFrame(CSV.File(file))
 br = @chain df begin
-    filter([:date, :city] => (date, city) -> date < Dates.Date("2021-01-01") && date > Dates.Date("2020-04-01") && ismissing(city), _)
+    filter(
+        [:date, :city] =>
+            (date, city) ->
+                date < Dates.Date("2021-01-01") &&
+                    date > Dates.Date("2020-04-01") &&
+                    ismissing(city),
+        _,
+    )
     groupby(:date)
     combine(
-        [:estimated_population_2019,
+        [
+            :estimated_population_2019,
             :last_available_confirmed_per_100k_inhabitants,
             :last_available_deaths,
             :new_confirmed,
-            :new_deaths] .=> sum .=>
-            [:estimated_population_2019,
+            :new_deaths,
+        ] .=>
+            sum .=> [
+                :estimated_population_2019,
                 :last_available_confirmed_per_100k_inhabitants,
                 :last_available_deaths,
                 :new_confirmed,
-                :new_deaths]
+                :new_deaths,
+            ],
     )
 end;
 
@@ -43,13 +58,12 @@ last(br, 5)
 
 # Here is a plot of the data:
 
-using Plots, StatsPlots, LaTeXStrings
-@df br plot(:date,
-    :new_confirmed,
-    xlab=L"t", ylab="infected daily",
-    yformatter=y -> string(round(Int64, y ÷ 1_000)) * "K",
-    label=false)
-savefig(joinpath(@OUTPUT, "infected.svg")); # hide
+using AlgebraOfGraphics
+using CairoMakie
+f = Figure()
+plt = data(br) * mapping(:date => L"t", :new_confirmed => "infected daily") * visual(Lines)
+draw!(f[1, 1], plt)
+save(joinpath(@OUTPUT, "infected.svg"), f); # hide
 
 # \fig{infected}
 # \center{*Infected in Brazil during COVID in 2020*} \\
@@ -110,7 +124,7 @@ function sir_ode!(du, u, p, t)
         du[2] = infection - recovery # Infected
         du[3] = recovery # Recovered
     end
-    nothing
+    return nothing
 end;
 
 # This is what the infection would look with some fixed `β` and `γ`
@@ -123,13 +137,17 @@ u = [N - i₀, i₀, 0.0]
 p = [0.5, 0.05]
 prob = ODEProblem(sir_ode!, u, (1.0, 100.0), p)
 sol_ode = solve(prob)
-plot(sol_ode, label=[L"S" L"I" L"R"],
-    lw=3,
-    xlabel=L"t",
-    ylabel=L"N",
-    yformatter=y -> string(round(Int64, y ÷ 1_000_000)) * "mi",
-    title="SIR Model for 100 days, β = $(p[1]), γ = $(p[2])")
-savefig(joinpath(@OUTPUT, "ode_solve.svg")); # hide
+f = Figure()
+plt =
+    data(stack(DataFrame(sol_ode), Not(:timestamp))) *
+    mapping(
+        :timestamp => L"t",
+        :value => L"N";
+        color=:variable => renamer(["value1" => "S", "value2" => "I", "value3" => "R"]),
+    ) *
+    visual(Lines; linewidth=3)
+draw!(f[1, 1], plt; axis=(; title="SIR Model for 100 days, β = $(p[1]), γ = $(p[2])"))
+save(joinpath(@OUTPUT, "ode_solve.svg"), f); # hide
 
 # \fig{ode_solve}
 # \center{*SIR ODE Solution for Brazil's 100 days of COVID in early 2020*} \\
@@ -168,18 +186,17 @@ setprogress!(false) # hide
     u0 = [N - I, I, r₀] # S,I,R
     p = [β, γ]
     tspan = (1.0, float(l))
-    prob = ODEProblem(sir_ode!,
-        u0,
-        tspan,
-        p)
-    sol = solve(prob,
-        Tsit5(), # similar to Dormand-Prince RK45 in Stan but 20% faster
-        saveat=1.0)
+    prob = ODEProblem(sir_ode!, u0, tspan, p)
+    sol = solve(
+        prob,
+        Tsit5(); # similar to Dormand-Prince RK45 in Stan but 20% faster
+        saveat=1.0,
+    )
     solᵢ = Array(sol)[2, :] # New Infected
     solᵢ = max.(1e-4, solᵢ) # numerical issues arose
 
     #likelihood
-    infected ~ arraydist(LazyArray(@~ NegativeBinomial2.(solᵢ, ϕ)))
+    return infected ~ arraydist(LazyArray(@~ NegativeBinomial2.(solᵢ, ϕ)))
 end;
 
 # Now run the model and inspect our parameters estimates.

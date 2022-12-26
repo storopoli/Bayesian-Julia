@@ -11,11 +11,10 @@
 # We use regression with count data when our dependent variable is restricted to positive integers, *i.e.* $y \in \mathbb{Z}^+$.
 # See the figure below for a graphical intuition of the exponential function:
 
-using Plots, LaTeXStrings
+using CairoMakie
 
-plot(exp, -6, 6, label=false,
-    xlabel=L"x", ylabel=L"e^x")
-savefig(joinpath(@OUTPUT, "exponential.svg")); # hide
+f, ax, l = lines(-6 .. 6, exp; axis=(xlabel=L"x", ylabel=L"e^x"))
+save(joinpath(@OUTPUT, "exponential.svg"), f); # hide
 
 # \fig{exponential}
 # \center{*Exponential Function*} \\
@@ -123,7 +122,7 @@ setprogress!(false) # hide
     β ~ filldist(TDist(3), predictors)
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
+    return y ~ arraydist(LazyArray(@~ LogPoisson.(α .+ X * β)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -167,13 +166,13 @@ end;
 
 # Here is what a $\text{Gamma}(0.01, 0.01)$ looks like:
 
-using StatsPlots, Distributions
-plot(Gamma(0.01, 0.01),
-    lw=2, label=false,
-    xlabel=L"\phi",
-    ylabel="Density",
-    xlims=(0, 0.001))
-savefig(joinpath(@OUTPUT, "gamma.svg")); # hide
+using Distributions
+f, ax, l = lines(
+    Gamma(0.01, 0.01);
+    linewidth=2,
+    axis=(xlabel=L"\phi", ylabel="Density", limits=(0, 0.03, nothing, nothing)),
+)
+save(joinpath(@OUTPUT, "gamma.svg"), f); # hide
 
 # \fig{gamma}
 # \center{*Gamma Distribution with $\alpha = 0.01$ and $\theta = 0.01$*} \\
@@ -262,7 +261,7 @@ end
     ϕ = 1 / ϕ⁻
 
     #likelihood
-    y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
+    return y ~ arraydist(LazyArray(@~ NegativeBinomial2.(exp.(α .+ X * β), ϕ)))
 end;
 
 # Here I am also specifying very weakly informative priors:
@@ -291,7 +290,9 @@ end;
 # * `exposure2` -- number of days for which the roach traps were used
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/roaches.csv"
 roaches = CSV.read(HTTP.get(url).body, DataFrame)
@@ -326,10 +327,7 @@ using Chain
 
 @chain quantile(chain_poisson) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Let's analyze our results. The intercept `α` is the basal number of roaches caught `y` and has
@@ -360,10 +358,7 @@ summarystats(chain_negbin)
 
 @chain quantile(chain_negbin) begin
     DataFrame
-    select(_,
-        :parameters,
-        names(_, r"%") .=> ByRow(exp),
-        renamecols=false)
+    select(_, :parameters, names(_, r"%") .=> ByRow(exp); renamecols=false)
 end
 
 # Our results show much more uncertainty in the coefficients than in the Poisson regression.

@@ -19,13 +19,11 @@
 # mean without having to change the mean's position (or location). In other words, the bell curve needs to "shift" to be able
 # to contemplate outliers, thus making the inference unstable.
 
-using StatsPlots, Distributions, LaTeXStrings
+using CairoMakie
+using Distributions
 
-plot(Normal(0, 1),
-        lw=5, label=false,
-        xlabel=L"x",
-        ylabel="Density")
-savefig(joinpath(@OUTPUT, "normal.svg")); # hide
+f, ax, l = lines(-4 .. 4, Normal(0, 1); linewidth=5, axis=(; xlabel=L"x", ylabel="Density"))
+save(joinpath(@OUTPUT, "normal.svg"), f); # hide
 
 # \fig{normal}
 # \center{*Normal with $\mu=0$ and $\sigma = 1$*} \\
@@ -35,12 +33,8 @@ savefig(joinpath(@OUTPUT, "normal.svg")); # hide
 # far from the average without having to "shift" the mean's position (or location). For that we have the Student-$t$ distribution.
 # See the figure below to remember its shape.
 
-plot(TDist(2),
-        lw=5, label=false,
-        xlabel=L"x",
-        ylabel="Density",
-        xlims=(-4, 4))
-savefig(joinpath(@OUTPUT, "tdist.svg")); # hide
+f, ax, l = lines(-4 .. 4, TDist(2); linewidth=5, axis=(xlabel=L"x", ylabel="Density"))
+save(joinpath(@OUTPUT, "tdist.svg"), f); # hide
 
 # \fig{tdist}
 # \center{*Student-$t$ with $\nu =  2$*} \\
@@ -49,14 +43,16 @@ savefig(joinpath(@OUTPUT, "tdist.svg")); # hide
 
 # Take a look at the tails in the comparison below:
 
-plot(Normal(0, 1),
-        lw=5, label="Normal",
-        xlabel=L"x",
-        ylabel="Density",
-        xlims=(-4, 4))
-plot!(TDist(2),
-        lw=5, label="Student")
-savefig(joinpath(@OUTPUT, "comparison_normal_student.svg")); # hide
+f, ax, l = lines(
+    -4 .. 4,
+    Normal(0, 1);
+    linewidth=5,
+    label="Normal",
+    axis=(; xlabel=L"x", ylabel="Density"),
+)
+lines!(ax, -4 .. 4, TDist(2); linewidth=5, label="Student")
+axislegend(ax)
+save(joinpath(@OUTPUT, "comparison_normal_student.svg"), f); # hide
 
 # \fig{comparison_normal_student}
 # \center{*Comparison between Normal and Student-$t$ Distributions*} \\
@@ -123,14 +119,14 @@ seed!(456) # hide
 setprogress!(false) # hide
 
 @model function robustreg(X, y; predictors=size(X, 2))
-        #priors
-        α ~ LocationScale(median(y), 2.5 * mad(y), TDist(3))
-        β ~ filldist(TDist(3), predictors)
-        σ ~ Exponential(1)
-        ν ~ LogNormal(2, 1)
+    #priors
+    α ~ LocationScale(median(y), 2.5 * mad(y), TDist(3))
+    β ~ filldist(TDist(3), predictors)
+    σ ~ Exponential(1)
+    ν ~ LogNormal(2, 1)
 
-        #likelihood
-        y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
+    #likelihood
+    return y ~ arraydist(LocationScale.(α .+ X * β, σ, TDist.(ν)))
 end;
 
 # Here I am specifying very weakly informative priors:
@@ -161,7 +157,9 @@ end;
 # * `prestige`: percentage of respondents in the survey who classified their occupation as at least "good" with respect to prestige.
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/duncan.csv"
 duncan = CSV.read(HTTP.get(url).body, DataFrame)
@@ -171,17 +169,22 @@ describe(duncan)
 # as at least "good" with respect to prestige is around 41%. But `prestige` variable is very dispersed and actually has a bimodal
 # distribution:
 
-@df duncan density(:prestige, label=false)
-savefig(joinpath(@OUTPUT, "prestige_density.svg")); # hide
+f = Figure()
+plt = data(duncan) * mapping(:prestige) * AlgebraOfGraphics.density()
+draw!(f[1, 1], plt)
+save(joinpath(@OUTPUT, "prestige_density.svg"), f); # hide
 
 # \fig{prestige_density}
 # \center{*Density Plot of `prestige`*} \\
 
 # Besides that, the mean `prestige` per `type` shows us where the source of variation might come from:
 
-gdf_type = groupby(duncan, :type)
-@df combine(gdf_type, :prestige => mean) bar(:type, :prestige_mean, label=false)
-savefig(joinpath(@OUTPUT, "prestige_per_type.svg")); # hide
+gdf = groupby(duncan, :type)
+f = Figure()
+plt =
+    data(combine(gdf, :prestige => mean)) * mapping(:type, :prestige_mean) * visual(BarPlot)
+draw!(f[1, 1], plt)
+save(joinpath(@OUTPUT, "prestige_per_type.svg"), f); # hide
 
 # \fig{prestige_per_type}
 # \center{*Mean `prestige` per `type`*} \\

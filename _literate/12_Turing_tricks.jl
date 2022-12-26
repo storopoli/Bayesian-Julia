@@ -57,10 +57,12 @@ setprogress!(false) # hide
     σ ~ Exponential(1)
 
     #likelihood
-    y ~ MvNormal(α .+ X * β, σ^2 * I)
+    return y ~ MvNormal(α .+ X * β, σ^2 * I)
 end;
 
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/kidiq.csv"
 kidiq = CSV.read(HTTP.get(url).body, DataFrame)
@@ -115,8 +117,12 @@ chain_qr = sample(model_qr, NUTS(1_000, 0.65), MCMCThreads(), 1_000, 4)
 # the regular `linreg`.
 # Now we have to reconstruct our $\boldsymbol{\beta}$s:
 
-betas = mapslices(x -> R_ast^-1 * x, chain_qr[:, namesingroup(chain_qr, :β), :].value.data, dims=[2])
-chain_beta = setrange(Chains(betas, ["real_β[$i]" for i in 1:size(Q_ast, 2)]), 1_001:1:3_000)
+betas = mapslices(
+    x -> R_ast^-1 * x, chain_qr[:, namesingroup(chain_qr, :β), :].value.data; dims=[2]
+)
+chain_beta = setrange(
+    Chains(betas, ["real_β[$i]" for i in 1:size(Q_ast, 2)]), 1_001:1:2_000
+)
 chain_qr_reconstructed = hcat(chain_beta, chain_qr)
 
 # ## Non-Centered Parametrization
@@ -126,15 +132,18 @@ chain_qr_reconstructed = hcat(chain_beta, chain_qr)
 # change the step size $L$ and the $\epsilon$ factor. This is  I've showed one of the most infamous
 # case in [5. **Markov Chain Monte Carlo (MCMC)**](/pages/5_MCMC/): Neal's Funnel (Neal, 2003):
 
-using StatsPlots, Distributions, LaTeXStrings
+using CairoMakie
+using Distributions
 funnel_y = rand(Normal(0, 3), 10_000)
 funnel_x = rand(Normal(), 10_000) .* exp.(funnel_y / 2)
 
-scatter((funnel_x, funnel_y),
-    label=false, mc=:steelblue, ma=0.3,
-    xlabel=L"X", ylabel=L"Y",
-    xlims=(-100, 100))
-savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
+f, ax, s = scatter(
+    funnel_x,
+    funnel_y;
+    color=(:steelblue, 0.3),
+    axis=(; xlabel=L"X", ylabel=L"Y", limits=(-100, 100, nothing, nothing)),
+)
+save(joinpath(@OUTPUT, "funnel.svg"), f); # hide
 
 # \fig{funnel}
 # \center{*Neal's Funnel*} \\
@@ -147,7 +156,7 @@ savefig(joinpath(@OUTPUT, "funnel.svg")); # hide
 
 @model function funnel()
     y ~ Normal(0, 3)
-    x ~ Normal(0, exp(y / 2))
+    return x ~ Normal(0, exp(y / 2))
 end
 
 chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 1_000, 4)
@@ -167,7 +176,7 @@ chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), 1_000, 4)
     x̃ ~ Normal()
     ỹ ~ Normal()
     y = 3.0 * ỹ         # implies y ~ Normal(0, 3)
-    x = exp(y / 2) * x̃  # implies x ~ Normal(0, exp(y / 2))
+    return x = exp(y / 2) * x̃  # implies x ~ Normal(0, exp(y / 2))
 end
 
 chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 1_000, 4)
@@ -178,7 +187,9 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 1_000, 4)
 # in [10. **Multilevel Models (a.k.a. Hierarchical Models)**](/pages/10_multilevel_models/). Here was the
 # approach that we took, also known as Centered Parametrization (CP):
 
-@model function varying_intercept(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
+@model function varying_intercept(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)
+)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
@@ -190,12 +201,14 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 1_000, 4)
 
     #likelihood
     ŷ = α .+ X * β .+ αⱼ[idx]
-    y ~ MvNormal(ŷ, σ^2 * I)
+    return y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # To perform a Non-Centered Parametrization (NCP) in this model we do as following:
 
-@model function varying_intercept_ncp(X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2))
+@model function varying_intercept_ncp(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)
+)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
@@ -208,7 +221,7 @@ end;
 
     #likelihood
     ŷ = α .+ X * β .+ zⱼ[idx] .* τ
-    y ~ MvNormal(ŷ, σ^2 * I)
+    return y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
 # Here we are using a NCP with the `zⱼ`s following a standard normal and we reconstruct the
@@ -226,8 +239,13 @@ for c in unique(cheese[:, :cheese])
 end
 
 cheese[:, :background_int] = map(cheese[:, :background]) do b
-    b == "rural" ? 1 :
-    b == "urban" ? 2 : missing
+    if b == "rural"
+        1
+    elseif b == "urban"
+        2
+    else
+        missing
+    end
 end
 
 X = Matrix(select(cheese, Between(:cheese_A, :cheese_D)));
@@ -247,8 +265,12 @@ chain_ncp = sample(model_ncp, NUTS(), MCMCThreads(), 1_000, 4)
 # in Turing. Before we conclude, we need to recover our original `αⱼ`s. We can do this by multiplying `zⱼ[idx] .* τ`:
 
 τ = summarystats(chain_ncp)[:τ, :mean]
-αⱼ = mapslices(x -> x * τ, chain_ncp[:, namesingroup(chain_ncp, :zⱼ), :].value.data, dims=[2])
-chain_ncp_reconstructed = hcat(MCMCChains.resetrange(chain_ncp), Chains(αⱼ, ["αⱼ[$i]" for i in 1:length(unique(idx))]))
+αⱼ = mapslices(
+    x -> x * τ, chain_ncp[:, namesingroup(chain_ncp, :zⱼ), :].value.data; dims=[2]
+)
+chain_ncp_reconstructed = hcat(
+    MCMCChains.resetrange(chain_ncp), Chains(αⱼ, ["αⱼ[$i]" for i in 1:length(unique(idx))])
+)
 
 # ## References
 
