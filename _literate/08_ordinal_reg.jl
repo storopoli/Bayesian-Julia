@@ -124,17 +124,17 @@ let
     x_logodds_cdf = logit.(x_cdf)
     df = DataFrame(; x, x_pmf, x_cdf, x_logodds_cdf)
     labels = ["CDF", "Log-cumulative-odds"]
-    fig = Figure()
+    f = Figure()
     plt1 = data(df) * mapping(:x, :x_pmf) * visual(BarPlot)
     plt2 =
         data(df) *
         mapping(:x, [:x_cdf, :x_logodds_cdf]; col=dims(1) => renamer(labels)) *
         visual(ScatterLines)
     axis = (; xticks=1:6)
-    draw!(fig[1, 2:3], plt1; axis)
-    draw!(fig[2, 1:4], plt2; axis, facet=(; linkyaxes=:none))
-    fig
-    save(joinpath(@OUTPUT, "logodds.svg"), fig) # hide
+    draw!(f[1, 2:3], plt1; axis)
+    draw!(f[2, 1:4], plt2; axis, facet=(; linkyaxes=:none))
+    f
+    save(joinpath(@OUTPUT, "logodds.svg"), f) # hide
 end
 
 # \fig{logodds}
@@ -329,7 +329,9 @@ end;
 # * `ncontrols`: Number of controls
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/esoph.csv"
 esoph = CSV.read(HTTP.get(url).body, DataFrame)

@@ -76,7 +76,11 @@
 # Here is Julia:
 
 # ```julia
-# using Random, StatsBase, DataFrames, BenchmarkTools, Chain
+# using Random
+# using StatsBase
+# using DataFrames
+# using BenchmarkTools
+# using Chain
 # Random.seed!(123)
 #
 # n = 10_000

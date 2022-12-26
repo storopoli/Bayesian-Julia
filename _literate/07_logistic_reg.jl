@@ -13,14 +13,15 @@
 # We use logistic regression when our dependent variable is binary. It has only two distinct values, usually
 # encoded as $0$ or $1$. See the figure below for a graphical intuition of the logistic function:
 
-using Plots, LaTeXStrings
+using CairoMakie
 
 function logistic(x)
     return 1 / (1 + exp(-x))
 end
 
-plot(logistic, -10, 10; label=false, xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)")
-savefig(joinpath(@OUTPUT, "logistic.svg")); # hide
+f, ax, l = lines(-10 .. 10, logistic; axis=(; xlabel=L"x", ylabel=L"\mathrm{Logistic}(x)"))
+f
+save(joinpath(@OUTPUT, "logistic.svg"), f); # hide
 
 # \fig{logistic}
 # \center{*Logistic Function*} \\
@@ -176,7 +177,9 @@ end;
 # * `educ` -- years of education (head of household).
 
 # Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
-using DataFrames, CSV, HTTP
+using DataFrames
+using CSV
+using HTTP
 
 url = "https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/wells.csv"
 wells = CSV.read(HTTP.get(url).body, DataFrame)
