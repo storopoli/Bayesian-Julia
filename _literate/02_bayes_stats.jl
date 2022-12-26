@@ -416,24 +416,23 @@
 # and the 75% percentile of the probability density of $\theta$. In this example, MLE leads to estimated values that are not
 # consistent with the actual probability density of the value of $\theta$.
 
-using Plots, StatsPlots, Distributions, LaTeXStrings
+using CairoMakie
+using Distributions
 
 d = LogNormal(0, 2)
 range_d = 0:0.001:4
 q25 = quantile(d, 0.25)
 q75 = quantile(d, 0.75)
-plot((range_d, pdf.(d, range_d)),
-     leg=false,
-     xlims=(-0.2, 4.2),
-     lw=3,
-     xlabel=L"\theta",
-     ylabel="Density")
-scatter!((mode(d), pdf(d, mode(d))), mc=:green, ms=5)
-plot!(range(q25, stop=q75, length=100),
-      x -> pdf(d, x),
-      lc=false, fc=:blues,
-      fill=true, fa=0.5)
-savefig(joinpath(@OUTPUT, "lognormal.svg")); # hide
+credint = range(q25; stop=q75, length=100)
+f, ax, l = lines(
+    range_d,
+    pdf.(d, range_d);
+    linewidth=3,
+    axis=(; limits=(-0.2, 4.2, nothing, nothing), xlabel=L"\theta", ylabel="Density"),
+)
+scatter!(ax, mode(d), pdf(d, mode(d)); color=:green, markersize=12)
+band!(ax, credint, 0.0, pdf.(d, credint); color=(:steelblue, 0.5))
+save(joinpath(@OUTPUT, "lognormal.svg"), f); # hide
 
 # \fig{lognormal}
 # \center{_**Log-Normal**: Maximum Likelihood Estimate vs Credible Intervals_} \\
@@ -454,19 +453,22 @@ range_d = -2:0.01:14
 sim_d = rand(d, 10_000)
 q25 = quantile(sim_d, 0.25)
 q75 = quantile(sim_d, 0.75)
-plot((range_d, pdf.(d, range_d)),
-     leg=false,
-     xlims=(-2, 14),
-     xticks=[0, 5, 10],
-     lw=3,
-     xlabel=L"\theta",
-     ylabel="Density")
-scatter!((mode(d2), pdf(d, mode(d2))), mc=:green, ms=5)
-plot!(range(q25, stop=q75, length=100),
-      x -> pdf(d, x),
-      lc=false, fc=:blues,
-      fill=true, fa=0.5)
-savefig(joinpath(@OUTPUT, "mixture.svg")); # hide
+credint = range(q25; stop=q75, length=100)
+
+f, ax, l = lines(
+    range_d,
+    pdf.(d, range_d);
+    linewidth=3,
+    axis=(;
+        limits=(-2, 14, nothing, nothing),
+        xticks=[0, 5, 10],
+        xlabel=L"\theta",
+        ylabel="Density",
+    ),
+)
+scatter!(ax, mode(d2), pdf(d, mode(d2)); color=:green, markersize=12)
+band!(ax, credint, 0.0, pdf.(d, credint); color=(:steelblue, 0.5))
+save(joinpath(@OUTPUT, "mixture.svg"), f); # hide
 
 # \fig{mixture}
 # \center{_**Mixture**: Maximum Likelihood Estimate vs Credible Intervals_} \\
