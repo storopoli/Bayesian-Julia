@@ -116,7 +116,7 @@ Here is a (not complete) list of other Turing tutorials:
 2. [**Statistical Rethinking - Turing Models**](https://statisticalrethinkingjulia.github.io/TuringModels.jl/): Julia versions of the Bayesian models described in *Statistical Rethinking* Edition 1 (McElreath, 2016) and Edition 2 (McElreath, 2020)
 3. [**Håkan Kjellerstrand Turing Tutorials**](http://hakank.org/julia/turing/): a collection of Julia Turing models
 
-I also have a free and opensource graduate course on Bayesian Statistics with Turing and Stan code.
+I also have a free and open-source graduate course on Bayesian Statistics with Turing and Stan code.
 You can find it at [`storopoli/Bayesian-Statistics`](https://github.com/storopoli/Bayesian-Statistics).
 
 ## How to cite
