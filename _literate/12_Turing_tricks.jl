@@ -193,7 +193,7 @@ chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), 1_000, 4)
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
-    σ ~ Exponential(1 / std(y))             # residual SD
+    σ ~ Exponential(std(y))                 # residual SD
     #prior for variance of random intercepts
     #usually requires thoughtful specification
     τ ~ truncated(Cauchy(0, 2); lower=0)    # group-level SDs intercepts
@@ -212,7 +212,7 @@ end;
     #priors
     α ~ Normal(mean(y), 2.5 * std(y))       # population-level intercept
     β ~ filldist(Normal(0, 2), predictors)  # population-level coefficients
-    σ ~ Exponential(1 / std(y))             # residual SD
+    σ ~ Exponential(std(y))                 # residual SD
 
     #prior for variance of random intercepts
     #usually requires thoughtful specification
