@@ -397,9 +397,12 @@
 # that you performed a statistical analysis to compare the effectiveness of a public policy in two groups and you obtained
 # the difference between the average of those groups. You can express this difference as a confidence interval. We generally
 # choose 95% confidence (since it is analogous as $p < 0.05$). You then write in your paper that the "observed difference between
-# groups is 10.5 - 23.5 (95% CI)." This means that 95 studies out of 100, which would use the same sample size and target population,
-# applying the same statistical test, will expect to find a result of mean differences between groups between 10.5 and 23.5. The
-# units here are arbitrary, but to conclude the example we assume that they are life expectancy.
+# groups is 10.5 - 23.5 (95% CI)."
+# This means that approximately 95 studies out of 100 would compute a confidence interval that contains the true mean difference
+# –- but it says nothing about which ones those are (whereas the data might).
+# In other words, 95% is not the probability of obtaining data such that the estimate of the true parameter is contained in the interval that we obtained,
+# it is the probability of obtaining data such that, if we compute another confidence interval in the same way, it contains the true parameter.
+# The interval that we got in this particular instance is irrelevant and might as well be thrown away.
 
 # #### Confidence Intervals (Frequentist) vs Credible Intervals (Bayesian)
 
