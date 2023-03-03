@@ -249,7 +249,7 @@ end
 # -- `assoc`. The other remaining 95% credible intervals can be interpreted as follows:
 
 # * `β[1]` -- first column of `X`, `arsenic`, has 95% credible interval 0.595 to 0.634. This means that each increase in one unit of `arsenic` is related to an increase of 9.6% to 13.4% propension of `switch` being 1.
-# * `β[2]` -- second column of `X`, `dist`, has a 95% credible interval from 0.497 to 0.498. So we expect that each increase in one meter of `dist` is related to a decrease of 0.1% propension of `switch` being 0.
+# * `β[2]` -- second column of `X`, `dist`, has a 95% credible interval from 0.497 to 0.498. So we expect that each increase in one meter of `dist` is related to a decrease of 0.01% propension of `switch` being 1.
 # * `β[4]` -- fourth column of `X`, `educ`, has a 95% credible interval from 0.506 to 0.515. Each increase in one year of `educ` is related to an increase of 0.6% to 1.5% propension of `switch` being 1.
 
 # That's how you interpret 95% credible intervals from a `quantile()` output of a logistic regression `Chains`
