@@ -415,7 +415,7 @@ summarystats(chain_met)
 
 # $$ \text{efficiency} = \frac{\text{ESS}}{\text{iterations}} \label{ESS} $$
 
-mean(summarystats(chain_met)[:, :ess]) / S
+mean(summarystats(chain_met)[:, :ess_tail]) / S
 
 # Our Metropolis algorithm has around 10.2% efficiency. Which, in my honest opinion, *sucks*...(😂)
 
@@ -671,7 +671,7 @@ summarystats(chain_gibbs)
 # the ESS by the number of sampling iterations that we've performed also
 # accounting for the `S * 2`:
 
-(mean(summarystats(chain_gibbs)[:, :ess]) / 2) / S
+(mean(summarystats(chain_gibbs)[:, :ess_tail]) / 2) / S
 
 # Our Gibbs algorithm has around 10.6% efficiency. Which, in my honest opinion, despite the
 # small improvement still *sucks*...(😂)
@@ -1048,7 +1048,7 @@ summarystats(chain_hmc)
 # Now let's calculate the efficiency of our HMC algorithm by dividing
 # the ESS by the number of sampling iterations:
 
-mean(summarystats(chain_hmc)[:, :ess]) / S
+mean(summarystats(chain_hmc)[:, :ess_tail]) / S
 
 # We see that a simple naïve (and not well-calibrated[^calibrated]) HMC has 70% more efficiency from both Gibbs and Metropolis.
 # ≈ 10% versus ≈ 17%. Great! 😀
