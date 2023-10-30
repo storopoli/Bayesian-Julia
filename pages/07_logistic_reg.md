@@ -4,6 +4,4 @@
 @def hascode = true
 @def mintoclevel = 2
 
-\toc
-
 \literate{/_literate/07_logistic_reg.jl}

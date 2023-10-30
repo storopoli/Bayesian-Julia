@@ -4,6 +4,4 @@
 @def hascode = true
 @def mintoclevel = 2
 
-\toc
-
 \literate{/_literate/05_MCMC.jl}

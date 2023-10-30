@@ -1,4 +1,5 @@
 __site/
+_rss/
 .DS_Store
 franklin
 franklin.pub
