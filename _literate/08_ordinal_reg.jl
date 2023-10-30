@@ -95,6 +95,7 @@ using CairoMakie
 using AlgebraOfGraphics
 using Distributions
 using StatsFuns: logit
+using DataFrames: transform!
 
 # Here we have a discrete variable `x` with 6 possible ordered values as response.
 # The values range from 1 to 6 having probability, respectively:
