@@ -269,19 +269,20 @@ using Bijectors
 using LazyArrays
 using LinearAlgebra
 using Random: seed!
+using Bijectors: transformed, OrderedBijector
 seed!(123)
 setprogress!(false) # hide
 
 @model function ordreg(X, y; predictors=size(X, 2), ncateg=maximum(y))
     #priors
-    cutpoints ~ Bijectors.ordered(filldist(TDist(3) * 5, ncateg - 1))
+    cutpoints ~ transformed(filldist(TDist(3) * 5, ncateg - 1), OrderedBijector())
     β ~ filldist(TDist(3) * 2.5, predictors)
 
     #likelihood
     return y ~ arraydist([OrderedLogistic(X[i, :] ⋅ β, cutpoints) for i in 1:length(y)])
 end;
 
-# First, let's deal with the new stuff in our model: the **`Bijectors.ordered`**.
+# First, let's deal with the new stuff in our model: the **`Bijectors.jl`'s `transformed` and `OrderedBijector`**.
 # As I've said in the [4. **How to use Turing**](/pages/04_Turing/),
 # Turing has a rich ecosystem of packages.
 # Bijectors implements a set of functions for transforming constrained random variables
@@ -289,7 +290,7 @@ end;
 # Here we are defining `cutpoints` as a `ncateg - 1` vector of Student-$t$ distributions
 # with mean 0, standard deviation 5 and degrees of freedom $\nu = 3$.
 # Remember that we only need $K-1$ cutpoints for all of our $K$ intercepts.
-# And we are also constraining it to be an ordered vector with `Bijectors.ordered`,
+# And we are also constraining it to be an ordered vector with `transformed(d, OrderedBijector)`,
 # such that for all cutpoints $c_i$ we have $c_1 < c_2 < ... c_{k-1}$.
 
 # As before, we are giving $\boldsymbol{\beta}$ a very weakly informative priors of a
@@ -355,7 +356,9 @@ DataFrames.transform!(
         x -> categorical(x; levels=["0-9g/day", "10-19", "20-29", "30+"], ordered=true);
     renamecols=false,
 )
-DataFrames.transform!(esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false)
+DataFrames.transform!(
+    esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false
+)
 
 X = Matrix(select(esoph, [:agegp, :alcgp]))
 y = esoph[:, :tobgp]
