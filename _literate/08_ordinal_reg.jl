@@ -95,7 +95,6 @@ using CairoMakie
 using AlgebraOfGraphics
 using Distributions
 using StatsFuns: logit
-using DataFrames: transform!
 
 # Here we have a discrete variable `x` with 6 possible ordered values as response.
 # The values range from 1 to 6 having probability, respectively:
@@ -344,7 +343,7 @@ esoph = CSV.read(HTTP.get(url).body, DataFrame)
 
 using CategoricalArrays
 
-transform!(
+DataFrames.transform!(
     esoph,
     :agegp =>
         x -> categorical(
@@ -356,7 +355,7 @@ transform!(
         x -> categorical(x; levels=["0-9g/day", "10-19", "20-29", "30+"], ordered=true);
     renamecols=false,
 )
-transform!(esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false)
+DataFrames.transform!(esoph, [:agegp, :alcgp, :tobgp] .=> ByRow(levelcode); renamecols=false)
 
 X = Matrix(select(esoph, [:agegp, :alcgp]))
 y = esoph[:, :tobgp]
