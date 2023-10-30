@@ -7,16 +7,16 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
         JULIA_NUM_THREADS: 2
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         persist-credentials: false
     - name: Install Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
     - run: npm install highlight.js
     - name: Install Julia
       uses: julia-actions/setup-julia@v1
