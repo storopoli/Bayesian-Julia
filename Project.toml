@@ -24,6 +24,7 @@ StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 
 [compat]
-Turing = "0.29"
 Bijectors = "0.13"
+DifferentialEquations = "7"
+Turing = "0.29"
 julia = "1"
