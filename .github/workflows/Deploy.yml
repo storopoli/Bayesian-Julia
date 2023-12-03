@@ -9,46 +9,45 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-        JULIA_NUM_THREADS: 2
+      JULIA_NUM_THREADS: "auto"
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        persist-credentials: false
-    - name: Install Node
-      uses: actions/setup-node@v4
-    - run: npm install highlight.js
-    - name: Install Julia
-      uses: julia-actions/setup-julia@v1
-      with:
-        version: '1.9'
-    # NOTE
-    #   The steps below ensure that NodeJS and Franklin are loaded then it
-    #   installs highlight.js which is needed for the prerendering step
-    #   (code highlighting + katex prerendering).
-    #   Then the environment is activated and instantiated to install all
-    #   Julia packages which may be required to successfully build your site.
-    #   The last line should be `optimize()` though you may want to give it
-    #   specific arguments, see the documentation or ?optimize in the REPL.
-    - run: julia --color=yes -e '
-            using Pkg;
-            Pkg.activate("."); Pkg.instantiate();
-            using NodeJS; run(`$(npm_cmd()) install highlight.js`);
-            using Franklin;
-            optimize(); verify_links();' > build.log
-      env:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node
+        uses: actions/setup-node@v4
+      - run: npm install highlight.js
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/cache@v1
+      # NOTE
+      #   The steps below ensure that NodeJS and Franklin are loaded then it
+      #   installs highlight.js which is needed for the prerendering step
+      #   (code highlighting + katex prerendering).
+      #   Then the environment is activated and instantiated to install all
+      #   Julia packages which may be required to successfully build your site.
+      #   The last line should be `optimize()` though you may want to give it
+      #   specific arguments, see the documentation or ?optimize in the REPL.
+      - run: julia --color=yes -e '
+          using Pkg;
+          Pkg.activate("."); Pkg.instantiate();
+          using NodeJS; run(`$(npm_cmd()) install highlight.js`);
+          using Franklin;
+          optimize(); verify_links();' > build.log
+        env:
           # Allows the use of unicode characters in Plots.jl
           GKS_ENCODING: "utf8"
           # Fixes 'GKS: can't connect to GKS socket application' errors
           # and quality of output plots in GR back end.
           GKSwstype: "100"
-    - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        branch: gh-pages
-        folder: __site
-        # To reduce state.
-        clean: true
-        # To save space; we don't really need older versions.
-        single-commit: true
+      - name: Build and Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: __site
+          # To reduce state.
+          clean: true
+          # To save space; we don't really need older versions.
+          single-commit: true
