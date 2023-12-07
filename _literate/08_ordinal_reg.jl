@@ -178,7 +178,7 @@ end
 # **How we would interpret our $\boldsymbol{\beta}$ estimated values?**
 
 # First, to recap, $\boldsymbol{\beta}$ measures the strength of association between
-# the covariate $\mathbf{x}$ and depedent variable $\mathbf{y}$.
+# the covariate $\mathbf{x}$ and dependent variable $\mathbf{y}$.
 # But, $\boldsymbol{\beta}$ is nested inside a non-linear transformation called
 # logistic function:
 

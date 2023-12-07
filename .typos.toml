@@ -1,0 +1,29 @@
+[default]
+extend-ignore-re = [
+    # citation keys
+    "textcite\\{.*\\}",
+]
+
+[default.extend-words]
+# code stuff
+lik = "lik"
+quation = "quation"
+# surnames
+Yau = "Yau"
+
+[files]
+extend-exclude = [
+    "datasets/*",
+    "_assets/*",
+    "_libs/*",
+    "images/*",
+    "pages/images/*",
+]
+
+[type.bib]
+check-file = false
+extend-glob = ["*.bib"]
+
+[type.gitignore]
+check-file = false
+extend-glob = [".gitignore"]
