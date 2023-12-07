@@ -5,6 +5,7 @@ on:
       - main
       - master
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,12 +16,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+
       - name: Install Node
         uses: actions/setup-node@v4
       - run: npm install highlight.js
+
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
       - uses: julia-actions/cache@v1
+
       # NOTE
       #   The steps below ensure that NodeJS and Franklin are loaded then it
       #   installs highlight.js which is needed for the prerendering step
@@ -41,3 +45,19 @@ jobs:
           # Fixes 'GKS: can't connect to GKS socket application' errors
           # and quality of output plots in GR back end.
           GKSwstype: "100"
+
+      - name: Make Franklin preview available
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: preview
+          path: ./__site
+
+      - name: Create a comment to say that the artifact is ready
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.number }}
+          body: |
+            The site preview was created and uploaded as an artifact.
+            You can find it on the GitHub Actions Summary page for the GitHub Actions Runs in this PR.

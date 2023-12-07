@@ -1,10 +1,12 @@
 name: Build and Deploy
+
 on:
   push:
     branches:
       - main
       - master
   workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -15,12 +17,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+
       - name: Install Node
         uses: actions/setup-node@v4
       - run: npm install highlight.js
+
       - name: Install Julia
         uses: julia-actions/setup-julia@v1
+
       - uses: julia-actions/cache@v1
+
       # NOTE
       #   The steps below ensure that NodeJS and Franklin are loaded then it
       #   installs highlight.js which is needed for the prerendering step
@@ -41,6 +47,7 @@ jobs:
           # Fixes 'GKS: can't connect to GKS socket application' errors
           # and quality of output plots in GR back end.
           GKSwstype: "100"
+
       - name: Build and Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
