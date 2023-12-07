@@ -57,6 +57,7 @@
 # 1. **Random-intercept model**: each group receives a **different intercept** in addition to the global intercept.
 # 2. **Random-slope model**: each group receives **different coefficients** for each (or a subset of) independent variable(s) in addition to a global intercept.
 # 3. **Random-intercept-slope model**: each group receives **both a different intercept and different coefficients** for each independent variable in addition to a global intercept.
+# 4. **Correlated-Random-intercept-slope model**: each group receives **both a different intercept and different coefficients** for each independent variable in addition to a global intercept; while also taking into account the **correlation/covariance amongst intercept/coefficients**.
 
 # ### Random-Intercept Model
 
@@ -90,7 +91,7 @@
 # This is easily accomplished with Turing:
 
 using Turing
-using LinearAlgebra: I
+using LinearAlgebra
 using Statistics: mean, std
 using Random: seed!
 seed!(123)
@@ -196,28 +197,114 @@ end;
     return y ~ MvNormal(ŷ, σ^2 * I)
 end;
 
-# In all of the models,
+# In all of the models so far,
 # we are using the `MvNormal` construction where we specify both
 # a vector of means (first positional argument)
 # and a covariance matrix (second positional argument).
 # Regarding the covariance matrix `σ^2 * I`,
 # it uses the model's errors `σ`, here parameterized as a standard deviation,
-# squares it to produce a variance paramaterization,
+# squares it to produce a variance parameterization,
 # and multiplies by `I`, which is Julia's `LinearAlgebra` standard module implementation
 # to represent an identity matrix of any size.
+
+# ### Correlated-Random-Intercept-Slope Model
+
+# The third approach is the **correlated-random-intercept-slope model** in which we specify a different intercept
+# and  slope for each group, in addition to the global intercept.
+# These group-level intercepts and slopes are sampled from hyperpriors.
+# Finally, we also model the correlation/covariance amongst the intercepts and slopes.
+# We assume that they are not independent anymore, rather they are correlated.
+
+# In order to model the correlation between parameters,
+# we need a prior on correlation/covariance matrices.
+# There are several ways to define priors on covariance matrices.
+# In some ancient time, "Bayesian elders" used distributions such as 
+# the [Wishart distribution](https://en.wikipedia.org/wiki/Wishart_distribution)
+# and the [Inverse Wishart distribution](https://en.wikipedia.org/wiki/Inverse-Wishart_distribution).
+# However, priors on covariance matrices are not that intuitive,
+# and can be hard to translate into real-world scenarios.
+# That's why I much prefer to construct my covariances matrices from a
+# correlation matrix and a vector of standard deviations.
+# Remember that every covariance matrix $\boldsymbol{\Sigma}$ can be decomposed into:
+
+# $$\boldsymbol{\Sigma}=\text{diag}_\text{matrix}(\boldsymbol{\tau}) \cdot \boldsymbol{\Omega} \cdot \text{diag}_\text{matrix}(\boldsymbol{\tau})$$
+
+# where $\boldsymbol{\Omega}$ is a correlation matrix with
+# $1$s in the diagonal and the off-diagonal elements between -1 e 1 $\rho \in (-1, 1)$.
+# $\boldsymbol{\tau}$ is a vector composed of the variables' standard deviation from
+# $\boldsymbol{\Sigma}$ (is is the $\boldsymbol{\Sigma}$'s diagonal).
+
+# These are much more intuitive and easy to work with,
+# specially if you are not working together with some "Bayesian elders".
+# This approach leaves us with the need to specify a prior on correlation matrices.
+# Luckily, we have the [LKJ distribution](https://en.wikipedia.org/wiki/Lewandowski-Kurowicka-Joe_distribution):
+# distribution for positive definite matrices with unit diagonals
+# (exactly what a correlation matrix is).
+
+# To illustrate a multilevel model, I will use the linear regression example with a Gaussian/normal likelihood function.
+# Mathematically a Bayesian multilevel correlated-random-intercept-slope linear regression model is:
+
+# $$
+# \begin{aligned}
+# \mathbf{y}           & \sim \text{Normal}(\mathbf{X} \boldsymbol{\beta}_{j}, \sigma)            \\
+# \boldsymbol{\beta}_j & \sim \text{Multivariate Normal}(\boldsymbol{\mu}_j, \boldsymbol{\Sigma})
+# \quad \text{for}\quad j \in \{ 1, \dots, J \}                                                   \\
+# \boldsymbol{\Sigma}  & \sim \text{LKJ}(\eta)                                                    \\
+# \sigma               & \sim \text{Exponential}(\lambda_\sigma)
+# \end{aligned}
+# $$
+
+# We don't have any $\alpha$s.
+# If we want a varying intercept, we just insert a column filled with $1$s in the data matrix $\mathbf{X}$.
+# Mathematically, this makes the column behave like an "identity" variable
+# (because the number $1$ in the multiplication operation $1 \cdot \beta$ is the identity element.
+# It maps $x \to x$ keeping the value of $x$ intact) and, consequently,
+# we can interpret the column's coefficient as the model's intercept.
+
+# In Turing we can accomplish this as:
+
+using PDMats
+
+@model function correlated_varying_intercept_slope(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, 2)
+)
+    #priors
+    Ω ~ LKJCholesky(predictors, 2.0) # Cholesky decomposition correlation matrix
+    σ ~ Exponential(std(y))
+
+    #prior for variance of random correlated intercepts and slopes
+    #usually requires thoughtful specification
+    τ ~ filldist(truncated(Cauchy(0, 2); lower=0), predictors) # group-level SDs
+    γ ~ filldist(Normal(0, 5), predictors, n_gr)               # matrix of group coefficients
+
+    #reconstruct Σ from Ω and τ
+    Σ_L = Diagonal(τ) * Ω.L
+    Σ = PDMat(Cholesky(Σ_L + 1e-6 * I))                        # numerical instability
+    #reconstruct β from Σ and γ
+    β = Σ * γ
+
+    #likelihood
+    return y ~ arraydist([Normal(X[i, :] ⋅ β[:, idx[i]], σ) for i in 1:length(y)])
+end;
+
+# In the `correlated_varying_intercept_slope` model,
+# we are using the efficient [Cholesky decomposition](https://en.wikipedia.org/wiki/Cholesky_decomposition)
+# version of the LKJ prior with `LKJCholesky`.
+# We put priors on all group coefficients `γ` and reconstruct both the
+# covariance matrix `Σ` and the coefficient matrix `β`.
 
 # ## Example - Cheese Ratings
 
 # For our example, I will use a famous dataset called `cheese` (Boatwright, McCulloch & Rossi, 1999), which is data from
 # cheese ratings. A group of 10 rural and 10 urban raters rated 4 types of different cheeses (A, B, C and D) in two samples.
-# So we have $4 \cdot 20 \cdot2 = 160$ observations and 4 variables:
+# So we have $4 \cdot 20 \cdot 2 = 160$ observations and 4 variables:
 
 # * `cheese`: type of cheese from `A` to `D`
 # * `rater`: id of the rater from `1` to `10`
 # * `background`: type of rater, either `rural` or `urban`
 # * `y`: rating of the cheese
 
-# Ok let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
+# OK, let's read our data with `CSV.jl` and output into a `DataFrame` from `DataFrames.jl`:
 
 using DataFrames
 using CSV
@@ -291,6 +378,18 @@ println(DataFrame(summarystats(chain_intercept_slope)))
 # we have in the same model group-level intercepts for each of the groups `αⱼ`s and group-level along with their standard
 # deviation `τₐ`. We also have the coefficients `βⱼ`s with their standard deviation `τᵦ`s.
 # The parameters are interpreted exactly as the previous cases.
+
+# Now let's go to the fourth model, `varying_intercept_slope`.
+# Here we are going to add a columns of into the data matrix `X`:
+
+X_correlated = hcat(fill(1, size(X, 1)), X)
+model_correlated = correlated_varying_intercept_slope(X_correlated, idx, y)
+chain_correlated = sample(model_correlated, NUTS(), MCMCThreads(), 1_000, 4)
+println(DataFrame(summarystats(chain_correlated)))
+
+# We can see that we also get all of the Cholesky factors of the correlation
+# matrix `Ω` which we can transform back into a correlation matrix by doing
+# `Ω = Ω.L * Ω.L'`.
 
 # ## References
 
