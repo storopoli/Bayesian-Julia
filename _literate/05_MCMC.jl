@@ -643,7 +643,7 @@ end
 # Generally a Gibbs sampler is not implemented in this way. Here I coded the Gibbs algorithm so that it samples a parameter for each iteration.
 # To be more computationally efficient we would sample all parameters are on each iteration. I did it on purpose because I want
 # to show in the animations the real trajectory of the Gibbs sampler in the sample space (vertical and horizontal, not diagonal).
-# So to remedy this I will provide `gibbs()` double the ammount of `S` (20,000 in total). Also take notice that we are now proposing
+# So to remedy this I will provide `gibbs()` double the amount of `S` (20,000 in total). Also take notice that we are now proposing
 # new parameters' values conditioned on other parameters, so there is not an acceptance/rejection rule here.
 
 X_gibbs = gibbs(S * 2, ρ);
@@ -1235,7 +1235,7 @@ model = dice_throw(data_dice)
 chain = sample(model, NUTS(), 1_000);
 summarystats(chain)
 
-# We have the following columns that outpus some kind of MCMC summary statistics:
+# We have the following columns that outputs some kind of MCMC summary statistics:
 
 # * `mcse`: **M**onte **C**arlo **S**tandard **E**rror, the uncertainty about a statistic in the sample due to sampling error.
 # * `ess`: **E**ffective **S**ample **S**ize, a rough approximation of the number of effective samples sampled by the MCMC estimated by the value of `rhat`.

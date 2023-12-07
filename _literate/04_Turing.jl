@@ -8,7 +8,7 @@
 
 # What is **probabilistic programming** (PP)? It is a **programming paradigm** in which probabilistic models
 # are specified and inference for these models is performed **automatically** (Hardesty, 2015). In more clear terms,
-# PP and PP Languages (PPLs) allows us to specify **variables as random variables** (like Normal, Binominal etc.) with
+# PP and PP Languages (PPLs) allows us to specify **variables as random variables** (like Normal, Binomial etc.) with
 # **known or unknown parameters**. Then, we **construct a model** using these variables by specifying how the variables
 #  related to each other, and finally **automatic inference of the variables' unknown parameters** is then performed.
 
@@ -233,8 +233,8 @@ save(joinpath(@OUTPUT, "chain.svg"), f); # hide
 
 # Predictive checks are a great way to **validate a model**.
 # The idea is to **generate data from the model** using **parameters from draws from the prior or posterior**.
-# **Prior predictive check** is when we simulate data using model parameter values drawn fom the **prior** distribution,
-# and **posterior predictive check** is is when we simulate data using model parameter values drawn fom the **posterior**
+# **Prior predictive check** is when we simulate data using model parameter values drawn from the **prior** distribution,
+# and **posterior predictive check** is is when we simulate data using model parameter values drawn from the **posterior**
 # distribution.
 
 # The workflow we do when specifying and sampling Bayesian models is not linear or acyclic (Gelman et al., 2020). This means
