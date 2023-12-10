@@ -13,7 +13,7 @@ Bayesian for Everyone!
 </div>
 
 Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/).
-Tutorials are available at [storopoli.github.io/Bayesian-Julia](https://storopoli.github.io/Bayesian-Julia).
+Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
 
 **Bayesian statistics** is an approach to inferential statistics based on Bayes' theorem,
 where available knowledge about parameters in a statistical model is updated with the information in observed data.
@@ -89,19 +89,19 @@ To configure a local environment:
 
 ## Tutorials
 
-1. [**Why Julia?**](https://storopoli.github.io/Bayesian-Julia/pages/01_why_Julia/)
-2. [**What is Bayesian Statistics?**](https://storopoli.github.io/Bayesian-Julia/pages/02_bayes_stats/)
-3. [**Common Probability Distributions**](https://storopoli.github.io/Bayesian-Julia/pages/03_prob_dist/)
-4. [**How to use Turing**](https://storopoli.github.io/Bayesian-Julia/pages/04_Turing/)
-5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.github.io/Bayesian-Julia/pages/05_MCMC/)
-6. [**Bayesian Linear Regression**](https://storopoli.github.io/Bayesian-Julia/pages/06_linear_reg/)
-7. [**Bayesian Logistic Regression**](https://storopoli.github.io/Bayesian-Julia/pages/07_logistic_reg/)
-8. [**Bayesian Ordinal Regression**](https://storopoli.github.io/Bayesian-Julia/pages/08_ordinal_reg/)
-9. [**Bayesian Regression with Count Data**](https://storopoli.github.io/Bayesian-Julia/pages/09_count_reg/)
-10. [**Robust Bayesian Regression**](https://storopoli.github.io/Bayesian-Julia/pages/10_robust_reg/)
-11. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.github.io/Bayesian-Julia/pages/11_multilevel_models/)
-12. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.github.io/Bayesian-Julia/pages/12_Turing_tricks/)
-13. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.github.io/Bayesian-Julia/pages/13_epi_models/)
+1. [**Why Julia?**](https://storopoli.io/Bayesian-Julia/pages/01_why_Julia/)
+2. [**What is Bayesian Statistics?**](https://storopoli.io/Bayesian-Julia/pages/02_bayes_stats/)
+3. [**Common Probability Distributions**](https://storopoli.io/Bayesian-Julia/pages/03_prob_dist/)
+4. [**How to use Turing**](https://storopoli.io/Bayesian-Julia/pages/04_Turing/)
+5. [**Markov Chain Monte Carlo (MCMC)**](https://storopoli.io/Bayesian-Julia/pages/05_MCMC/)
+6. [**Bayesian Linear Regression**](https://storopoli.io/Bayesian-Julia/pages/06_linear_reg/)
+7. [**Bayesian Logistic Regression**](https://storopoli.io/Bayesian-Julia/pages/07_logistic_reg/)
+8. [**Bayesian Ordinal Regression**](https://storopoli.io/Bayesian-Julia/pages/08_ordinal_reg/)
+9. [**Bayesian Regression with Count Data**](https://storopoli.io/Bayesian-Julia/pages/09_count_reg/)
+10. [**Robust Bayesian Regression**](https://storopoli.io/Bayesian-Julia/pages/10_robust_reg/)
+11. [**Multilevel Models (a.k.a. Hierarchical Models)**](https://storopoli.io/Bayesian-Julia/pages/11_multilevel_models/)
+12. [**Computational Tricks with Turing (Non-Centered Parametrization and QR Decomposition)**](https://storopoli.io/Bayesian-Julia/pages/12_Turing_tricks/)
+13. [**Epidemiological Models using ODE Solvers in Turing**](https://storopoli.io/Bayesian-Julia/pages/13_epi_models/)
 
 ## Datasets
 
@@ -141,14 +141,14 @@ You can find it at [`storopoli/Bayesian-Statistics`](https://github.com/storopol
 
 To cite these tutorials, please use:
 
-    Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.github.io/Bayesian-Julia.
+    Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
 
 Or in BibTeX format (LaTeX):
 
     @misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
-      url = {https://storopoli.github.io/Bayesian-Julia},
+      url = {https://storopoli.io/Bayesian-Julia},
       year = {2021}
     }
 

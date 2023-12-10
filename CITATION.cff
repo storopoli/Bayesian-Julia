@@ -10,7 +10,7 @@ date-released: 2021-06-01
 identifiers: 
   - 
     type: url
-    value: "https://storopoli.github.io/Bayesian-Julia"
+    value: "https://storopoli.io/Bayesian-Julia"
 license: "CC-BY-SA-4.0"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/storopoli/Bayesian-Julia"

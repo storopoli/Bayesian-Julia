@@ -5,7 +5,7 @@ The website_* must be defined for the RSS to work
 -->
 @def website_title = "Bayesian Statistics with Julia and Turing"
 @def website_descr = "Bayesian Statistics Tutorials for Social Scientists and PhD Candidates"
-@def website_url   = "https://storopoli.github.io/Bayesian-Julia/"
+@def website_url   = "https://storopoli.io/Bayesian-Julia/"
 
 @def author = "Jose Storopoli"
 

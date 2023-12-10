@@ -9,7 +9,7 @@
 \center{*Bayesian for Everyone*} \\
 
 Welcome to the repository of tutorials on how to do **Bayesian Statistics** using [**Julia**](https://www.julialang.org) and [**Turing**](http://turing.ml/).
-Tutorials are available at [storopoli.github.io/Bayesian-Julia](https://storopoli.github.io/Bayesian-Julia).
+Tutorials are available at [storopoli.io/Bayesian-Julia](https://storopoli.io/Bayesian-Julia).
 
 **Bayesian statistics** is an approach to inferential statistics based on Bayes' theorem,
 where available knowledge about parameters in a statistical model is updated with the information in observed data.
@@ -124,7 +124,7 @@ You can find it at [`storopoli/Bayesian-Statistics`](https://github.com/storopol
 To cite these tutorials, please use:
 
 ```plaintext
-Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.github.io/Bayesian-Julia.
+Storopoli (2021). Bayesian Statistics with Julia and Turing. https://storopoli.io/Bayesian-Julia.
 ```
 
 Or in BibTeX format $\LaTeX$:
@@ -133,7 +133,7 @@ Or in BibTeX format $\LaTeX$:
 @misc{storopoli2021bayesianjulia,
       author = {Storopoli, Jose},
       title = {Bayesian Statistics with Julia and Turing},
-      url = {https://storopoli.github.io/Bayesian-Julia},
+      url = {https://storopoli.io/Bayesian-Julia},
       year = {2021}
     }
 ```
