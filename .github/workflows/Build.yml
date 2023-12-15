@@ -48,7 +48,7 @@ jobs:
 
       - name: Make Franklin preview available
         if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: preview
           path: ./__site
