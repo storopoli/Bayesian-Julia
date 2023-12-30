@@ -1,7 +1,7 @@
 # # Bonus: Epidemiological Models using ODE Solvers in Turing
 
 # Ok, now this is something that really makes me very excited with Julia's
-# ecosystem. If you want to use an **O**rdinary **D**ifferential **E**quation solver
+# ecosystem. If you want to use an Ordinary Differential Equation solver
 # in your Turing model, you don't need to code it from scratch. You've just
 # **borrow a pre-made one** from [`DifferentialEquations.jl`](https://diffeq.sciml.ai/dev/).
 # This is what makes Julia so great. We can use functions and types

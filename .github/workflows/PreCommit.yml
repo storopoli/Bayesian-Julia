@@ -1,0 +1,33 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: 
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3'
+
+    - name: Install Julia
+      uses: julia-actions/setup-julia@v1
+
+    - name: Julia Cache
+      uses: julia-actions/cache@v1
+
+    - name: Install Julia Formatter
+      run: julia -e 'using Pkg; Pkg.add("JuliaFormatter");'
+
+    - name: Pre Commit Checks
+      uses: pre-commit/action@v3.0.0
