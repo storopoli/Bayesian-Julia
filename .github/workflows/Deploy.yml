@@ -10,6 +10,11 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      # Required by julia-actions/cache.
+      actions: write
+      # For the push to `gh-pages` branch.
+      contents: write
     env:
       JULIA_NUM_THREADS: "auto"
     steps:
