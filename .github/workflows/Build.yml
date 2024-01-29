@@ -9,6 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      # Required by julia-actions/cache.
+      actions: write
+      # For the comment in the PRs saying that the PDF is ready.
+      pull-requests: write
     env:
       JULIA_NUM_THREADS: "auto"
     steps:
