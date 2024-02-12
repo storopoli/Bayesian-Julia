@@ -30,4 +30,4 @@ jobs:
       run: julia -e 'using Pkg; Pkg.add("JuliaFormatter");'
 
     - name: Pre Commit Checks
-      uses: pre-commit/action@v3.0.1
+      uses: pre-commit/action@v3
