@@ -1,0 +1,16 @@
+digraph bayesian_workflow {
+  forcelabels = true;
+  graph [overlap = false,
+         fontsize = 10,
+         rankdir = LR,
+         dpi = 300]
+  node [shape = oval,
+        fontname = Helvetica]
+  A [label = "Model\nSpecification"]
+  B [label = "Prior\nSpecification"]
+  C [label = "Posterior\nInference"]
+  A -> B
+  B -> A [label = "Prior\nPredictive\nCheck"]
+  B -> C
+  C -> B [label = "Posterior\nPredictive\nCheck"]
+}
