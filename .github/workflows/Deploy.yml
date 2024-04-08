@@ -28,7 +28,7 @@ jobs:
       - run: npm install highlight.js
 
       - name: Install Julia
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v2
 
       - uses: julia-actions/cache@v1
 

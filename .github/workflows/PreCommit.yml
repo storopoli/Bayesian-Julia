@@ -21,7 +21,7 @@ jobs:
         python-version: '3'
 
     - name: Install Julia
-      uses: julia-actions/setup-julia@v1
+      uses: julia-actions/setup-julia@v2
 
     - name: Julia Cache
       uses: julia-actions/cache@v1
