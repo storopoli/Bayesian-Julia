@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Julia
         uses: julia-actions/setup-julia@v2
-      - uses: julia-actions/cache@v1
+      - uses: julia-actions/cache@v2
 
       # NOTE
       #   The steps below ensure that NodeJS and Franklin are loaded then it
