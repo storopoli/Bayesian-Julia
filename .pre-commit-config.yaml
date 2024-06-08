@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.16.23
+    hooks:
+      - id: typos
+  - repo: https://github.com/qiaojunfeng/pre-commit-julia-format
+    rev: v0.1.1                # use the most recent version
+    hooks:
+    - id: julia-format         # formatter for Julia code
