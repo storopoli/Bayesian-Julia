@@ -12,6 +12,8 @@ lik = "lik"
 quation = "quation"
 # surnames
 Yau = "Yau"
+# Bold stuff
+"rror" = "rror" # **E**rror
 
 [files]
 extend-exclude = [
