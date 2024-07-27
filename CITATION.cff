@@ -1,0 +1,19 @@
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: Storopoli
+    given-names: Jose
+    orcid: "https://orcid.org/0000-0002-0559-5176"
+cff-version: "1.2.0"
+date-released: 2021-06-01
+identifiers: 
+  - 
+    type: url
+    value: "https://storopoli.io/Bayesian-Julia"
+license: "CC-BY-SA-4.0"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/storopoli/Bayesian-Julia"
+title: "Bayesian Statistics with Julia and Turing"
+version: 1.0.0
+...
