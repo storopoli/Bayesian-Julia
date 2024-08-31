@@ -1,0 +1,4 @@
+Sitemap: https://storopoli.io/Bayesian-Julia/sitemap.xml
+
+User-agent: *
+Disallow:
