@@ -1,0 +1,33 @@
+[default]
+extend-ignore-re = [
+    "textcite\\{.*\\}",                # citation keys
+    "\\b[0-9A-Za-z+/]{91}(=|==)?\\b",  # base64 strings
+    "[0-9a-fA-F]{7,}",                 # git commit hashes
+    "\\b[0-9A-Za-z+/]{33,}(=|==)?\\b", # SHA/tpub/adresses etc strings
+]
+
+[default.extend-words]
+# code stuff
+lik = "lik"
+quation = "quation"
+# surnames
+Yau = "Yau"
+# Bold stuff
+"rror" = "rror" # **E**rror
+
+[files]
+extend-exclude = [
+    "datasets/*",
+    "_assets/*",
+    "_libs/*",
+    "images/*",
+    "pages/images/*",
+]
+
+[type.bib]
+check-file = false
+extend-glob = ["*.bib"]
+
+[type.gitignore]
+check-file = false
+extend-glob = [".gitignore"]

@@ -1,0 +1,485 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/Bayesian-Julia/libs/katex/katex.min.css"> <link rel=stylesheet  href="/Bayesian-Julia/libs/highlight/github.min.css"> <link rel=stylesheet  href="/Bayesian-Julia/css/jtd.css"> <link rel=icon  href="/Bayesian-Julia/assets/favicon.ico"> <title>Computational Tricks with Turing <br/> &#40;Non-Centered Parametrization <br/> and QR Decomposition&#41;</title> <div class=page-wrap > <div class=side-bar > <div class=header > <a href="/Bayesian-Julia/" class=title > Bayesian Stats </a> </div> <label for=show-menu  class=show-menu >MENU</label> <input type=checkbox  id=show-menu  role=button > <div class=menu  id=side-menu > <ul class=menu-list > <li class="menu-list-item "><a href="/Bayesian-Julia/" class="menu-list-link ">Home</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/01_why_Julia/" class="menu-list-link ">1. Why Julia?</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/02_bayes_stats/" class="menu-list-link ">2. What is Bayesian Statistics?</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/03_prob_dist/" class="menu-list-link ">3. Common Probability Distributions</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/04_Turing/" class="menu-list-link ">4. How to use Turing</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/05_MCMC/" class="menu-list-link ">5. Markov Chain Monte Carlo (MCMC)</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/06_linear_reg/" class="menu-list-link ">6. Bayesian Linear Regression</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/07_logistic_reg/" class="menu-list-link ">7. Bayesian Logistic Regression</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/08_ordinal_reg/" class="menu-list-link ">8. Bayesian Ordinal Regression</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/09_count_reg/" class="menu-list-link ">9. Bayesian Regression with Count Data</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/10_robust_reg/" class="menu-list-link ">10. Robust Bayesian Regression</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/11_multilevel_models/" class="menu-list-link ">11. Multilevel Models</a> <li class="menu-list-item active"><a href="/Bayesian-Julia/pages/12_Turing_tricks/" class="menu-list-link active">12. Computational Tricks with Turing</a> <li class="menu-list-item "><a href="/Bayesian-Julia/pages/13_epi_models/" class="menu-list-link ">13. Bayesian Epidemiological Models</a> </ul> </div> <div class=footer > <a href="https://www.julialang.org"><img style="height:50px;padding-left:10px;margin-bottom:15px;" src="https://julialang.org/assets/infra/logo.svg" alt="Julia Logo"></a> </div> </div> <div class=main-content-wrap > <div class=main-content > <div class=main-header > <a id=github  href="https://github.com/storopoli/Bayesian-Julia">Code on GitHub</a> </div> <div class=franklin-content ><div class=franklin-toc ><ol><li><a href="#qr_decomposition">QR Decomposition</a><li><a href="#non-centered_parametrization">Non-Centered Parametrization</a><li><a href="#references">References</a></ol></div> <h1 id=computational_tricks_with_turing_non-centered_parametrization_and_qr_decomposition ><a href="#computational_tricks_with_turing_non-centered_parametrization_and_qr_decomposition" class=header-anchor >Computational Tricks with Turing <br/> &#40;Non-Centered Parametrization <br/> and QR Decomposition&#41;</a></h1> <p>There are some computational tricks that we can employ with Turing. I will cover here two computational tricks:</p> <ol> <li><p><strong>QR Decomposition</strong></p> <li><p><strong>Non-Centered Parametrization</strong></p> </ol> <h2 id=qr_decomposition ><a href="#qr_decomposition" class=header-anchor >QR Decomposition</a></h2> <p>Back in &quot;Linear Algebra 101&quot; we&#39;ve learned that any matrix &#40;even rectangular ones&#41; can be factored into the product of two matrices:</p> <ul> <li><p><span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >Q</mi></mrow><annotation encoding="application/x-tex">\mathbf{Q}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.8805499999999999em;vertical-align:-0.19444em;"></span><span class="mord mathbf">Q</span></span></span></span>: an orthogonal matrix &#40;its columns are orthogonal unit vectors meaning <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi mathvariant=bold >Q</mi><mi>T</mi></msup><mo>=</mo><msup><mi mathvariant=bold >Q</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy=false >)</mo></mrow><annotation encoding="application/x-tex">\mathbf{Q}^T = \mathbf{Q}^{-1})</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:1.035771em;vertical-align:-0.19444em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:1.064108em;vertical-align:-0.25em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class=mclose >)</span></span></span></span>.</p> <li><p><span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >R</mi></mrow><annotation encoding="application/x-tex">\mathbf{R}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">R</span></span></span></span>: an upper triangular matrix.</p> </ul> <p>This is commonly known as the <a href="https://en.wikipedia.org/wiki/QR_decomposition"><strong>QR Decomposition</strong></a>:</p> <span class=katex-display ><span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML" display=block ><semantics><mrow><mi mathvariant=bold >A</mi><mo>=</mo><mi mathvariant=bold >Q</mi><mo>⋅</mo><mi mathvariant=bold >R</mi></mrow><annotation encoding="application/x-tex"> \mathbf{A} = \mathbf{Q} \cdot \mathbf{R} </annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">A</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.8805499999999999em;vertical-align:-0.19444em;"></span><span class="mord mathbf">Q</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span></span><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">R</span></span></span></span></span> <p>Let me show you an example with a random matrix <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >A</mi><mo>∈</mo><msup><mi mathvariant=double-struck >R</mi><mrow><mn>3</mn><mo>×</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\mathbf{A} \in \mathbb{R}^{3 \times 2}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.72521em;vertical-align:-0.0391em;"></span><span class="mord mathbf">A</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >∈</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.8141079999999999em;vertical-align:0em;"></span><span class=mord ><span class="mord mathbb">R</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mbin mtight">×</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>:</p> <pre><code class="julia hljs">A = rand(<span class=hljs-number >3</span>, <span class=hljs-number >2</span>)</code></pre><pre><code class="plaintext hljs">3×2 Matrix{Float64}:
+ 0.052264  0.275093
+ 0.366625  0.283257
+ 0.609951  0.94951</code></pre> <p>Now let&#39;s factor <code>A</code> using <code>LinearAlgebra</code>&#39;s <code>qr&#40;&#41;</code> function:</p> <pre><code class="julia hljs"><span class=hljs-keyword >using</span> LinearAlgebra: qr, I
+Q, R = qr(A)</code></pre><pre><code class="plaintext hljs">LinearAlgebra.QRCompactWY{Float64, Matrix{Float64}, Matrix{Float64}}
+Q factor: 3×3 LinearAlgebra.QRCompactWYQ{Float64, Matrix{Float64}, Matrix{Float64}}
+R factor:
+2×2 Matrix{Float64}:
+ -0.713573  -0.977309
+  0.0        0.319916</code></pre> <p>Notice that <code>qr&#40;&#41;</code> produced a tuple containing two matrices <code>Q</code> and <code>R</code>. <code>Q</code> is a 3x3 orthogonal matrix. And <code>R</code> is a 2x2 upper triangular matrix. So that <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi mathvariant=bold >Q</mi><mi>T</mi></msup><mo>=</mo><msup><mi mathvariant=bold >Q</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\mathbf{Q}^T = \mathbf{Q}^{-1}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:1.035771em;vertical-align:-0.19444em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:1.008548em;vertical-align:-0.19444em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span> &#40;the transpose is equal the inverse&#41;:</p> <pre><code class="julia hljs"><span class=hljs-built_in >Matrix</span>(Q&#x27;) ≈ <span class=hljs-built_in >Matrix</span>(Q^-<span class=hljs-number >1</span>)</code></pre><pre><code class="plaintext hljs">true</code></pre>
+<p>Also note that <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi mathvariant=bold >Q</mi><mi>T</mi></msup><mo>⋅</mo><msup><mi mathvariant=bold >Q</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>=</mo><mi mathvariant=bold >I</mi></mrow><annotation encoding="application/x-tex">\mathbf{Q}^T \cdot \mathbf{Q}^{-1} = \mathbf{I}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:1.035771em;vertical-align:-0.19444em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span></span><span class=base ><span class=strut  style="height:1.008548em;vertical-align:-0.19444em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">I</span></span></span></span> &#40;identity matrix&#41;:</p>
+<pre><code class="julia hljs">Q&#x27; * Q ≈ I(<span class=hljs-number >3</span>)</code></pre><pre><code class="plaintext hljs">true</code></pre>
+<p>This is nice. But what can we do with QR decomposition? It can speed up Turing&#39;s sampling by a huge factor while also decorrelating the columns of <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >X</mi></mrow><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">X</span></span></span></span>, <em>i.e.</em> the independent variables. The orthogonal nature of QR decomposition alters the posterior&#39;s topology and makes it easier for HMC or other MCMC samplers to explore it. Let&#39;s see how fast we can get with QR decomposition. First, let&#39;s go back to the <code>kidiq</code> example in <a href="/Bayesian-Julia/pages/6_linear_reg/">6. <strong>Bayesian Linear Regression</strong></a>:</p>
+<pre><code class="julia hljs"><span class=hljs-keyword >using</span> Turing
+<span class=hljs-keyword >using</span> LinearAlgebra: I
+<span class=hljs-keyword >using</span> Statistics: mean, std
+<span class=hljs-keyword >using</span> Random: seed!
+seed!(<span class=hljs-number >123</span>)
+
+<span class=hljs-meta >@model</span> <span class=hljs-keyword >function</span> linreg(X, y; predictors=size(X, <span class=hljs-number >2</span>))
+    <span class=hljs-comment >#priors</span>
+    α ~ Normal(mean(y), <span class=hljs-number >2.5</span> * std(y))
+    β ~ filldist(TDist(<span class=hljs-number >3</span>), predictors)
+    σ ~ Exponential(<span class=hljs-number >1</span>)
+
+    <span class=hljs-comment >#likelihood</span>
+    <span class=hljs-keyword >return</span> y ~ MvNormal(α .+ X * β, σ^<span class=hljs-number >2</span> * I)
+<span class=hljs-keyword >end</span>;
+
+<span class=hljs-keyword >using</span> DataFrames
+<span class=hljs-keyword >using</span> CSV
+<span class=hljs-keyword >using</span> HTTP
+
+url = <span class=hljs-string >&quot;https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/kidiq.csv&quot;</span>
+kidiq = CSV.read(HTTP.get(url).body, DataFrame)
+X = <span class=hljs-built_in >Matrix</span>(select(kidiq, Not(:kid_score)))
+y = kidiq[:, :kid_score]
+model = linreg(X, y)
+chain = sample(model, NUTS(), MCMCThreads(), <span class=hljs-number >1_000</span>, <span class=hljs-number >4</span>)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×17×4 Array{Float64, 3}):
+
+Iterations        = 501:1:1500
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 5.79 seconds
+Compute duration  = 21.28 seconds
+parameters        = α, β[1], β[2], β[3], σ
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters      mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol   Float64   Float64   Float64     Float64     Float64   Float64       Float64
+
+           α   21.4873    8.4924    0.2037   1745.2565   2027.6065    1.0016       82.0062
+        β[1]    2.0094    1.8046    0.0404   2503.6573   1943.0201    1.0018      117.6420
+        β[2]    0.5804    0.0587    0.0013   2105.4795   2393.3903    1.0002       98.9324
+        β[3]    0.2501    0.3040    0.0064   2289.2311   2357.9811    1.0011      107.5665
+           σ   17.8704    0.6117    0.0128   2302.7508   2294.8862    1.0010      108.2018
+
+Quantiles
+  parameters      2.5%     25.0%     50.0%     75.0%     97.5%
+      Symbol   Float64   Float64   Float64   Float64   Float64
+
+           α    5.1041   15.6692   21.4971   27.2446   38.0485
+        β[1]   -0.6083    0.7132    1.6417    3.0215    6.2792
+        β[2]    0.4648    0.5429    0.5800    0.6190    0.6949
+        β[3]   -0.3675    0.0436    0.2546    0.4551    0.8387
+           σ   16.7198   17.4475   17.8650   18.2730   19.1362
+</code></pre>
+<p>See the wall duration in Turing&#39;s <code>chain</code>: for me it took around 24 seconds.</p>
+<p>Now let&#39;s us incorporate QR decomposition in the linear regression model. Here, I will use the &quot;thin&quot; instead of the &quot;fat&quot; QR, which scales the <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >Q</mi></mrow><annotation encoding="application/x-tex">\mathbf{Q}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.8805499999999999em;vertical-align:-0.19444em;"></span><span class="mord mathbf">Q</span></span></span></span> and <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >R</mi></mrow><annotation encoding="application/x-tex">\mathbf{R}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">R</span></span></span></span> matrices by a factor of <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msqrt><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msqrt></mrow><annotation encoding="application/x-tex">\sqrt{n-1}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:1.04em;vertical-align:-0.17444499999999996em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:0.8655550000000001em;"><span class=svg-align  style="top:-3em;"><span class=pstrut  style="height:3em;"></span><span class=mord  style="padding-left:0.833em;"><span class="mord mathnormal">n</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >−</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord >1</span></span></span><span style="top:-2.825555em;"><span class=pstrut  style="height:3em;"></span><span class=hide-tail  style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:0.17444499999999996em;"><span></span></span></span></span></span></span></span></span> where <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">n</span></span></span></span> is the number of rows of <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold >X</mi></mrow><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68611em;vertical-align:0em;"></span><span class="mord mathbf">X</span></span></span></span>. In practice it is better to implement the thin QR decomposition, which is to be preferred to the fat QR decomposition. It is numerically more stable. Mathematically, the thin QR decomposition is:</p>
+<span class=katex-display ><span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML" display=block ><semantics><mtable rowspacing=0.2500em  columnalign="right left" columnspacing=0em ><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><mi>x</mi></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><msup><mi mathvariant=bold >Q</mi><mo>∗</mo></msup><msup><mi mathvariant=bold >R</mi><mo>∗</mo></msup></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><msup><mi mathvariant=bold >Q</mi><mo>∗</mo></msup></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><mi mathvariant=bold >Q</mi><mo>⋅</mo><msqrt><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msqrt></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><msup><mi mathvariant=bold >R</mi><mo>∗</mo></msup></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><mfrac><mn>1</mn><msqrt><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msqrt></mfrac><mo>⋅</mo><mi mathvariant=bold >R</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><mi mathvariant=bold-italic >μ</mi></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><mi>α</mi><mo>+</mo><mi mathvariant=bold >X</mi><mo>⋅</mo><mi mathvariant=bold-italic >β</mi><mo>+</mo><mi>σ</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><mi>α</mi><mo>+</mo><msup><mi mathvariant=bold >Q</mi><mo>∗</mo></msup><mo>⋅</mo><msup><mi mathvariant=bold >R</mi><mo>∗</mo></msup><mo>⋅</mo><mi mathvariant=bold-italic >β</mi><mo>+</mo><mi>σ</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><mi>α</mi><mo>+</mo><msup><mi mathvariant=bold >Q</mi><mo>∗</mo></msup><mo>⋅</mo><mo stretchy=false >(</mo><msup><mi mathvariant=bold >R</mi><mo>∗</mo></msup><mo>⋅</mo><mi mathvariant=bold-italic >β</mi><mo stretchy=false >)</mo><mo>+</mo><mi>σ</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel=0  displaystyle=true ><mrow><mrow></mrow><mo>=</mo><mi>α</mi><mo>+</mo><msup><mi mathvariant=bold >Q</mi><mo>∗</mo></msup><mo>⋅</mo><mover accent=true ><mi mathvariant=bold-italic >β</mi><mo stretchy=true >undefined</mo></mover><mo>+</mo><mi>σ</mi></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned}
+x &amp;= \mathbf{Q}^* \mathbf{R}^* \\
+\mathbf{Q}^* &amp;= \mathbf{Q} \cdot \sqrt{n - 1} \\
+\mathbf{R}^* &amp;= \frac{1}{\sqrt{n - 1}} \cdot \mathbf{R}\\
+\boldsymbol{\mu}
+&amp;= \alpha + \mathbf{X} \cdot \boldsymbol{\beta} + \sigma
+\\
+&amp;= \alpha + \mathbf{Q}^* \cdot \mathbf{R}^* \cdot \boldsymbol{\beta} + \sigma
+\\
+&amp;= \alpha + \mathbf{Q}^* \cdot (\mathbf{R}^* \cdot \boldsymbol{\beta}) + \sigma
+\\
+&amp;= \alpha + \mathbf{Q}^* \cdot \widetilde{\boldsymbol{\beta}} + \sigma
+\\
+\end{aligned}
+</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:11.740310000000001em;vertical-align:-5.620155em;"></span><span class=mord ><span class=mtable ><span class=col-align-r ><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:6.1201550000000005em;"><span style="top:-8.601595em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class="mord mathnormal">x</span></span></span><span style="top:-7.027165em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span><span style="top:-5.045725000000001em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ><span class="mord mathbf">R</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span><span style="top:-2.975725em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ><span class=mord ><span class="mord boldsymbol">μ</span></span></span></span></span><span style="top:-1.4757250000000006em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ></span></span><span style="top:0.02427499999999938em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ></span></span><span style="top:1.6387149999999995em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:5.620155em;"><span></span></span></span></span></span><span class=col-align-l ><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:6.1201550000000005em;"><span style="top:-8.601595em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class=mord ><span class="mord mathbf">R</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span><span style="top:-7.027165em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class="mord mathbf">Q</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:0.9144300000000001em;"><span class=svg-align  style="top:-3em;"><span class=pstrut  style="height:3em;"></span><span class=mord  style="padding-left:0.833em;"><span class="mord mathnormal">n</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >−</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord >1</span></span></span><span style="top:-2.8744300000000003em;"><span class=pstrut  style="height:3em;"></span><span class=hide-tail  style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:0.12556999999999996em;"><span></span></span></span></span></span></span></span><span style="top:-5.045725000000001em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mord ><span class="mopen nulldelimiter"></span><span class=mfrac ><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:1.32144em;"><span style="top:-2.244445em;"><span class=pstrut  style="height:3em;"></span><span class=mord ><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:0.8655550000000001em;"><span class=svg-align  style="top:-3em;"><span class=pstrut  style="height:3em;"></span><span class=mord  style="padding-left:0.833em;"><span class="mord mathnormal">n</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >−</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord >1</span></span></span><span style="top:-2.825555em;"><span class=pstrut  style="height:3em;"></span><span class=hide-tail  style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:0.17444499999999996em;"><span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class=pstrut  style="height:3em;"></span><span class=frac-line  style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class=pstrut  style="height:3em;"></span><span class=mord ><span class=mord >1</span></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:0.93em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord mathbf">R</span></span></span><span style="top:-2.975725em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord mathbf">X</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span></span></span><span style="top:-1.4757250000000006em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class="mord mathbf">R</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span></span></span><span style="top:0.02427499999999938em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mopen >(</span><span class=mord ><span class="mord mathbf">R</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span><span class=mclose >)</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span></span></span><span style="top:1.6387149999999995em;"><span class=pstrut  style="height:3.32144em;"></span><span class=mord ><span class=mord ></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mord ><span class="mord mathbf">Q</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:0.95444em;"><span style="top:-3em;"><span class=pstrut  style="height:3em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span></span><span class=svg-align  style="top:-3.69444em;"><span class=pstrut  style="height:3em;"></span><span style="height:0.26em;"><svg width='100%' height='0.26em' viewBox='0 0 600 260' preserveAspectRatio='none'><path d='M200 55.538c-77 0-168 73.953-177 73.953-3 0-7
+-2.175-9-5.437L2 97c-1-2-2-4-2-6 0-4 2-7 5-9l20-12C116 12 171 0 207 0c86 0
+ 114 68 191 68 78 0 168-68 177-68 4 0 7 2 9 5l12 19c1 2.175 2 4.35 2 6.525 0
+ 4.35-2 7.613-5 9.788l-19 13.05c-92 63.077-116.937 75.308-183 76.128
+-68.267.847-113-73.952-191-73.952z'/></svg></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:0.19444em;"><span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:5.620155em;"><span></span></span></span></span></span></span></span></span></span></span></span>
+<p>Then we can recover the original <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold-italic >β</mi></mrow><annotation encoding="application/x-tex">\boldsymbol{\beta}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span></span></span></span> with:</p>
+<span class=katex-display ><span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML" display=block ><semantics><mrow><mi mathvariant=bold-italic >β</mi><mo>=</mo><msup><mi mathvariant=bold >R</mi><mrow><mo>∗</mo><mo>−</mo><mn>1</mn></mrow></msup><mo>⋅</mo><mover accent=true ><mi mathvariant=bold-italic >β</mi><mo stretchy=true >undefined</mo></mover></mrow><annotation encoding="application/x-tex"> \boldsymbol{\beta} = \mathbf{R}^{*-1} \cdot \widetilde{\boldsymbol{\beta}} </annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.864108em;vertical-align:0em;"></span><span class=mord ><span class="mord mathbf">R</span><span class=msupsub ><span class=vlist-t ><span class=vlist-r ><span class=vlist  style="height:0.864108em;"><span style="top:-3.113em;margin-right:0.05em;"><span class=pstrut  style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span></span><span class=base ><span class=strut  style="height:1.14888em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class=vlist-r ><span class=vlist  style="height:0.95444em;"><span style="top:-3em;"><span class=pstrut  style="height:3em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span></span><span class=svg-align  style="top:-3.69444em;"><span class=pstrut  style="height:3em;"></span><span style="height:0.26em;"><svg width='100%' height='0.26em' viewBox='0 0 600 260' preserveAspectRatio='none'><path d='M200 55.538c-77 0-168 73.953-177 73.953-3 0-7
+-2.175-9-5.437L2 97c-1-2-2-4-2-6 0-4 2-7 5-9l20-12C116 12 171 0 207 0c86 0
+ 114 68 191 68 78 0 168-68 177-68 4 0 7 2 9 5l12 19c1 2.175 2 4.35 2 6.525 0
+ 4.35-2 7.613-5 9.788l-19 13.05c-92 63.077-116.937 75.308-183 76.128
+-68.267.847-113-73.952-191-73.952z'/></svg></span></span></span><span class=vlist-s >​</span></span><span class=vlist-r ><span class=vlist  style="height:0.19444em;"><span></span></span></span></span></span></span></span></span></span>
+<p>In Turing, a model with QR decomposition would be the same <code>linreg</code> but with a different <code>X</code> matrix supplied, since it is a data transformation. First, we decompose your model data <code>X</code> into <code>Q</code> and <code>R</code>:</p>
+<pre><code class="julia hljs">Q, R = qr(X)
+Q_ast = <span class=hljs-built_in >Matrix</span>(Q) * sqrt(size(X, <span class=hljs-number >1</span>) - <span class=hljs-number >1</span>)
+R_ast = R / sqrt(size(X, <span class=hljs-number >1</span>) - <span class=hljs-number >1</span>);</code></pre>
+<p>Then, we instantiate a model with <code>Q</code> instead of <code>X</code> and sample as you would:</p>
+<pre><code class="julia hljs">model_qr = linreg(Q_ast, y)
+chain_qr = sample(model_qr, NUTS(<span class=hljs-number >1_000</span>, <span class=hljs-number >0.65</span>), MCMCThreads(), <span class=hljs-number >1_000</span>, <span class=hljs-number >4</span>)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×17×4 Array{Float64, 3}):
+
+Iterations        = 1001:1:2000
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 3.24 seconds
+Compute duration  = 9.97 seconds
+parameters        = α, β[1], β[2], β[3], σ
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters       mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol    Float64   Float64   Float64     Float64     Float64   Float64       Float64
+
+           α    33.5261    8.5202    0.3294    762.1540    758.6985    1.0060       76.4601
+        β[1]   -49.4478    7.6440    0.2944    770.0258    774.9488    1.0070       77.2498
+        β[2]    21.7894    3.8757    0.1479    785.6259    729.7449    1.0060       78.8148
+        β[3]     0.3363    0.9415    0.0301   1099.7874   1210.5649    1.0017      110.3318
+           σ    17.8645    0.5924    0.0122   2337.3604   2264.5760    1.0027      234.4864
+
+Quantiles
+  parameters       2.5%      25.0%      50.0%      75.0%      97.5%
+      Symbol    Float64    Float64    Float64    Float64    Float64
+
+           α    18.4458    27.8121    33.1619    38.7305    50.9329
+        β[1]   -63.1518   -54.6239   -49.7727   -44.8569   -33.7062
+        β[2]    13.6960    19.4252    21.9738    24.4045    28.7370
+        β[3]    -1.3522    -0.2708     0.2808     0.8746     2.2836
+           σ    16.7411    17.4558    17.8498    18.2630    19.0793
+</code></pre>
+<p>See the wall duration in Turing&#39;s <code>chain_qr</code>: for me it took around 5 seconds. Much faster than the regular <code>linreg</code>. Now we have to reconstruct our <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant=bold-italic >β</mi></mrow><annotation encoding="application/x-tex">\boldsymbol{\beta}</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class=mord ><span class=mord ><span class="mord boldsymbol" style="margin-right:0.03403em;">β</span></span></span></span></span></span>s:</p>
+<pre><code class="julia hljs">betas = mapslices(
+    x -&gt; R_ast^-<span class=hljs-number >1</span> * x, chain_qr[:, namesingroup(chain_qr, :β), :].value.data; dims=[<span class=hljs-number >2</span>]
+)
+chain_beta = setrange(
+    Chains(betas, [<span class=hljs-string >&quot;real_β[<span class=hljs-variable >$i</span>]&quot;</span> <span class=hljs-keyword >for</span> i <span class=hljs-keyword >in</span> <span class=hljs-number >1</span>:size(Q_ast, <span class=hljs-number >2</span>)]), <span class=hljs-number >1_001</span>:<span class=hljs-number >1</span>:<span class=hljs-number >2_000</span>
+)
+chain_qr_reconstructed = hcat(chain_beta, chain_qr)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×20×4 Array{Float64, 3}):
+
+Iterations        = 1001:1:2000
+Number of chains  = 4
+Samples per chain = 1000
+parameters        = real_β[1], real_β[2], real_β[3], α, β[1], β[2], β[3], σ
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters       mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol    Float64   Float64   Float64     Float64     Float64   Float64       Missing
+
+   real_β[1]     6.2873    2.1921    0.0337   4243.2988   2940.8659    1.0004       missing
+   real_β[2]     0.5022    0.0651    0.0020   1157.6335   1467.5847    1.0015       missing
+   real_β[3]    -0.0821    0.2299    0.0074   1099.7874   1210.5649    1.0017       missing
+           α    33.5261    8.5202    0.3294    762.1540    758.6985    1.0060       missing
+        β[1]   -49.4478    7.6440    0.2944    770.0258    774.9488    1.0070       missing
+        β[2]    21.7894    3.8757    0.1479    785.6259    729.7449    1.0060       missing
+        β[3]     0.3363    0.9415    0.0301   1099.7874   1210.5649    1.0017       missing
+           σ    17.8645    0.5924    0.0122   2337.3604   2264.5760    1.0027       missing
+
+Quantiles
+  parameters       2.5%      25.0%      50.0%      75.0%      97.5%
+      Symbol    Float64    Float64    Float64    Float64    Float64
+
+   real_β[1]     2.0723     4.7898     6.2768     7.7708    10.5720
+   real_β[2]     0.3696     0.4602     0.5035     0.5471     0.6245
+   real_β[3]    -0.5577    -0.2136    -0.0686     0.0661     0.3302
+           α    18.4458    27.8121    33.1619    38.7305    50.9329
+        β[1]   -63.1518   -54.6239   -49.7727   -44.8569   -33.7062
+        β[2]    13.6960    19.4252    21.9738    24.4045    28.7370
+        β[3]    -1.3522    -0.2708     0.2808     0.8746     2.2836
+           σ    16.7411    17.4558    17.8498    18.2630    19.0793
+</code></pre>
+<h2 id=non-centered_parametrization ><a href="#non-centered_parametrization" class=header-anchor >Non-Centered Parametrization</a></h2>
+<p>Now let&#39;s us explore <strong>Non-Centered Parametrization</strong> &#40;NCP&#41;. This is useful when the posterior&#39;s topology is very difficult to explore as has regions where HMC sampler has to change the step size <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span> and the <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> factor. This is  I&#39;ve showed one of the most infamous case in <a href="/Bayesian-Julia/pages/5_MCMC/">5. <strong>Markov Chain Monte Carlo &#40;MCMC&#41;</strong></a>: Neal&#39;s Funnel &#40;Neal, 2003&#41;:</p>
+<pre><code class="julia hljs"><span class=hljs-keyword >using</span> CairoMakie
+<span class=hljs-keyword >using</span> Distributions
+funnel_y = rand(Normal(<span class=hljs-number >0</span>, <span class=hljs-number >3</span>), <span class=hljs-number >10_000</span>)
+funnel_x = rand(Normal(), <span class=hljs-number >10_000</span>) .* exp.(funnel_y / <span class=hljs-number >2</span>)
+
+f, ax, s = scatter(
+    funnel_x,
+    funnel_y;
+    color=(:steelblue, <span class=hljs-number >0.3</span>),
+    axis=(; xlabel=<span class=hljs-string >L&quot;X&quot;</span>, ylabel=<span class=hljs-string >L&quot;Y&quot;</span>, limits=(-<span class=hljs-number >100</span>, <span class=hljs-number >100</span>, <span class=hljs-literal >nothing</span>, <span class=hljs-literal >nothing</span>)),
+)</code></pre>
+<p><img src="/Bayesian-Julia/assets/pages/12_Turing_tricks/code/output/funnel.svg" alt=""> <div class=text-center ><em>Neal&#39;s Funnel</em></div> <br/></p>
+<p>Here we see that in upper part of the funnel HMC has to take few steps <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span> and be more liberal with the <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> factor. But, the opposite is in the lower part of the funnel: way more steps <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span> and be more conservative with the <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> factor.</p>
+<p>To see the devil&#39;s funnel &#40;how it is known in some Bayesian circles&#41; in action, let&#39;s code it in Turing and then sample:</p>
+<pre><code class="julia hljs"><span class=hljs-meta >@model</span> <span class=hljs-keyword >function</span> funnel()
+    y ~ Normal(<span class=hljs-number >0</span>, <span class=hljs-number >3</span>)
+    <span class=hljs-keyword >return</span> x ~ Normal(<span class=hljs-number >0</span>, exp(y / <span class=hljs-number >2</span>))
+<span class=hljs-keyword >end</span>
+
+chain_funnel = sample(funnel(), NUTS(), MCMCThreads(), <span class=hljs-number >1_000</span>, <span class=hljs-number >4</span>)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×14×4 Array{Float64, 3}):
+
+Iterations        = 501:1:1500
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 5.11 seconds
+Compute duration  = 19.98 seconds
+parameters        = y, x
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters      mean       std      mcse   ess_bulk   ess_tail      rhat   ess_per_sec
+      Symbol   Float64   Float64   Float64    Float64    Float64   Float64       Float64
+
+           y    1.4437    2.4955    0.2686    73.6811   178.9709    1.0703        3.6874
+           x    1.2393   14.7866    1.0891   361.1533    95.3643    1.0462       18.0739
+
+Quantiles
+  parameters       2.5%     25.0%     50.0%     75.0%     97.5%
+      Symbol    Float64   Float64   Float64   Float64   Float64
+
+           y    -2.5780   -0.3287    1.1671    2.9051    7.1693
+           x   -13.8585   -0.9896    0.0421    1.1881   24.9459
+</code></pre>
+<p>Wow, take a look at those <code>rhat</code> values... That sucks: all are above <code>1.01</code> even with 4 parallel chains with 1,000 iterations&#33;</p>
+<p>How do we deal with that? We <strong>reparametrize</strong>&#33; Note that we can add two normal distributions in the following manner:</p>
+<span class=katex-display ><span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML" display=block ><semantics><mrow><mtext>Normal</mtext><mo stretchy=false >(</mo><mi>μ</mi><mo separator=true >,</mo><mi>σ</mi><mo stretchy=false >)</mo><mo>=</mo><mtext>Standard Normal</mtext><mo>⋅</mo><mi>σ</mi><mo>+</mo><mi>μ</mi></mrow><annotation encoding="application/x-tex"> \text{Normal}(\mu, \sigma) = \text{Standard Normal} \cdot \sigma + \mu </annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class=mord >Normal</span></span><span class=mopen >(</span><span class="mord mathnormal">μ</span><span class=mpunct >,</span><span class=mspace  style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class=mclose >)</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.69444em;vertical-align:0em;"></span><span class="mord text"><span class=mord >Standard Normal</span></span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >⋅</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span></span><span class=base ><span class=strut  style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span><span class=mbin >+</span><span class=mspace  style="margin-right:0.2222222222222222em;"></span></span><span class=base ><span class=strut  style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">μ</span></span></span></span></span>
+<p>where the standard normal is the normal with mean <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\mu = 0</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">μ</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.64444em;vertical-align:0em;"></span><span class=mord >0</span></span></span></span> and standard deviation <span class=katex ><span class=katex-mathml ><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma = 1</annotation></semantics></math></span><span class=katex-html  aria-hidden=true ><span class=base ><span class=strut  style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span><span class=mrel >=</span><span class=mspace  style="margin-right:0.2777777777777778em;"></span></span><span class=base ><span class=strut  style="height:0.64444em;vertical-align:0em;"></span><span class=mord >1</span></span></span></span>. This is why is called Non-Centered Parametrization because we &quot;decouple&quot; the parameters and reconstruct them before.</p>
+<pre><code class="julia hljs"><span class=hljs-meta >@model</span> <span class=hljs-keyword >function</span> ncp_funnel()
+    x̃ ~ Normal()
+    ỹ ~ Normal()
+    y = <span class=hljs-number >3.0</span> * ỹ         <span class=hljs-comment ># implies y ~ Normal(0, 3)</span>
+    <span class=hljs-keyword >return</span> x = exp(y / <span class=hljs-number >2</span>) * x̃  <span class=hljs-comment ># implies x ~ Normal(0, exp(y / 2))</span>
+<span class=hljs-keyword >end</span>
+
+chain_ncp_funnel = sample(ncp_funnel(), NUTS(), MCMCThreads(), <span class=hljs-number >1_000</span>, <span class=hljs-number >4</span>)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×14×4 Array{Float64, 3}):
+
+Iterations        = 501:1:1500
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 4.44 seconds
+Compute duration  = 17.56 seconds
+parameters        = x̃, ỹ
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters      mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol   Float64   Float64   Float64     Float64     Float64   Float64       Float64
+
+           x̃   -0.0127    0.9808    0.0150   4247.2749   3263.5261    1.0020      241.8721
+           ỹ    0.0194    0.9963    0.0165   3654.4614   2827.3503    1.0009      208.1128
+
+Quantiles
+  parameters      2.5%     25.0%     50.0%     75.0%     97.5%
+      Symbol   Float64   Float64   Float64   Float64   Float64
+
+           x̃   -1.9706   -0.6901   -0.0057    0.6521    1.8977
+           ỹ   -1.9722   -0.6448    0.0146    0.6887    1.9837
+</code></pre>
+<p>Much better now: all <code>rhat</code> are well below <code>1.01</code> &#40;or below <code>0.99</code>&#41;.</p>
+<p>How we would implement this a real-world model in Turing? Let&#39;s go back to the <code>cheese</code> random-intercept model in <a href="/Bayesian-Julia/pages/11_multilevel_models/">11. <strong>Multilevel Models &#40;a.k.a. Hierarchical Models&#41;</strong></a>. Here was the approach that we took, also known as Centered Parametrization &#40;CP&#41;:</p>
+<pre><code class="julia hljs"><span class=hljs-meta >@model</span> <span class=hljs-keyword >function</span> varying_intercept(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, <span class=hljs-number >2</span>)
+)
+    <span class=hljs-comment >#priors</span>
+    α ~ Normal(mean(y), <span class=hljs-number >2.5</span> * std(y))       <span class=hljs-comment ># population-level intercept</span>
+    β ~ filldist(Normal(<span class=hljs-number >0</span>, <span class=hljs-number >2</span>), predictors)  <span class=hljs-comment ># population-level coefficients</span>
+    σ ~ Exponential(std(y))                 <span class=hljs-comment ># residual SD</span>
+    <span class=hljs-comment >#prior for variance of random intercepts</span>
+    <span class=hljs-comment >#usually requires thoughtful specification</span>
+    τ ~ truncated(Cauchy(<span class=hljs-number >0</span>, <span class=hljs-number >2</span>); lower=<span class=hljs-number >0</span>)    <span class=hljs-comment ># group-level SDs intercepts</span>
+    αⱼ ~ filldist(Normal(<span class=hljs-number >0</span>, τ), n_gr)       <span class=hljs-comment ># CP group-level intercepts</span>
+
+    <span class=hljs-comment >#likelihood</span>
+    ŷ = α .+ X * β .+ αⱼ[idx]
+    <span class=hljs-keyword >return</span> y ~ MvNormal(ŷ, σ^<span class=hljs-number >2</span> * I)
+<span class=hljs-keyword >end</span>;</code></pre>
+<p>To perform a Non-Centered Parametrization &#40;NCP&#41; in this model we do as following:</p>
+<pre><code class="julia hljs"><span class=hljs-meta >@model</span> <span class=hljs-keyword >function</span> varying_intercept_ncp(
+    X, idx, y; n_gr=length(unique(idx)), predictors=size(X, <span class=hljs-number >2</span>)
+)
+    <span class=hljs-comment >#priors</span>
+    α ~ Normal(mean(y), <span class=hljs-number >2.5</span> * std(y))       <span class=hljs-comment ># population-level intercept</span>
+    β ~ filldist(Normal(<span class=hljs-number >0</span>, <span class=hljs-number >2</span>), predictors)  <span class=hljs-comment ># population-level coefficients</span>
+    σ ~ Exponential(std(y))                 <span class=hljs-comment ># residual SD</span>
+
+    <span class=hljs-comment >#prior for variance of random intercepts</span>
+    <span class=hljs-comment >#usually requires thoughtful specification</span>
+    τ ~ truncated(Cauchy(<span class=hljs-number >0</span>, <span class=hljs-number >2</span>); lower=<span class=hljs-number >0</span>)   <span class=hljs-comment ># group-level SDs intercepts</span>
+    zⱼ ~ filldist(Normal(<span class=hljs-number >0</span>, <span class=hljs-number >1</span>), n_gr)      <span class=hljs-comment ># NCP group-level intercepts</span>
+
+    <span class=hljs-comment >#likelihood</span>
+    ŷ = α .+ X * β .+ zⱼ[idx] .* τ
+    <span class=hljs-keyword >return</span> y ~ MvNormal(ŷ, σ^<span class=hljs-number >2</span> * I)
+<span class=hljs-keyword >end</span>;</code></pre>
+<p>Here we are using a NCP with the <code>zⱼ</code>s following a standard normal and we reconstruct the group-level intercepts by multiplying the <code>zⱼ</code>s by <code>τ</code>. Since the original <code>αⱼ</code>s had a prior centered on 0 with standard deviation <code>τ</code>, we only have to use the multiplication by <code>τ</code> to get back the <code>αⱼ</code>s.</p>
+<p>Now let&#39;s see how NCP compares to the CP. First, let&#39;s redo our CP hierarchical model:</p>
+<pre><code class="julia hljs">url = <span class=hljs-string >&quot;https://raw.githubusercontent.com/storopoli/Bayesian-Julia/master/datasets/cheese.csv&quot;</span>
+cheese = CSV.read(HTTP.get(url).body, DataFrame)
+
+<span class=hljs-keyword >for</span> c <span class=hljs-keyword >in</span> unique(cheese[:, :cheese])
+    cheese[:, <span class=hljs-string >&quot;cheese_<span class=hljs-variable >$c</span>&quot;</span>] = ifelse.(cheese[:, :cheese] .== c, <span class=hljs-number >1</span>, <span class=hljs-number >0</span>)
+<span class=hljs-keyword >end</span>
+
+cheese[:, :background_int] = map(cheese[:, :background]) <span class=hljs-keyword >do</span> b
+    <span class=hljs-keyword >if</span> b == <span class=hljs-string >&quot;rural&quot;</span>
+        <span class=hljs-number >1</span>
+    <span class=hljs-keyword >elseif</span> b == <span class=hljs-string >&quot;urban&quot;</span>
+        <span class=hljs-number >2</span>
+    <span class=hljs-keyword >else</span>
+        <span class=hljs-literal >missing</span>
+    <span class=hljs-keyword >end</span>
+<span class=hljs-keyword >end</span>
+
+X = <span class=hljs-built_in >Matrix</span>(select(cheese, Between(:cheese_A, :cheese_D)));
+y = cheese[:, :y];
+idx = cheese[:, :background_int];
+
+model_cp = varying_intercept(X, idx, y)
+chain_cp = sample(model_cp, NUTS(), MCMCThreads(), <span class=hljs-number >1_000</span>, <span class=hljs-number >4</span>)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×21×4 Array{Float64, 3}):
+
+Iterations        = 501:1:1500
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 6.74 seconds
+Compute duration  = 25.04 seconds
+parameters        = α, β[1], β[2], β[3], β[4], σ, τ, αⱼ[1], αⱼ[2]
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters       mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol    Float64   Float64   Float64     Float64     Float64   Float64       Float64
+
+           α    70.9777    4.9292    0.1951    733.8674    698.0036    1.0024       29.3043
+        β[1]     2.9391    1.3125    0.0274   2286.1309   2670.5875    1.0023       91.2882
+        β[2]   -10.6031    1.3439    0.0273   2408.5309   2595.0412    1.0021       96.1758
+        β[3]     6.5407    1.2973    0.0254   2620.3949   2658.5828    1.0009      104.6358
+        β[4]     1.0906    1.3048    0.0260   2514.3608   2958.6202    1.0011      100.4017
+           σ     7.3923    0.4537    0.0079   3320.4428   2540.7254    1.0014      132.5897
+           τ     6.5988    7.6336    0.2042   1628.0444   1702.8711    1.0011       65.0100
+       αⱼ[1]    -3.6532    4.8490    0.1914    742.0644    627.3595    1.0028       29.6316
+       αⱼ[2]     3.4087    4.8273    0.1883    759.3680    689.2538    1.0033       30.3226
+
+Quantiles
+  parameters       2.5%      25.0%      50.0%     75.0%     97.5%
+      Symbol    Float64    Float64    Float64   Float64   Float64
+
+           α    60.9306    68.3731    70.8225   73.3482   81.9235
+        β[1]     0.3449     2.0539     2.9806    3.8499    5.4024
+        β[2]   -13.2616   -11.5028   -10.6004   -9.7101   -7.9419
+        β[3]     4.0352     5.6609     6.5454    7.4219    9.0464
+        β[4]    -1.4362     0.2293     1.0859    1.9292    3.6770
+           σ     6.5463     7.0668     7.3869    7.6893    8.3178
+           τ     1.8032     3.2176     4.6419    7.4369   21.6780
+       αⱼ[1]   -14.3009    -5.8219    -3.4560   -1.2685    6.2597
+       αⱼ[2]    -7.2993     1.1619     3.4004    5.7226   13.5513
+</code></pre>
+<p>Now let&#39;s do the NCP hierarchical model:</p>
+<pre><code class="julia hljs">model_ncp = varying_intercept_ncp(X, idx, y)
+chain_ncp = sample(model_ncp, NUTS(), MCMCThreads(), <span class=hljs-number >1_000</span>, <span class=hljs-number >4</span>)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×21×4 Array{Float64, 3}):
+
+Iterations        = 501:1:1500
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 11.72 seconds
+Compute duration  = 43.58 seconds
+parameters        = α, β[1], β[2], β[3], β[4], σ, τ, zⱼ[1], zⱼ[2]
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters       mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol    Float64   Float64   Float64     Float64     Float64   Float64       Float64
+
+           α    70.7400    3.9162    0.1535    746.8037    618.6365    1.0057       17.1356
+        β[1]     2.9733    1.3479    0.0298   2059.4494   2126.2529    1.0029       47.2546
+        β[2]   -10.5540    1.3858    0.0332   1731.0925   1336.6279    1.0007       39.7204
+        β[3]     6.5563    1.3427    0.0309   1890.8060   2006.9763    1.0038       43.3850
+        β[4]     1.0767    1.3266    0.0329   1631.6887   1056.7471    1.0036       37.4395
+           σ     7.4178    0.4592    0.0097   2204.0103   1429.4954    1.0007       50.5716
+           τ     5.3524    3.0071    0.1366    762.4344    292.4834    1.0041       17.4942
+       zⱼ[1]    -0.8283    0.7924    0.0211   1343.0493   1518.7369    1.0018       30.8166
+       zⱼ[2]     0.8513    0.7943    0.0221   1225.0626    684.1272    1.0049       28.1094
+
+Quantiles
+  parameters       2.5%      25.0%      50.0%     75.0%     97.5%
+      Symbol    Float64    Float64    Float64   Float64   Float64
+
+           α    62.4757    68.4153    70.7528   72.9883   78.9826
+        β[1]     0.3948     2.0540     2.9718    3.8870    5.6591
+        β[2]   -13.2620   -11.4840   -10.5581   -9.6211   -7.8268
+        β[3]     3.8493     5.6694     6.5733    7.4445    9.1352
+        β[4]    -1.5665     0.2066     1.0831    1.9586    3.6893
+           σ     6.5692     7.0980     7.4000    7.7030    8.3854
+           τ     1.8545     3.1768     4.5002    6.6171   13.7044
+       zⱼ[1]    -2.4668    -1.3391    -0.8119   -0.2700    0.6011
+       zⱼ[2]    -0.6738     0.2976     0.8311    1.3566    2.4837
+</code></pre>
+<p>Notice that some models are better off with a standard Centered Parametrization &#40;as is our <code>cheese</code> case here&#41;. While others are better off with a Non-Centered Parametrization. But now you know how to apply both parametrizations in Turing. Before we conclude, we need to recover our original <code>αⱼ</code>s. We can do this by multiplying <code>zⱼ&#91;idx&#93; .* τ</code>:</p>
+<pre><code class="julia hljs">τ = summarystats(chain_ncp)[:τ, :mean]
+αⱼ = mapslices(
+    x -&gt; x * τ, chain_ncp[:, namesingroup(chain_ncp, :zⱼ), :].value.data; dims=[<span class=hljs-number >2</span>]
+)
+chain_ncp_reconstructed = hcat(
+    MCMCChains.resetrange(chain_ncp), Chains(αⱼ, [<span class=hljs-string >&quot;αⱼ[<span class=hljs-variable >$i</span>]&quot;</span> <span class=hljs-keyword >for</span> i <span class=hljs-keyword >in</span> <span class=hljs-number >1</span>:length(unique(idx))])
+)</code></pre><pre><code class="plaintext hljs">Chains MCMC chain (1000×23×4 Array{Float64, 3}):
+
+Iterations        = 1:1000
+Number of chains  = 4
+Samples per chain = 1000
+Wall duration     = 11.72 seconds
+Compute duration  = 43.58 seconds
+parameters        = α, β[1], β[2], β[3], β[4], σ, τ, zⱼ[1], zⱼ[2], αⱼ[1], αⱼ[2]
+internals         = lp, n_steps, is_accept, acceptance_rate, log_density, hamiltonian_energy, hamiltonian_energy_error, max_hamiltonian_energy_error, tree_depth, numerical_error, step_size, nom_step_size
+
+Summary Statistics
+  parameters       mean       std      mcse    ess_bulk    ess_tail      rhat   ess_per_sec
+      Symbol    Float64   Float64   Float64     Float64     Float64   Float64       Float64
+
+           α    70.7400    3.9162    0.1535    746.8037    618.6365    1.0057       17.1356
+        β[1]     2.9733    1.3479    0.0298   2059.4494   2126.2529    1.0029       47.2546
+        β[2]   -10.5540    1.3858    0.0332   1731.0925   1336.6279    1.0007       39.7204
+        β[3]     6.5563    1.3427    0.0309   1890.8060   2006.9763    1.0038       43.3850
+        β[4]     1.0767    1.3266    0.0329   1631.6887   1056.7471    1.0036       37.4395
+           σ     7.4178    0.4592    0.0097   2204.0103   1429.4954    1.0007       50.5716
+           τ     5.3524    3.0071    0.1366    762.4344    292.4834    1.0041       17.4942
+       zⱼ[1]    -0.8283    0.7924    0.0211   1343.0493   1518.7369    1.0018       30.8166
+       zⱼ[2]     0.8513    0.7943    0.0221   1225.0626    684.1272    1.0049       28.1094
+       αⱼ[1]    -4.4336    4.2410    0.1130   1343.0493   1518.7369    1.0018       30.8166
+       αⱼ[2]     4.5567    4.2514    0.1181   1225.0626    684.1272    1.0049       28.1094
+
+Quantiles
+  parameters       2.5%      25.0%      50.0%     75.0%     97.5%
+      Symbol    Float64    Float64    Float64   Float64   Float64
+
+           α    62.4757    68.4153    70.7528   72.9883   78.9826
+        β[1]     0.3948     2.0540     2.9718    3.8870    5.6591
+        β[2]   -13.2620   -11.4840   -10.5581   -9.6211   -7.8268
+        β[3]     3.8493     5.6694     6.5733    7.4445    9.1352
+        β[4]    -1.5665     0.2066     1.0831    1.9586    3.6893
+           σ     6.5692     7.0980     7.4000    7.7030    8.3854
+           τ     1.8545     3.1768     4.5002    6.6171   13.7044
+       zⱼ[1]    -2.4668    -1.3391    -0.8119   -0.2700    0.6011
+       zⱼ[2]    -0.6738     0.2976     0.8311    1.3566    2.4837
+       αⱼ[1]   -13.2033    -7.1675    -4.3455   -1.4454    3.2174
+       αⱼ[2]    -3.6067     1.5930     4.4486    7.2611   13.2935
+</code></pre>
+<h2 id=references ><a href="#references" class=header-anchor >References</a></h2>
+<p>Neal, Radford M. &#40;2003&#41;. Slice Sampling. The Annals of Statistics, 31&#40;3&#41;, 705–741. Retrieved from https://www.jstor.org/stable/3448413</p>
+
+<div class=page-foot >
+  <div class=copyright >
+    Last modified: October 26, 2024. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+  </div>
+</div>
+</div>
+    </div> 
+    </div> 
+    </div> <!-- end of class page-wrap-->

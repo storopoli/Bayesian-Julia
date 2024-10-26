@@ -1,0 +1,7 @@
+UndefVarError: `Categorical` not defined in `Main.FD_SANDBOX_15168735258677954871`
+Hint: It looks like two or more modules export different bindings with this name, resulting in ambiguity. Try explicitly importing it from a particular module, or qualifying the name with the module it should come from.
+Hint: a global variable of this name may be made accessible by importing Distributions in the current active module Main
+Hint: a global variable of this name may be made accessible by importing Makie in the current active module Main
+Hint: a global variable of this name may be made accessible by importing CairoMakie in the current active module Main
+Hint: a global variable of this name may be made accessible by importing Bijectors in the current active module Main
+Hint: a global variable of this name may be made accessible by importing Turing in the current active module Main

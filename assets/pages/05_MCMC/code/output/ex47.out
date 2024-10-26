@@ -1,0 +1,3 @@
+UndefVarError: `chain` not defined in `Main.FD_SANDBOX_7674230745907385791`
+Suggestion: check for spelling errors or missing imports.
+Hint: a global variable of this name may be made accessible by importing IterTools in the current active module Main

@@ -1,0 +1,1 @@
+6-element Fill{Float64}, with entries equal to 0.16666666666666666
