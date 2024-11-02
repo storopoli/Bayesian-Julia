@@ -27,7 +27,7 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 [compat]
 AlgebraOfGraphics = "0.8"
 BenchmarkTools = "1"
-Bijectors = "0.13"
+Bijectors = "0.14"
 CSV = "0.10"
 CairoMakie = "0.12"
 CategoricalArrays = "0.10"
